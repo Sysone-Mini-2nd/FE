@@ -4,10 +4,9 @@ import ProjectStats from '../components/project/ProjectStats'
 import ProjectFilters from '../components/project/ProjectFilters'
 import ProjectList from '../components/project/ProjectList'
 import ProjectModal from '../components/project/ProjectModal'
-import Kanban from '../components/kanban/Kanban'
 
 function ProjectManager() {
-  const [viewType, setViewType] = useState('card') // 'card', 'list', 'table', 'kanban'
+  const [viewType, setViewType] = useState('card') // 'card', 'list', 'table'
   const [searchTerm, setSearchTerm] = useState('')
   const [filters, setFilters] = useState({
     status: 'all',
@@ -102,20 +101,16 @@ function ProjectManager() {
         onSortChange={setSortBy}
       />
       
-      {/* 프로젝트 목록 또는 칸반 보드 */}
-      {viewType === 'kanban' ? (
-        <Kanban projects={projects} />
-      ) : (
-        <ProjectList 
-          projects={projects}
-          viewType={viewType}
-          searchTerm={searchTerm}
-          filters={filters}
-          sortBy={sortBy}
-          onProjectSelect={setSelectedProject}
-          onProjectUpdate={setProjects}
-        />
-      )}
+      {/* 프로젝트 목록 */}
+      <ProjectList 
+        projects={projects}
+        viewType={viewType}
+        searchTerm={searchTerm}
+        filters={filters}
+        sortBy={sortBy}
+        onProjectSelect={setSelectedProject}
+        onProjectUpdate={setProjects}
+      />
 
       {isCreateModalOpen && (
         <ProjectModal

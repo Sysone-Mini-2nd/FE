@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { 
   Star, 
   StarBorder, 
@@ -12,6 +13,7 @@ import {
 } from '@mui/icons-material'
 
 function ProjectCard({ project, onAction }) {
+  const navigate = useNavigate()
   const getStatusInfo = (status) => {
     switch (status) {
       case 'progress':
@@ -48,7 +50,10 @@ function ProjectCard({ project, onAction }) {
   const daysRemaining = Math.ceil((new Date(project.endDate) - new Date()) / (1000 * 60 * 60 * 24))
 
   return (
-    <div className="bg-white/80 backdrop-blur-md border border-white/20 p-4 hover:bg-white/90 hover:border-white/30 transition-all duration-300 cursor-pointer shadow-lg shadow-black/5 relative overflow-hidden">
+    <div 
+      className="bg-white/80 backdrop-blur-md border border-white/20 p-4 hover:bg-white/90 hover:border-white/30 transition-all duration-300 cursor-pointer shadow-lg shadow-black/5 relative overflow-hidden"
+      onClick={() => navigate(`/projects/${project.id}`)}
+    >
       {/* 우선순위 배경 */}
       <div className={`absolute inset-0 ${getPriorityColor(project.priority)} backdrop-blur-sm`}></div>
       
@@ -58,14 +63,14 @@ function ProjectCard({ project, onAction }) {
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
-              <h3 
-                className="font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-1"
-                onClick={() => onAction('view', project)}
-              >
+              <h3 className="font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-1">
                 {project.name}
               </h3>
               <button
-                onClick={() => onAction('star', project)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onAction('star', project)
+                }}
                 className="text-gray-400 hover:text-yellow-600 transition-colors"
               >
                 {project.isStarred ? 

@@ -30,7 +30,6 @@ function Sidebar() {
       icon: <Folder />,
       path: "/projects",
     },
-    { id: "kanban", label: "칸반보드", icon: <ViewKanban />, path: "/kanban" },
     {
       id: "gantt",
       label: "간트차트",

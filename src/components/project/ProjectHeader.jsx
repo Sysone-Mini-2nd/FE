@@ -1,5 +1,5 @@
 import React from 'react'
-import { Add, Search, ViewModule, ViewList, TableChart, ViewKanban } from '@mui/icons-material'
+import { Add, Search, ViewModule, ViewList, TableChart } from '@mui/icons-material'
 
 function ProjectHeader({ 
   onCreateProject, 
@@ -65,7 +65,7 @@ function ProjectHeader({
           </button>
           <button
             onClick={() => onViewTypeChange('table')}
-            className={`p-2 transition-colors border-r border-gray-300 ${
+            className={`p-2 transition-colors ${
               viewType === 'table' 
                 ? 'bg-gray-100 text-blue-600' 
                 : 'text-gray-600 hover:bg-gray-50'
@@ -73,17 +73,6 @@ function ProjectHeader({
             title="테이블"
           >
             <TableChart className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => onViewTypeChange('kanban')}
-            className={`p-2 transition-colors ${
-              viewType === 'kanban' 
-                ? 'bg-gray-100 text-blue-600' 
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-            title="칸반"
-          >
-            <ViewKanban className="w-4 h-4" />
           </button>
         </div>
 
