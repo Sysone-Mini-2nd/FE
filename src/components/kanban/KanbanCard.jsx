@@ -16,7 +16,7 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-500/20 border-red-200/50'
+        return 'bg-red-500/20 border-red-200/10'
       case 'medium':
         return 'bg-yellow-500/20 border-yellow-200/50'
       case 'low':
@@ -26,19 +26,19 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
     }
   }
 
-  const getPriorityIcon = (priority) => {
-    const baseClass = "w-3 h-3"
-    switch (priority) {
-      case 'high':
-        return <Flag className={`${baseClass} text-red-600`} />
-      case 'medium':
-        return <Flag className={`${baseClass} text-yellow-600`} />
-      case 'low':
-        return <Flag className={`${baseClass} text-green-600`} />
-      default:
-        return <Flag className={`${baseClass} text-gray-600`} />
-    }
-  }
+  // const getPriorityIcon = (priority) => {
+  //   const baseClass = "w-3 h-3"
+  //   switch (priority) {
+  //     case 'high':
+  //       return <Flag className={`${baseClass} text-red-600`} />
+  //     case 'medium':
+  //       return <Flag className={`${baseClass} text-yellow-600`} />
+  //     case 'low':
+  //       return <Flag className={`${baseClass} text-green-600`} />
+  //     default:
+  //       return <Flag className={`${baseClass} text-gray-600`} />
+  //   }
+  // }
 
   const handleSave = () => {
     onUpdate(item.id, editData)
@@ -74,8 +74,8 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white/80 backdrop-blur-md border border-white/20 p-4 cursor-pointer transition-all duration-300 shadow-lg shadow-black/5 group relative overflow-hidden ${
-            snapshot.isDragging ? 'rotate-3 shadow-xl' : 'hover:bg-white/90'
+          className={`bg-white/80 rounded-md p-4 cursor-pointer transition-all duration-300 group relative overflow-hidden ${
+            snapshot.isDragging ? 'rotate-6 ' : 'hover:bg-white/90'
           }`}
         >
           {/* 우선순위 배경 */}
@@ -160,9 +160,9 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
               </div>
 
               {/* 우선순위 */}
-              <div className="flex items-center gap-1">
+              {/* <div className="flex items-center gap-1">
                 {getPriorityIcon(item.priority)}
-              </div>
+              </div> */}
             </div>
 
             {/* 마감일 */}

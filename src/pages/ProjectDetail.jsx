@@ -21,7 +21,7 @@ function ProjectDetail() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('kanban')
   
-  // 샘플 프로젝트 데이터 (실제로는 id로 fetch)
+  // 샘플 프로젝트 데이터
   const project = {
     id: 1,
     name: 'ERP 시스템 개편',
@@ -40,7 +40,7 @@ function ProjectDetail() {
 
   const tabs = [
     { id: 'kanban', label: '칸반 보드', icon: Assignment },
-    { id: 'timeline', label: '타임라인', icon: Timeline },
+    { id: 'timeline', label: '간트차트', icon: Timeline },
     { id: 'team', label: '팀 관리', icon: PeopleAlt },
     { id: 'reports', label: '리포트', icon: Analytics },
     { id: 'issues', label: '이슈 관리', icon: BugReport },
@@ -85,8 +85,8 @@ function ProjectDetail() {
       case 'timeline':
         return (
           <div className="p-6">
-            <h3 className="text-lg font-semibold mb-4">프로젝트 타임라인</h3>
-            <p className="text-gray-600">타임라인 기능이 여기에 구현됩니다.</p>
+            <h3 className="text-lg font-semibold mb-4">간트차트</h3>
+            <p className="text-gray-600">간트차트</p>
           </div>
         )
       case 'team':
@@ -132,14 +132,14 @@ function ProjectDetail() {
         return (
           <div className="p-6">
             <h3 className="text-lg font-semibold mb-4">이슈 관리</h3>
-            <p className="text-gray-600">이슈 관리 기능이 여기에 구현됩니다.</p>
+            <p className="text-gray-600">이슈 관리</p>
           </div>
         )
       case 'settings':
         return (
           <div className="p-6">
             <h3 className="text-lg font-semibold mb-4">프로젝트 설정</h3>
-            <p className="text-gray-600">프로젝트 설정 기능이 여기에 구현됩니다.</p>
+            <p className="text-gray-600">프로젝트 설정.</p>
           </div>
         )
       default:
@@ -155,7 +155,7 @@ function ProjectDetail() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate('/projects')}
-              className="p-2 hover:bg-gray-100 transition-colors"
+              className="p-2 hover:bg-white/50 transition-colors"
             >
               <ArrowBack className="w-5 h-5" />
             </button>
@@ -212,9 +212,9 @@ function ProjectDetail() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
+                className={`flex items-center gap-2 px-4 py-3 transition-colors ${
                   activeTab === tab.id
-                    ? 'border-blue-500 text-blue-600'
+                    ? 'border-white rounded-lg bg-green-300 text-gray-50'
                     : 'border-transparent text-gray-600 hover:text-gray-900'
                 }`}
               >

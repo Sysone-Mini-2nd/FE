@@ -6,7 +6,7 @@ import KanbanHeader from './KanbanHeader'
 import { Add } from '@mui/icons-material'
 
 function Kanban({ projectId }) {
-  // projectId에 따른 태스크 데이터 (실제로는 API로 가져옴)
+  // projectId에 따른 태스크 데이터 
   const getProjectTasks = (projectId) => {
     // 샘플 데이터 - 실제로는 projectId로 API 호출
     return {
