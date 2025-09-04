@@ -3,11 +3,10 @@ import { Add, FilterList, Search, MoreVert } from '@mui/icons-material'
 
 function KanbanHeader() {
   return (
-    <div className="bg-white border-b border-gray-200 p-4">
+    <div className="border-b border-gray-200 p-4">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">칸반 보드</h1>
-          <p className="text-gray-600 mt-1">팀 작업을 시각적으로 관리하세요</p>
         </div>
         
         <div className="flex items-center gap-3">

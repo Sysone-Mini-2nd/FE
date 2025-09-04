@@ -30,19 +30,6 @@ function Sidebar() {
       icon: <Folder />,
       path: "/projects",
     },
-    {
-      id: "gantt",
-      label: "간트차트",
-      icon: <ViewTimeline />,
-      path: "/ganttchart",
-    },
-    { id: "github", label: "GitHub 연동", icon: <GitHub />, path: "/github" },
-    {
-      id: "calendar",
-      label: "공유 캘린더",
-      icon: <CalendarMonth />,
-      path: "/calendar",
-    },
   ];
 
   return (

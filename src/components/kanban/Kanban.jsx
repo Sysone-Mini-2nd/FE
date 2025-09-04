@@ -98,7 +98,7 @@ function Kanban({ projectId }) {
   const [columns, setColumns] = useState(getProjectTasks(projectId))
 
   const handleDragEnd = (result) => {
-    const { destination, source, draggableId } = result
+    const { destination, source} = result //draggableId 
 
     // 드롭 위치가 없으면 리턴
     if (!destination) {

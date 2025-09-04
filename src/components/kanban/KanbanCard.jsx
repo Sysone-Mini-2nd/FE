@@ -5,7 +5,6 @@ import {
   Delete, 
   Schedule, 
   Person,
-  Flag,
   MoreVert
 } from '@mui/icons-material'
 
@@ -16,13 +15,13 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-500/20 border-red-200/10'
+        return 'bg-red-500/20'
       case 'medium':
-        return 'bg-yellow-500/20 border-yellow-200/50'
+        return 'bg-yellow-500/20'
       case 'low':
-        return 'bg-green-500/20 border-green-200/50'
+        return 'bg-green-500/20'
       default:
-        return 'bg-gray-500/20 border-gray-200/50'
+        return 'bg-gray-500/20'
     }
   }
 
@@ -74,7 +73,7 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white/80 rounded-md p-4 cursor-pointer transition-all duration-300 group relative overflow-hidden ${
+          className={`rounded-md p-4 cursor-pointer transition-all duration-300 group relative overflow-hidden ${
             snapshot.isDragging ? 'rotate-6 ' : 'hover:bg-white/90'
           }`}
         >
@@ -101,7 +100,7 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
               
               {/* 액션 메뉴 */}
               <div className="relative group/menu opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1 hover:bg-white/50 backdrop-blur-sm rounded">
+                <button className="p-1 hover:bg-white/50 backdrop-blur-sm rounded-full">
                   <MoreVert className="w-4 h-4 text-gray-500" />
                 </button>
                 <div className="absolute right-0 top-full mt-1 w-32 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 opacity-0 group-hover/menu:opacity-100 invisible group-hover/menu:visible transition-all z-20">

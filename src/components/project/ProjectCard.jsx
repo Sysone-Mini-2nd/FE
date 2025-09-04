@@ -47,7 +47,7 @@ function ProjectCard({ project, onAction }) {
                        project.progress >= 50 ? 'bg-blue-600' : 'bg-gray-400'
 
   const isOverdue = new Date(project.endDate) < new Date() && project.status === 'progress'
-  const daysRemaining = Math.ceil((new Date(project.endDate) - new Date()) / (1000 * 60 * 60 * 24))
+  // const daysRemaining = Math.ceil((new Date(project.endDate) - new Date()) / (1000 * 60 * 60 * 24))
 
   return (
     <div 
