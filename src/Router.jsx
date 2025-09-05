@@ -1,10 +1,9 @@
-import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import Dashboard from "./pages/Dashboard";
 import ProjectManager from "./pages/ProjectManager";
 import ProjectDetail from "./pages/ProjectDetail";
-import GanttChart from "./pages/GanttChart";
+import ShareCalendar from "./pages/ShareCalendar";
 
 const router = createBrowserRouter([
   {
@@ -28,9 +27,10 @@ const router = createBrowserRouter([
         element: <ProjectDetail />,
       },
       {
-        path: "ganttchart",
-        element: <GanttChart />,
+        path: "sharecalendar",
+        element: <ShareCalendar/>,
       },
+
     ],
   },
 ]);

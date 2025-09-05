@@ -3,10 +3,10 @@ import { Add, FilterList, Search, MoreVert } from '@mui/icons-material'
 
 function KanbanHeader() {
   return (
-    <div className="border-b border-gray-200 p-4">
+    <div className="border-b border-gray-200 p-2">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">칸반 보드</h1>
+          <h1 className="text-xl font-bold text-gray-900">칸반 보드</h1>
         </div>
         
         <div className="flex items-center gap-3">
@@ -27,10 +27,10 @@ function KanbanHeader() {
           </button>
           
           {/* 새 카드 추가 */}
-          <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 transition-colors">
+          {/* <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white border border-blue-600 hover:bg-blue-700 transition-colors">
             <Add className="w-4 h-4" />
             새 작업
-          </button>
+          </button> */}
           
           {/* 더보기 메뉴 */}
           <button className="p-2 text-gray-500 hover:bg-gray-100 transition-colors">

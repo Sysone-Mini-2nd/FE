@@ -37,12 +37,12 @@ function FloatingChat() {
 
       {/* 채팅 창 */}
       {isOpen && (
-        <div className={`fixed bottom-6 right-6 z-50 bg-white rounded-lg shadow-xl border border-gray-200 transition-all duration-300 ${
-          isMinimized ? 'w-80 h-12' : 'w-80 h-96'
+        <div className={`fixed bottom-6 right-6 z-50 rounded-lg shadow-xl border border-gray-200 transition-all duration-300 ${
+          isMinimized ? 'w-80 h-12' : 'w-80 h-140'
         }`}>
           {/* 채팅 헤더 */}
-          <div className="flex items-center justify-between p-3 bg-emerald-300 text-white rounded-t-lg">
-            <h3 className="font-medium">메신저</h3>
+          <div className="flex items-center justify-between p-3 bg-emerald-300/40 backdrop-blur-sm text-gray-500 rounded-t-lg">
+            <h3 className="font-bold">메신저</h3>
             <div className="flex items-center gap-2">
               <button
                 onClick={minimizeChat}
@@ -59,11 +59,11 @@ function FloatingChat() {
             </div>
           </div>
 
-          {/* 채팅 내용 (최소화되지 않았을 때만 표시) */}
+          {/* 채팅 내용 */}
           {!isMinimized && (
             <>
               {/* 메시지 영역 */}
-              <div className="flex-1 p-4 h-64 overflow-y-auto bg-gray-50">
+              <div className="flex-1 p-4 h-110 overflow-y-auto bg-gray-50/20 backdrop-blur-sm">
                 <div className="space-y-3">
                   {/* 샘플 메시지 */}
                   <div className="flex justify-start">
@@ -76,14 +76,14 @@ function FloatingChat() {
               </div>
 
               {/* 메시지 입력 영역 */}
-              <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200">
+              <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 backdrop-blur-sm">
                 <div className="flex gap-2">
                   <input
                     type="text"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="메시지를 입력하세요..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-400 text-sm"
+                    className="flex-1 px-3 py-2 border border-gray-300 bg-gray-50 rounded-lg focus:outline-none focus:ring-1 focus:ring-emerald-400 text-sm"
                   />
                   <button
                     type="submit"

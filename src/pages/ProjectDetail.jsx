@@ -16,7 +16,7 @@ import {
   Analytics,
 } from "@mui/icons-material";
 import Kanban from "../components/kanban/Kanban";
-import GanttChart from "../components/ganttchart/Ganttchart";
+import GanttChart from "../components/ganttchart/GanttChart";
 import Meeting from "../components/meeting/Meeting";
 import TeamManagement from "../components/teammanage/TeamManagement";
 import Trouble from "../components/trouble/Trouble";
@@ -202,7 +202,7 @@ function ProjectDetail() {
 
       {/* 탭 네비게이션 */}
       <div className=" border-gray-200">
-        <div className="flex px-6">
+        <div className="flex">
           {tabs.map((tab) => {
             const IconComponent = tab.icon;
             return (
