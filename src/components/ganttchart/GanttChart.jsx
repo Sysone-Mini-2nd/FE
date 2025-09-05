@@ -125,7 +125,7 @@ function GanttChart() {
   const columns = [
     { id: "text", header: "작업명", flexGrow: 1,align: "center"},
     { id: "start", header: "시작일", flexGrow: 1, align: "center" },
-    { id: "duration", header: "기간", align: "center", flexGrow: 1 },
+    // { id: "duration", header: "기간", align: "center", flexGrow: 1 },
     { id: "action", header: "", width: 50, align: "center" },
   ];
 
@@ -167,15 +167,15 @@ function GanttChart() {
       type: "date", 
       label: "종료일"
     },
-    {
-      key: "duration",
-      type: "counter",
-      label: "기간 (일)",
-      config: {
-        min: 1,
-        max: 365
-      }
-    },
+    // {
+    //   key: "duration",
+    //   type: "counter",
+    //   label: "기간 (일)",
+    //   config: {
+    //     min: 1,
+    //     max: 365
+    //   }
+    // },
     {
       key: "progress",
       type: "slider",

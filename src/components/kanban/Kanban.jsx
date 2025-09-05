@@ -60,22 +60,6 @@ function Kanban({ projectId }) {
           }
         ]
       },
-      'review': {
-        id: 'review',
-        title: '검토',
-        color: 'bg-yellow-100',
-        items: [
-          {
-            id: `${projectId}-5`,
-            title: '코드 리뷰',
-            description: '프론트엔드 코드 리뷰 및 개선사항 확인',
-            assignee: '김시니어',
-            priority: 'medium',
-            tags: ['코드리뷰'],
-            dueDate: '2024-03-22'
-          }
-        ]
-      },
       'done': {
         id: 'done',
         title: '완료',
