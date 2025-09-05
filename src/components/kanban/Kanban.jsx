@@ -98,7 +98,7 @@ function Kanban({ projectId }) {
   const [columns, setColumns] = useState(getProjectTasks(projectId))
 
   const handleDragEnd = (result) => {
-    const { destination, source, draggableId } = result
+    const { destination, source} = result //draggableId 
 
     // 드롭 위치가 없으면 리턴
     if (!destination) {
@@ -201,12 +201,10 @@ function Kanban({ projectId }) {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div>
       <KanbanHeader />
-      
-      <div className="flex-1 overflow-x-auto">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex gap-6 p-6 min-w-max">
+          <div className="flex gap-6 py-4 min-w-max">
             {Object.values(columns).map(column => (
               <div key={column.id} className="w-80 flex-shrink-0">
                 <KanbanColumn
@@ -219,7 +217,6 @@ function Kanban({ projectId }) {
             ))}
           </div>
         </DragDropContext>
-      </div>
     </div>
   )
 }

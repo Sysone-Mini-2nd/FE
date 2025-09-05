@@ -30,18 +30,11 @@ function Sidebar() {
       icon: <Folder />,
       path: "/projects",
     },
-    {
-      id: "gantt",
-      label: "간트차트",
-      icon: <ViewTimeline />,
-      path: "/ganttchart",
-    },
-    { id: "github", label: "GitHub 연동", icon: <GitHub />, path: "/github" },
-    {
-      id: "calendar",
+      {
+      id: "sharecalendar",
       label: "공유 캘린더",
       icon: <CalendarMonth />,
-      path: "/calendar",
+      path: "/sharecalendar",
     },
   ];
 
@@ -77,7 +70,7 @@ function Sidebar() {
           {!sidebarCollapsed && (
             <div className="flex-1 pl-4">
               <h6 className="text-lg font-bold text-white">SYSONE</h6>
-              <p className="text-xs text-white/70">PROMANAGER</p>
+              <p className="text-xs font-black text-gray-200">Task Manager</p>
             </div>
           )}
         </div>
