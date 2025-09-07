@@ -25,20 +25,6 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
     }
   }
 
-  // const getPriorityIcon = (priority) => {
-  //   const baseClass = "w-3 h-3"
-  //   switch (priority) {
-  //     case 'high':
-  //       return <Flag className={`${baseClass} text-red-600`} />
-  //     case 'medium':
-  //       return <Flag className={`${baseClass} text-yellow-600`} />
-  //     case 'low':
-  //       return <Flag className={`${baseClass} text-green-600`} />
-  //     default:
-  //       return <Flag className={`${baseClass} text-gray-600`} />
-  //   }
-  // }
-
   const handleSave = () => {
     onUpdate(item.id, editData)
     setIsEditing(false)
