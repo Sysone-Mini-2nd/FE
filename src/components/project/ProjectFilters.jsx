@@ -1,5 +1,6 @@
 import React from 'react'
 import { FilterList, Sort } from '@mui/icons-material'
+import Dropdown from '../common/Dropdown'
 
 function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
   const handleFilterChange = (filterType, value) => {
@@ -8,6 +9,46 @@ function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
       [filterType]: value
     })
   }
+
+  // 드롭다운 옵션들 정의
+  const statusOptions = [
+    { value: "all", label: "모든 상태" },
+    { value: "planning", label: "계획 중" },
+    { value: "progress", label: "진행 중" },
+    { value: "completed", label: "완료" },
+    { value: "paused", label: "일시정지" }
+  ];
+
+  const priorityOptions = [
+    { value: "all", label: "모든 우선순위" },
+    { value: "high", label: "높음" },
+    { value: "medium", label: "보통" },
+    { value: "low", label: "낮음" }
+  ];
+
+  const assigneeOptions = [
+    { value: "all", label: "모든 담당자" },
+    { value: "Kim Manager", label: "Kim Manager" },
+    { value: "Lee Manager", label: "Lee Manager" },
+    { value: "Park Manager", label: "Park Manager" },
+    { value: "Choi Manager", label: "Choi Manager" }
+  ];
+
+  const periodOptions = [
+    { value: "all", label: "모든 기간" },
+    { value: "thisWeek", label: "이번 주" },
+    { value: "thisMonth", label: "이번 달" },
+    { value: "thisQuarter", label: "이번 분기" },
+    { value: "overdue", label: "지연됨" }
+  ];
+
+  const sortOptions = [
+    { value: "created", label: "생성일순" },
+    { value: "name", label: "이름순" },
+    { value: "progress", label: "진행률순" },
+    { value: "endDate", label: "마감일순" },
+    { value: "priority", label: "우선순위순" }
+  ];
 
   return (
     <div className="bg-white rounded-xl p-4 border border-gray-200">
@@ -20,55 +61,36 @@ function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
           </div>
 
           {/* 상태 필터 */}
-          <select
+          <Dropdown
+            options={statusOptions}
             value={filters.status}
-            onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">모든 상태</option>
-            <option value="planning">계획 중</option>
-            <option value="progress">진행 중</option>
-            <option value="completed">완료</option>
-            <option value="paused">일시정지</option>
-          </select>
+            onChange={(value) => handleFilterChange('status', value)}
+            width="w-32"
+          />
 
           {/* 우선순위 필터 */}
-          <select
+          <Dropdown
+            options={priorityOptions}
             value={filters.priority}
-            onChange={(e) => handleFilterChange('priority', e.target.value)}
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">모든 우선순위</option>
-            <option value="high">높음</option>
-            <option value="medium">보통</option>
-            <option value="low">낮음</option>
-          </select>
+            onChange={(value) => handleFilterChange('priority', value)}
+            width="w-36"
+          />
 
           {/* 담당자 필터 */}
-          <select
+          <Dropdown
+            options={assigneeOptions}
             value={filters.assignee}
-            onChange={(e) => handleFilterChange('assignee', e.target.value)}
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">모든 담당자</option>
-            <option value="Kim Manager">Kim Manager</option>
-            <option value="Lee Manager">Lee Manager</option>
-            <option value="Park Manager">Park Manager</option>
-            <option value="Choi Manager">Choi Manager</option>
-          </select>
+            onChange={(value) => handleFilterChange('assignee', value)}
+            width="w-36"
+          />
 
           {/* 기간 필터 */}
-          <select
+          <Dropdown
+            options={periodOptions}
             value={filters.period}
-            onChange={(e) => handleFilterChange('period', e.target.value)}
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="all">모든 기간</option>
-            <option value="thisWeek">이번 주</option>
-            <option value="thisMonth">이번 달</option>
-            <option value="thisQuarter">이번 분기</option>
-            <option value="overdue">지연됨</option>
-          </select>
+            onChange={(value) => handleFilterChange('period', value)}
+            width="w-28"
+          />
         </div>
 
         {/* 정렬 섹션 */}
@@ -77,17 +99,12 @@ function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
             <Sort className="w-5 h-5 text-gray-500" />
             <span className="text-sm font-medium text-gray-700">정렬:</span>
           </div>
-          <select
+          <Dropdown
+            options={sortOptions}
             value={sortBy}
-            onChange={(e) => onSortChange(e.target.value)}
-            className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="created">생성일순</option>
-            <option value="name">이름순</option>
-            <option value="progress">진행률순</option>
-            <option value="endDate">마감일순</option>
-            <option value="priority">우선순위순</option>
-          </select>
+            onChange={onSortChange}
+            width="w-32"
+          />
         </div>
 
         {/* 필터 초기화 */}

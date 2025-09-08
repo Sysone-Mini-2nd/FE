@@ -1,14 +1,26 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Add, Search, FilterList } from "@mui/icons-material";
 import MeetingTable from "./MeetingTable";
 import MeetingCreate from "./MeetingCreate";
-import { meetingsData } from "../../data/meetings";
+import MeetingDetail from "./MeetingDetail";
+import Dropdown from "../common/Dropdown";
+import useMeetingStore from "../../store/meetingStore";
 
 function Meeting() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
-  const [showCreatePage, setShowCreatePage] = useState(false);
-  const [meetings, setMeetings] = useState(meetingsData);
+
+  // Zustand store 사용
+  const { 
+    meetings, 
+    currentView, 
+    selectedMeeting,
+    selectMeeting,
+    showList,
+    showCreate,
+    addMeeting,
+    deleteMeeting 
+  } = useMeetingStore();
 
   // 필터링된 회의 목록
   const filteredMeetings = meetings.filter((meeting) => {
@@ -20,41 +32,27 @@ function Meeting() {
     return matchesSearch && matchesFilter;
   });
 
-  // 테이블 액션 핸들러
+  // 간단해진 액션 핸들러들
   const handleMeetingAction = (action, meeting) => {
     switch (action) {
       case "view":
-        console.log("회의 상세보기:", meeting);
-        // 상세보기 모달이나 페이지로 이동
+        selectMeeting(meeting);
         break;
       case "edit":
         console.log("회의 편집:", meeting);
-        // 편집 모달 열기
         break;
       case "delete":
-        console.log("회의 삭제:", meeting);
-        // 삭제 확인 다이얼로그
-        break;
-      default:
+        if (window.confirm("이 회의록을 삭제하시겠습니까?")) {
+          deleteMeeting(meeting.id);
+        }
         break;
     }
   };
 
-  function handleCreateMeeting() {
-    setShowCreatePage(true);
-  }
-
-  // 회의 생성 페이지에서 돌아가기
-  const handleBackToList = () => {
-    setShowCreatePage(false);
-  };
-
-  // 회의 저장
   const handleSaveMeeting = (meetingData) => {
     const newMeeting = {
-      id: meetings.length + 1,
       title: meetingData.title,
-      organizer: '현재 사용자', // 실제로는 로그인한 사용자 정보
+      organizer: "현재사용자", // currentUser 임시 대체
       type: '기타',
       scheduledDate: new Date().toISOString(),
       location: meetingData.location,
@@ -63,19 +61,31 @@ function Meeting() {
       audioFile: meetingData.audioFile,
       createdAt: meetingData.createdAt
     };
-
-    setMeetings(prev => [newMeeting, ...prev]);
-    setShowCreatePage(false);
-    
-    console.log('새 회의록이 저장되었습니다:', newMeeting);
+    addMeeting(newMeeting);
   };
+
+  // 필터 옵션 정의
+  const filterOptions = [
+    { value: "all", label: "모든 타입" },
+    { value: "Daily Scrum", label: "Daily Scrum" },
+    { value: "Sprint Planning Meeting", label: "Sprint Planning" },
+    { value: "Sprint Review", label: "Sprint Review" },
+    { value: "Sprint Retrospective", label: "Sprint Retrospective" }
+  ];
 
   return (
     <div>
-      {showCreatePage ? (
+      {currentView === 'create' ? (
         <MeetingCreate 
-          onBack={handleBackToList}
+          onBack={showList}
           onSave={handleSaveMeeting}
+        />
+      ) : currentView === 'detail' ? (
+        <MeetingDetail
+          meeting={selectedMeeting}
+          onBack={showList}
+          onEdit={(meeting) => console.log("편집:", meeting)}
+          onDelete={(meeting) => deleteMeeting(meeting.id)}
         />
       ) : (
         <>
@@ -102,24 +112,16 @@ function Meeting() {
                   {/* 필터 */}
                   <div className="flex items-center gap-2">
                     <FilterList className="text-gray-400 w-4 h-4" />
-                    <select
+                    <Dropdown
+                      options={filterOptions}
                       value={filterType}
-                      onChange={(e) => setFilterType(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="all">모든 타입</option>
-                      <option value="Daily Scrum">Daily Scrum</option>
-                      <option value="Sprint Planning Meeting">
-                        Sprint Planning
-                      </option>
-                      <option value="Sprint Review">Sprint Review</option>
-                      <option value="Sprint Retrospective">
-                        Sprint Retrospective
-                      </option>
-                    </select>
+                      onChange={setFilterType}
+                      width="w-48"
+                      placeholder="타입 선택"
+                    />
                   </div>
                   <button
-                    onClick={handleCreateMeeting}
+                    onClick={showCreate}
                     className="createBtn"
                   >
                     <Add className="w-4 h-4" />

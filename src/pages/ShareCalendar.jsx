@@ -184,7 +184,7 @@ function ShareCalendar() {
   }, [])
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-full">
       {/* <div className="mb-6 md:mb-8 text-start">
         <h1 className="text-lg md:text-3xl font-bold text-gray-900 mb-2">공유 캘린더</h1>
       </div> */}

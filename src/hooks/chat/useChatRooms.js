@@ -1,12 +1,14 @@
 import { useState } from 'react'
-import { initialChatRooms } from '../../data/chatRooms'
+import useChatStore from '../../store/chatStore'
 
 export const useChatRooms = () => {
-  const [chatRooms, setChatRooms] = useState(initialChatRooms)
   const [searchTerm, setSearchTerm] = useState('')
+  
+  // Zustand store 사용
+  const { chatRooms, addChatRoom: addChatRoomToStore } = useChatStore()
 
   const addChatRoom = (newChat) => {
-    setChatRooms(prev => [...prev, newChat])
+    addChatRoomToStore(newChat)
   }
 
   const findExistingPrivateChat = (employeeName) => {

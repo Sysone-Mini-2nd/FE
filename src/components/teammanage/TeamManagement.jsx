@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import { Add, Close, Send, Person } from '@mui/icons-material'
 import { employeesData } from '../../data/employees'
 import { useFloatingChat } from '../../hooks/chat/useFloatingChat'
+import useChatStore from '../../store/chatStore'
 
-function TeamManagement({ project }) {
+function TeamManagement() {
   const [selectedMember, setSelectedMember] = useState(null)
   const [showAddModal, setShowAddModal] = useState(false)
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('')
@@ -14,7 +15,7 @@ function TeamManagement({ project }) {
     // employeesData에서 특정 사원들을 선택하여 팀 역할 부여
     const initialTeamIds = [1, 5, 2] // 박서호, 김철수, 이지민의 ID
     const teamRoles = ['프로젝트 매니저', '팀 리더', '팀 멤버']
-    const teamStatuses = ['online', 'offline']
+    const teamStatuses = ['offline','offline', 'offline']
     
     const initialTeam = initialTeamIds.map((id, index) => {
       const employee = employeesData.find(emp => emp.id === id)
@@ -35,7 +36,6 @@ function TeamManagement({ project }) {
   }
   
   const [teamMembers, setTeamMembers] = useState(() => {
-    // 항상 getInitialTeamMembers()를 사용하여 올바른 객체 구조 보장
     return getInitialTeamMembers()
   })
 
@@ -47,6 +47,9 @@ function TeamManagement({ project }) {
     selectChatRoom,
     isOpen 
   } = useFloatingChat()
+
+  // Zustand 채팅 Store 사용
+  const { sendMessage } = useChatStore()
 
   const handleMemberClick = (member) => {
     setSelectedMember(member)
@@ -80,12 +83,14 @@ function TeamManagement({ project }) {
         addChatRoom(targetChat)
       }
       
+      // 🔥 중요: 실제 메시지를 채팅 Store에 전송
+      sendMessage(targetChat.id, message.trim())
+      
       // 채팅방 선택하고 FloatingChat 열기
       selectChatRoom(targetChat)
       if (!isOpen) {
         toggleChat() // 채팅창이 닫혀있으면 열기
       }
-      
       
       setMessage('')
       setSelectedMember(null)
@@ -145,7 +150,7 @@ function TeamManagement({ project }) {
           >
             <div className="relative">
               <div className="w-10 h-10 bg-blue-500 text-white flex items-center justify-center font-medium rounded-full">
-                {member.avatar || member.name?.[0] || 'U'}
+                {member.avatar || member.name?.[0] || '👤'}
               </div>
               <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${
                 member.status === 'online' ? 'bg-green-400' : 'bg-gray-400'
@@ -164,7 +169,7 @@ function TeamManagement({ project }) {
         <div className="modal">
           <div className="bg-white rounded-md shadow-2xl w-80 max-w-[90vw] overflow-hidden">
             {/* 프로필 헤더 */}
-            <div className="bg-gradient-to-r from-black/50 to-sky-500 p-6 text-white relative">
+            <div className="bg-gradient-to-br from-black/50 to-sky-500 p-6 text-white relative">
               <button
                 onClick={handleCloseProfile}
                 className="absolute top-4 right-4 text-white hover:bg-white/20 rounded-full p-1 transition-colors"
@@ -238,7 +243,7 @@ function TeamManagement({ project }) {
       {/* 팀원 추가 모달 */}
       {showAddModal && (
         <div className="modal">
-          <div className="bg-white rounded-lg p-6 w-96 max-w-[90vw]">
+          <div className="bg-white backdrop-blur-2xl rounded-lg p-6 w-96">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">새 팀원 추가</h3>
               <button

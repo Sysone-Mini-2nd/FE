@@ -249,7 +249,7 @@ function ProjectModal({ isOpen, onClose, project, onSave }) {
               <button
                 type="button"
                 onClick={addTeamMember}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 transition-colors"
               >
                 <Add className="w-5 h-5" />
               </button>
@@ -284,7 +284,7 @@ function ProjectModal({ isOpen, onClose, project, onSave }) {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex-1 px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 transition-colors"
             >
               {project ? '수정' : '생성'}
             </button>

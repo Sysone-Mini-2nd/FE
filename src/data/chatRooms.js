@@ -1,5 +1,5 @@
 // 샘플 채팅방 데이터
-export const initialChatRooms = [
+export const chatRoomsData = [
   {
     id: 1,
     name: "마케팅팀",
@@ -55,3 +55,6 @@ export const initialChatRooms = [
     participants: ["김대호"],
   },
 ];
+
+// 호환성을 위해 유지
+export const initialChatRooms = chatRoomsData;

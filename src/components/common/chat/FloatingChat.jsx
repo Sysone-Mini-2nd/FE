@@ -17,7 +17,7 @@ function FloatingChat() {
     toggleChat,
     selectChatRoom,
     backToList,
-    goToCreateChat,
+    // goToCreateChat,
     toggleMinimize,
     handleSendMessage,
     searchTerm,
@@ -28,7 +28,7 @@ function FloatingChat() {
     selectedEmployees,
     handleToggleEmployee,
     filteredEmployees,
-    handleSelectEmployee,
+    // handleSelectEmployee,
     handleCreateGroupChat,
     handleGoToCreateChat
   } = useFloatingChat()
@@ -43,7 +43,7 @@ function FloatingChat() {
       {/* 채팅 창 */}
       {isOpen && (
         <div className={`fixed bottom-6 right-6 z-50 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300 ${
-          isMinimized ? 'w-80 h-12' : 'w-96 h-[600px]'
+          isMinimized ? 'w-80 h-12' : 'w-96 h-150'
         }`}>
           {/* 채팅 헤더 */}
           <ChatHeader
