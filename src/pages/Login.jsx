@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.jsx";
+import "../styles/login.css";
 
 function Login() {
   const [credentials, setCredentials] = useState({
@@ -32,7 +33,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4">
+    <div className="min-h-screen bg-white/10 backdrop-blur-xs flex items-center justify-center py-12 px-4">
       <div className="space-y-6 border-white rounded-md p-4">
         <div className="flex justify-center select-none">
           <img 
@@ -42,12 +43,7 @@ function Login() {
           />
         </div>
         <div className="mt-4 text-center text-5xl font-extrabold select-none">
-          <span className="text-white">S</span>
-          <span className="text-white">ysone</span>
-          <span className="text-white"> T</span>
-          <span className="text-white">ask</span>
-          <span className="text-white"> M</span>
-          <span className="text-white">anager</span>
+          <span className="text-white">Sysone Task Manager</span>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -55,32 +51,24 @@ function Login() {
               {error}
             </div>
           )}
-          <div className="rounded-md shadow-sm space-y-2 text-md">
-            <div>
-              <label htmlFor="username" className="sr-only">
-                아이디
-              </label>
+          <div className="space-y-2 text-md">
               <input
                 id="username"
                 name="username"
                 type="text"
                 required
-                className="appearance-none bg-gray-50 relative block w-full px-3 py-5 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:z-10"
+                className="loginBtn"
                 placeholder="아이디"
                 value={credentials.username}
                 onChange={handleInputChange}
               />
-            </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                비밀번호
-              </label>
               <input
                 id="password"
                 name="password"
                 type="password"
                 required
-                className="appearance-none bg-gray-50 relative block w-full px-3 py-5 placeholder-gray-500 rounded-md text-gray-900 focus:outline-none focus:z-10"
+                className="loginBtn"
                 placeholder="비밀번호"
                 value={credentials.password}
                 onChange={handleInputChange}
@@ -91,7 +79,7 @@ function Login() {
           <div>
             <button
               type="submit"
-              className="relative w-full flex justify-center p-4 border border-transparent text-lg font-bold rounded-md text-white focus:outline-none bg-green-400"
+              className="relative w-full flex justify-center p-4 border border-transparent text-lg font-bold rounded-4xl text-white focus:outline-none bg-green-400"
             >
               로그인
             </button>

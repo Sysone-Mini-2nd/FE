@@ -28,3 +28,7 @@ body {
            focus:outline-none border-1 border-white
           transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0;
 }
+
+.loginBtn {
+  @apply appearance-none bg-white duration-300 backdrop-blur-md relative inset-shadow-sm inset-shadow-black block w-full px-3 py-5 focus:outline-none placeholder-gray-500 rounded-4xl text-gray-900
+}
