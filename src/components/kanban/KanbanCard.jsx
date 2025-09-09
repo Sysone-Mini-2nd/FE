@@ -5,7 +5,6 @@ import {
   Delete, 
   Schedule, 
   Person,
-  Flag,
   MoreVert
 } from '@mui/icons-material'
 
@@ -16,27 +15,13 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'high':
-        return 'bg-red-500/20 border-red-200/50'
+        return 'bg-red-500/20'
       case 'medium':
-        return 'bg-yellow-500/20 border-yellow-200/50'
+        return 'bg-yellow-500/20'
       case 'low':
-        return 'bg-green-500/20 border-green-200/50'
+        return 'bg-green-500/20'
       default:
-        return 'bg-gray-500/20 border-gray-200/50'
-    }
-  }
-
-  const getPriorityIcon = (priority) => {
-    const baseClass = "w-3 h-3"
-    switch (priority) {
-      case 'high':
-        return <Flag className={`${baseClass} text-red-600`} />
-      case 'medium':
-        return <Flag className={`${baseClass} text-yellow-600`} />
-      case 'low':
-        return <Flag className={`${baseClass} text-green-600`} />
-      default:
-        return <Flag className={`${baseClass} text-gray-600`} />
+        return 'bg-gray-500/20'
     }
   }
 
@@ -74,8 +59,8 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
-          className={`bg-white/80 backdrop-blur-md border border-white/20 p-4 cursor-pointer transition-all duration-300 shadow-lg shadow-black/5 group relative overflow-hidden ${
-            snapshot.isDragging ? 'rotate-3 shadow-xl' : 'hover:bg-white/90'
+          className={`rounded-md p-4 cursor-pointer transition-all duration-300 group relative overflow-hidden ${
+            snapshot.isDragging ? 'rotate-6 ' : 'hover:bg-white/90'
           }`}
         >
           {/* 우선순위 배경 */}
@@ -101,7 +86,7 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
               
               {/* 액션 메뉴 */}
               <div className="relative group/menu opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1 hover:bg-white/50 backdrop-blur-sm rounded">
+                <button className="p-1 hover:bg-white/50 backdrop-blur-sm rounded-full">
                   <MoreVert className="w-4 h-4 text-gray-500" />
                 </button>
                 <div className="absolute right-0 top-full mt-1 w-32 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 opacity-0 group-hover/menu:opacity-100 invisible group-hover/menu:visible transition-all z-20">
@@ -160,9 +145,9 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
               </div>
 
               {/* 우선순위 */}
-              <div className="flex items-center gap-1">
+              {/* <div className="flex items-center gap-1">
                 {getPriorityIcon(item.priority)}
-              </div>
+              </div> */}
             </div>
 
             {/* 마감일 */}

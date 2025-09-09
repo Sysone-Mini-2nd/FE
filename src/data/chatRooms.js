@@ -1,0 +1,60 @@
+// 샘플 채팅방 데이터
+export const chatRoomsData = [
+  {
+    id: 1,
+    name: "마케팅팀",
+    type: "group",
+    lastMessage: "회의 자료 확인했습니다.",
+    lastTime: "오후 3:45",
+    unreadCount: 2,
+    participants: ["김개발", "이디자인", "박기획"],
+  },
+  {
+    id: 2,
+    name: "박서호",
+    type: "private",
+    lastMessage: "내일 코드리뷰 어떠세요?",
+    lastTime: "오후 2:30",
+    unreadCount: 1,
+    participants: ["박서호"],
+  },
+  {
+    id: 3,
+    name: "이지민",
+    type: "private",
+    lastMessage: "UI 수정 완료했어요!",
+    lastTime: "어제",
+    unreadCount: 0,
+    participants: ["이지민"],
+  },
+  {
+    id: 4,
+    name: "최우식",
+    type: "private",
+    lastMessage: "좋은 하루 되세요!",
+    lastTime: "어제",
+    unreadCount: 0,
+    participants: ["최우식"],
+  },
+  {
+    id: 5,
+    name: "이수민",
+    type: "private",
+    lastMessage: "프로젝트 진행상황 공유드립니다.",
+    lastTime: "2일 전",
+    unreadCount: 0,
+    participants: ["이수민"],
+  },
+  {
+    id: 6,
+    name: "김대호",
+    type: "private",
+    lastMessage: "좋은 하루 되세요!",
+    lastTime: "어제",
+    unreadCount: 0,
+    participants: ["김대호"],
+  },
+];
+
+// 호환성을 위해 유지
+export const initialChatRooms = chatRoomsData;

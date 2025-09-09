@@ -1,13 +1,19 @@
-import { Notifications } from "@mui/icons-material";
+import { Notifications, Logout } from "@mui/icons-material";
+import { useAuth } from '../../hooks/useAuth.jsx';
 
 function Header() {
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <header className="py-3 px-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="text-md font-semibold text-white">
-            DX사업부 | 관리자
+            {user.name } | {user.email}
           </div>
         </div>
         
@@ -24,11 +30,20 @@ function Header() {
           
           {/* 사용자 메뉴 */}
           <div className="flex items-center bg-white/20 text-white rounded-xl px-4 py-2 space-x-2">
-            <div className="w-6 h-6 rounded-full bg-white/30 flex items-center justify-center">
-              <span className="text-sm">👤</span>
+            <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center text-xs">
+              {user?.name?.[0] || 'U'}
             </div>
-            <span className="font-semibold text-sm">관리자</span>
+            <span className="font-semibold text-sm">{user?.name || '사용자'}</span>
           </div>
+
+          {/* 로그아웃 버튼 */}
+          <button 
+            onClick={handleLogout}
+            className="p-2 text-white hover:bg-white/30 rounded-lg"
+            title="로그아웃"
+          >
+            <Logout className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </header>

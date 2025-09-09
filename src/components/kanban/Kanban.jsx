@@ -6,7 +6,7 @@ import KanbanHeader from './KanbanHeader'
 import { Add } from '@mui/icons-material'
 
 function Kanban({ projectId }) {
-  // projectId에 따른 태스크 데이터 (실제로는 API로 가져옴)
+  // projectId에 따른 태스크 데이터 
   const getProjectTasks = (projectId) => {
     // 샘플 데이터 - 실제로는 projectId로 API 호출
     return {
@@ -60,22 +60,6 @@ function Kanban({ projectId }) {
           }
         ]
       },
-      'review': {
-        id: 'review',
-        title: '검토',
-        color: 'bg-yellow-100',
-        items: [
-          {
-            id: `${projectId}-5`,
-            title: '코드 리뷰',
-            description: '프론트엔드 코드 리뷰 및 개선사항 확인',
-            assignee: '김시니어',
-            priority: 'medium',
-            tags: ['코드리뷰'],
-            dueDate: '2024-03-22'
-          }
-        ]
-      },
       'done': {
         id: 'done',
         title: '완료',
@@ -98,7 +82,7 @@ function Kanban({ projectId }) {
   const [columns, setColumns] = useState(getProjectTasks(projectId))
 
   const handleDragEnd = (result) => {
-    const { destination, source, draggableId } = result
+    const { destination, source} = result //draggableId 
 
     // 드롭 위치가 없으면 리턴
     if (!destination) {
@@ -201,12 +185,10 @@ function Kanban({ projectId }) {
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div>
       <KanbanHeader />
-      
-      <div className="flex-1 overflow-x-auto">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex gap-6 p-6 min-w-max">
+          <div className="flex gap-6 py-4 min-w-max">
             {Object.values(columns).map(column => (
               <div key={column.id} className="w-80 flex-shrink-0">
                 <KanbanColumn
@@ -219,7 +201,6 @@ function Kanban({ projectId }) {
             ))}
           </div>
         </DragDropContext>
-      </div>
     </div>
   )
 }
