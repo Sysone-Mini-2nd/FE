@@ -5,91 +5,30 @@ body {
   font-family: Pretendard;
 }
 
-/* 텍스트 줄임 유틸리티 */
-/* .line-clamp-1 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 1;
+.modal {
+  @apply fixed inset-0 bg-black/30 backdrop-blur-md z-50 flex items-center justify-center;
 }
 
-.line-clamp-2 {
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-} */
-
-/* React Big Calendar 스타일 커스터마이징 */
-.rbc-calendar {
-  font-family: Pretendard, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+.chatbutton {
+  @apply fixed bottom-6 right-6 z-50 w-14 h-14 bg-emerald-400/30 hover:bg-emerald-400/50 backdrop-blur-xs text-white rounded-full shadow-lg transition-all duration-300 flex items-center justify-center;
+}
+.createBtn {
+  @apply bg-green-400 hover:bg-green-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors;
 }
 
-.rbc-toolbar {
-  @apply p-5 bg-gray-50 border-b border-gray-200;
+.dropdownmenu {
+  @apply w-full px-3 py-2 text-left border border-gray-300 rounded-lg 
+          hover:border-gray-400 transition-colors duration-200
+          disabled:bg-gray-100 disabled:cursor-not-allowed
+          flex items-center justify-between;
 }
 
-.rbc-toolbar button {
-  @apply text-gray-700 border border-gray-300 bg-white px-4 py-2 mx-1 rounded-md font-medium transition-all duration-200;
+.dropdownitem {
+  @apply z-50 mt-1 max-h-80 overflow-auto rounded-lg bg-white/50 backdrop-blur-md py-1 px-0.5 shadow-lg 
+           focus:outline-none border-1 border-white
+          transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0;
 }
 
-.rbc-toolbar button:hover {
-  @apply bg-gray-100 border-gray-400;
-}
-
-.rbc-toolbar button:active,
-.rbc-toolbar button.rbc-active {
-  @apply bg-blue-600 border-blue-600 text-white;
-}
-
-.rbc-toolbar-label {
-  @apply text-lg font-semibold text-gray-900;
-}
-
-.rbc-header {
-  @apply bg-gray-50 border-b border-gray-200 py-3 px-2 font-semibold text-gray-700 text-center;
-}
-
-.rbc-month-view {
-  @apply bg-white;
-}
-
-.rbc-date-cell {
-  @apply p-2 border-r border-gray-100;
-}
-
-.rbc-date-cell.rbc-off-range {
-  @apply bg-gray-50 text-gray-400;
-}
-
-.rbc-today {
-  @apply bg-blue-50;
-}
-
-.rbc-event {
-  @apply border-0 rounded px-1.5 py-0.5 text-xs font-medium my-0.5 cursor-pointer;
-}
-
-.rbc-selected {
-  @apply !bg-blue-600;
-}
-
-.rbc-show-more {
-  @apply text-blue-600 font-medium text-xs cursor-pointer hover:underline;
-}
-
-.rbc-month-row {
-  @apply border-b border-gray-100;
-}
-
-.rbc-day-bg {
-  @apply border-r border-gray-100;
-}
-
-.rbc-day-bg.rbc-today {
-  @apply bg-blue-50;
-}
-
-.rbc-slot-selection {
-  @apply bg-blue-100 border border-blue-300;
+.loginBtn {
+  @apply appearance-none bg-white duration-300 backdrop-blur-md relative inset-shadow-sm inset-shadow-black block w-full px-3 py-5 focus:outline-none placeholder-gray-500 rounded-4xl text-gray-900
 }

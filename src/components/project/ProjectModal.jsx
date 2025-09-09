@@ -72,7 +72,7 @@ function ProjectModal({ isOpen, onClose, project, onSave }) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-45 p-4">
       <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
@@ -249,7 +249,7 @@ function ProjectModal({ isOpen, onClose, project, onSave }) {
               <button
                 type="button"
                 onClick={addTeamMember}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 transition-colors"
               >
                 <Add className="w-5 h-5" />
               </button>
@@ -284,7 +284,7 @@ function ProjectModal({ isOpen, onClose, project, onSave }) {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex-1 px-4 py-2 bg-green-400 text-white rounded-lg hover:bg-green-500 transition-colors"
             >
               {project ? '수정' : '생성'}
             </button>

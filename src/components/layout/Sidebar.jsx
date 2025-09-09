@@ -9,6 +9,7 @@ import {
   GitHub,
   CalendarMonth,
 } from "@mui/icons-material";
+import { currentUser } from "../../data/userData";
 
 function Sidebar() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -109,8 +110,8 @@ function Sidebar() {
                 <span className="text-white">👤</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-white">관리자</p>
-                <p className="text-xs text-white/70">DX사업부</p>
+                <p className="text-sm font-semibold text-white">{currentUser.name}</p>
+                <p className="text-xs text-white/70">{currentUser.department}</p>
               </div>
             </div>
           </div>
