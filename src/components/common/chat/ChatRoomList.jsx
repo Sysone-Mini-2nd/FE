@@ -8,9 +8,9 @@ const ChatRoomList = ({
   onGoToCreateChat 
 }) => {
   return (
-    <div className="h-[540px] flex flex-col bg-white/50">
+    <div className="h-full flex flex-col bg-white/50 rounded-b-lg">
       {/* 검색 및 채팅방 생성 */}
-      <div className="p-3 border-b border-gray-200">
+      <div className="flex-shrink-0 p-3 border-b border-gray-200">
         <div className="flex gap-2">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -32,7 +32,7 @@ const ChatRoomList = ({
       </div>
 
       {/* 채팅방 목록 */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto min-h-0">
         {filteredChatRooms.map((room) => (
           <div
             key={room.id}

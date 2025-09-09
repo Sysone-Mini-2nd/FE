@@ -20,7 +20,7 @@ const ChatHeader = ({
 
   return (
     <div 
-      className={`flex items-center justify-between p-3 bg-emerald-400/50 text-white rounded-t-lg ${
+      className={`flex items-center justify-between p-3 bg-emerald-400/50 backdrop-blur-sm text-white rounded-t-lg border-b border-emerald-300/30 ${
         isMinimized ? 'cursor-pointer' : ''
       }`}
       onClick={isMinimized ? onToggleMinimize : undefined}

@@ -41,24 +41,26 @@ function FloatingChat() {
       )}
 
       {/* 채팅 창 */}
-      <div className={`fixed bottom-6 right-6 z-50 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300 ease-in-out ${
+      <div className={`fixed bottom-6 right-6 z-50 rounded-lg shadow-xl h-2/3 backdrop-blur-sm transition-all duration-300 ease-in-out flex flex-col ${
         isOpen 
-          ? `opacity-100 scale-100 translate-y-0 ${isMinimized ? 'w-80 h-12' : 'w-96 h-150'}` 
-          : 'opacity-0 scale-95 translate-y-4 pointer-events-none w-96 h-150'
+          ? `opacity-100 scale-100 translate-y-0 ${isMinimized ? 'w-80 h-20' : 'w-96'}` 
+          : 'opacity-0 scale-95 translate-y-4 pointer-events-none w-96'
       }`}>
           {/* 채팅 헤더 */}
-          <ChatHeader
-            currentView={currentView}
-            selectedChat={selectedChat}
-            isMinimized={isMinimized}
-            onBackToList={backToList}
-            onToggleMinimize={toggleMinimize}
-            onToggleChat={toggleChat}
-          />
+          <div className="flex-shrink-0">
+            <ChatHeader
+              currentView={currentView}
+              selectedChat={selectedChat}
+              isMinimized={isMinimized}
+              onBackToList={backToList}
+              onToggleMinimize={toggleMinimize}
+              onToggleChat={toggleChat}
+            />
+          </div>
 
           {/* 채팅 내용 */}
           {!isMinimized && (
-            <>
+            <div className="flex-1 min-h-0 overflow-hidden">
               {currentView === 'list' ? (
                 <ChatRoomList
                   searchTerm={searchTerm}
@@ -84,7 +86,7 @@ function FloatingChat() {
                   onSendMessage={handleSendMessage}
                 />
               )}
-            </>
+            </div>
           )}
         </div>
     </>

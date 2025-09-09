@@ -9,7 +9,7 @@ const EmployeeSearch = ({
   onCreateGroupChat 
 }) => {
   return (
-    <div className="h-[540px] flex flex-col bg-white">
+    <div className="flex flex-col h-full bg-white/50 rounded-b-lg">
       {/* 검색 입력 */}
       <div className="p-3 border-b border-gray-200">
         <div className="relative">

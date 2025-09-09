@@ -28,8 +28,9 @@ const ChatRoom = ({
   }
 
   return (
-    <>
-      <div className="flex-1 p-4 h-120 overflow-y-auto bg-gray-50/30">
+    <div className="flex flex-col h-full bg-white/50 rounded-b-lg">
+      {/* 메시지 영역 */}
+      <div className="flex-1 p-4 overflow-y-auto bg-gray-50/30 min-h-0">
         <div className="space-y-3">
           {messages.length === 0 ? (
             <div className="text-center text-gray-500 mt-8">
@@ -64,25 +65,27 @@ const ChatRoom = ({
       </div>
 
       {/* 메시지 입력 영역 */}
-      <form onSubmit={onSendMessage} className="p-3 border-t border-gray-200 bg-white rounded-b-lg">
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={message}
-            onChange={(e) => onMessageChange(e.target.value)}
-            placeholder="메시지를 입력하세요..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
-          />
-          <button
-            type="submit"
-            disabled={!message.trim()}
-            className="px-3 py-2 bg-emerald-400 text-white rounded-lg hover:bg-emerald-500 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
-          >
-            <Send className="w-4 h-4" />
-          </button>
-        </div>
-      </form>
-    </>
+      <div className="flex-shrink-0">
+        <form onSubmit={onSendMessage} className="p-3 border-t border-gray-200 bg-white rounded-b-lg">
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => onMessageChange(e.target.value)}
+              placeholder="메시지를 입력하세요..."
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
+            />
+            <button
+              type="submit"
+              disabled={!message.trim()}
+              className="px-3 py-2 bg-emerald-400 text-white rounded-lg hover:bg-emerald-500 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
   )
 }
 
