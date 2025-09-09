@@ -1,4 +1,3 @@
-import React from 'react'
 import { Search, Add, Group } from '@mui/icons-material'
 
 const ChatRoomList = ({ 

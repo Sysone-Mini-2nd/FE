@@ -33,7 +33,6 @@ function ProjectManager() {
       team: ['김개발', '박디자인', '이기획'],
       completedTasks: 13,
       totalTasks: 20,
-      isStarred: true
     },
     {
       id: 2,
@@ -42,13 +41,12 @@ function ProjectManager() {
       status: 'progress',
       priority: 'medium',
       progress: 40,
-      startDate: '2024-02-01',
-      endDate: '2024-08-15',
+      startDate: '2026-02-01',
+      endDate: '2026-08-15',
       manager: 'Lee Manager',
       team: ['김앱개발', '박UI'],
       completedTasks: 8,
       totalTasks: 20,
-      isStarred: false
     },
     {
       id: 3,
@@ -57,13 +55,12 @@ function ProjectManager() {
       status: 'completed',
       priority: 'medium',
       progress: 100,
-      startDate: '2024-01-01',
-      endDate: '2024-03-31',
+      startDate: '2026-01-01',
+      endDate: '2026-03-31',
       manager: 'Park Manager',
       team: ['김AI', '박데이터'],
       completedTasks: 15,
       totalTasks: 15,
-      isStarred: true
     },
     {
       id: 4,
@@ -78,7 +75,6 @@ function ProjectManager() {
       team: ['김보안', '박인프라', '이네트워크'],
       completedTasks: 2,
       totalTasks: 18,
-      isStarred: false
     }
   ])
 

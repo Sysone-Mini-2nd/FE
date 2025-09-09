@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { Send } from '@mui/icons-material'
 import useChatStore from '../../../store/chatStore'
 

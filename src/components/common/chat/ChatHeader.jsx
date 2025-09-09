@@ -1,4 +1,3 @@
-import React from 'react'
 import { Close, Minimize, ArrowBack } from '@mui/icons-material'
 import { currentUser } from '../../../data/userData'
 

@@ -41,10 +41,11 @@ function FloatingChat() {
       )}
 
       {/* 채팅 창 */}
-      {isOpen && (
-        <div className={`fixed bottom-6 right-6 z-50 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300 ${
-          isMinimized ? 'w-80 h-12' : 'w-96 h-150'
-        }`}>
+      <div className={`fixed bottom-6 right-6 z-50 rounded-lg shadow-xl backdrop-blur-sm transition-all duration-300 ease-in-out ${
+        isOpen 
+          ? `opacity-100 scale-100 translate-y-0 ${isMinimized ? 'w-80 h-12' : 'w-96 h-150'}` 
+          : 'opacity-0 scale-95 translate-y-4 pointer-events-none w-96 h-150'
+      }`}>
           {/* 채팅 헤더 */}
           <ChatHeader
             currentView={currentView}
@@ -86,7 +87,6 @@ function FloatingChat() {
             </>
           )}
         </div>
-      )}
     </>
   )
 }

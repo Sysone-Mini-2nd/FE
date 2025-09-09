@@ -1,8 +1,6 @@
 import React from 'react'
 import { createColumnHelper } from '@tanstack/react-table'
 import { 
-  Star, 
-  StarBorder, 
   MoreVert
 } from '@mui/icons-material'
 import DataTable from '../common/DataTable'
@@ -44,15 +42,6 @@ function ProjectTable({ projects, onAction }) {
       header: '프로젝트',
       cell: info => (
         <div className="flex items-center gap-3">
-          <button
-            onClick={() => onAction('star', info.row.original)}
-            className="text-gray-400 hover:text-yellow-600 transition-colors"
-          >
-            {info.row.original.isStarred ? 
-              <Star className="w-4 h-4 text-yellow-600" /> : 
-              <StarBorder className="w-4 h-4" />
-            }
-          </button>
           <div>
             <div 
               className="font-medium text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"

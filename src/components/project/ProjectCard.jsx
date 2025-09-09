@@ -1,8 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  Star, 
-  StarBorder, 
   MoreVert, 
   Group, 
   Schedule,
@@ -66,18 +64,6 @@ function ProjectCard({ project, onAction }) {
               <h3 className="font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-1">
                 {project.name}
               </h3>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  onAction('star', project)
-                }}
-                className="text-gray-400 hover:text-yellow-600 transition-colors"
-              >
-                {project.isStarred ? 
-                  <Star className="w-4 h-4 text-yellow-600" /> : 
-                  <StarBorder className="w-4 h-4" />
-                }
-              </button>
             </div>
             <p className="text-sm text-gray-600 line-clamp-2 mb-3">
               {project.description}
