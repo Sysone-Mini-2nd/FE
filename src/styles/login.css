@@ -1,37 +1,53 @@
 /* 간단하고 효율적인 애니메이션 */
 @keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-30px);
+  }
 }
 
 @keyframes slideIn {
-  0% { transform: translateY(30px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
-/* 배경 그라디언트 - 더 느리고 부드럽게 */
+/* 배경 그라디언트 */
 .gradient-bg {
   background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe);
   background-size: 300% 300%;
   animation: gradientShift 20s ease infinite;
 }
 
-/* 텍스트 그라디언트 - 색상 수 줄임 */
+/* 텍스트 그라디언트 */
 .text-gradient {
-  background: linear-gradient(45deg, #4facfe, #00f2fe, #667eea, #764ba2);
-  background-size: 200% 200%;
+  background: linear-gradient(45deg, white, green, purple, #e3d768);
+  background-size: 250% 200%;
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
-  animation: gradientShift 12s ease infinite;
+  animation: gradientShift 4s ease infinite;
 }
 
-/* 글래스모피즘 - 간소화 */
+/* 글래스모피즘 */
 .glass-morphism {
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(8px);
@@ -39,9 +55,9 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* 떠다니는 효과 - 더 부드럽게 */
+/* 로고 둥둥 효과 */
 .floating-orb {
-  animation: float 8s ease-in-out infinite;
+  animation: float 3s ease-in-out infinite;
 }
 
 /* 슬라이드 인 */
@@ -49,7 +65,7 @@
   animation: slideIn 0.8s ease-out forwards;
 }
 
-/* 입력 필드 효과 - 간소화 */
+/* 입력 필드 효과 */
 .input-glow:focus {
   box-shadow: 0 0 15px rgba(79, 172, 254, 0.4);
   transform: translateY(-1px);

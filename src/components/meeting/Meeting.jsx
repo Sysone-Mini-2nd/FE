@@ -5,6 +5,7 @@ import MeetingCreate from "./MeetingCreate";
 import MeetingDetail from "./MeetingDetail";
 import Dropdown from "../common/Dropdown";
 import useMeetingStore from "../../store/meetingStore";
+import { currentUser } from "../../data/userData";
 
 function Meeting() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -52,7 +53,7 @@ function Meeting() {
   const handleSaveMeeting = (meetingData) => {
     const newMeeting = {
       title: meetingData.title,
-      organizer: "현재사용자", // currentUser 임시 대체
+      organizer: currentUser.name,
       type: '기타',
       scheduledDate: new Date().toISOString(),
       location: meetingData.location,

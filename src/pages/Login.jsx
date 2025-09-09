@@ -33,18 +33,26 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-white/10 backdrop-blur-xs flex items-center justify-center py-12 px-4">
-      <div className="space-y-6 border-white rounded-md p-4">
-        <div className="flex justify-center select-none">
-          <img 
-            src="/logo.png" 
-            alt="Sysone Logo" 
-            className="w-30 h-30"
-          />
-        </div>
-        <div className="mt-4 text-center text-5xl font-extrabold select-none">
-          <span className="text-white">Sysone Task Manager</span>
-        </div>
+    <div className="min-h-screen bg-white/10 backdrop-blur-xs flex items-center justify-center">
+      <div className="slide-in glass-morphism rounded-3xl p-8 space-y-4 relative z-10 max-w-md w-full">
+          <div className="flex justify-center select-none">
+            <div className="relative">
+              <img 
+                src="/logo.png" 
+                alt="Sysone Logo" 
+                className="w-30 h-30 floating-orb drop-shadow-2xl"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-600 to-purple-600 rounded-full opacity-30 blur-md"></div>
+            </div>
+          </div>
+          <div className="text-center">
+            <h1 className="text-gradient text-4xl md:text-5xl font-extrabold select-none leading-tight">
+              Sysone Task Manager
+            </h1>
+            <p className="text-white/80 mt-4 text-lg font-medium">
+              시스원 프로젝트 관리 시스템
+            </p>
+          </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
@@ -79,7 +87,7 @@ function Login() {
           <div>
             <button
               type="submit"
-              className="relative w-full flex justify-center p-4 border border-transparent text-lg font-bold rounded-4xl text-white focus:outline-none bg-green-400"
+              className="relative w-full hover:inset-shadow-sm hover:inset-shadow-black/35 hover: duration-150 flex justify-center p-4 border border-transparent text-lg font-bold rounded-4xl text-white focus:outline-none bg-green-400"
             >
               로그인
             </button>

@@ -7,7 +7,7 @@ const useMeetingStore = create((set) => ({
   selectedMeeting: null,
   currentView: 'list', // 'list', 'detail', 'create'
   
-  // 액션들
+  
   selectMeeting: (meeting) => set({ 
     selectedMeeting: meeting, 
     currentView: 'detail' 

@@ -10,7 +10,7 @@ const useChatStore = create((set, get) => ({
     // 예시: { 1: [message1, message2], 2: [message3, message4] }
   },
 
-  // 현재 사용자 (임시)
+  // 현재 사용자 
   currentUser: { name: '현재사용자', id: 'current' },
 
   // 채팅방 추가
