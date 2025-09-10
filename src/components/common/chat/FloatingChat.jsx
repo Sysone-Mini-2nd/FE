@@ -1,5 +1,7 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useFloatingChat } from '../../../hooks/chat/useFloatingChat'
+import { useAuth } from '../../../hooks/useAuth'
+import useChatStore from '../../../store/chatStore'
 import FloatingChatButton from './FloatingChatButton'
 import ChatHeader from './ChatHeader'
 import ChatRoomList from './ChatRoomList'
@@ -7,6 +9,16 @@ import EmployeeSearch from './EmployeeSearch'
 import ChatRoom from './ChatRoom'
 
 function FloatingChat() {
+  const { user } = useAuth()
+  const { setCurrentUser } = useChatStore()
+  
+  // 현재 사용자 정보를 chatStore에 설정
+  useEffect(() => {
+    if (user) {
+      setCurrentUser(user)
+    }
+  }, [user, setCurrentUser])
+  
   const {
     isOpen,
     isMinimized,

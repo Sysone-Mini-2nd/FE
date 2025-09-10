@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Send } from '@mui/icons-material'
 import useChatStore from '../../../store/chatStore'
+import { useAuth } from '../../../hooks/useAuth'
 
 const ChatRoom = ({ 
   selectedChat, 
@@ -9,9 +10,10 @@ const ChatRoom = ({
   onSendMessage 
 }) => {
   const messagesEndRef = useRef(null)
+  const { user } = useAuth()
   
   // Zustand store에서 메시지 가져오기
-  const { getMessages, currentUser } = useChatStore()
+  const { getMessages } = useChatStore()
   const messages = getMessages(selectedChat?.id || 0)
 
   // 새 메시지가 추가될 때마다 스크롤을 맨 아래로
@@ -40,19 +42,19 @@ const ChatRoom = ({
             messages.map((msg) => (
               <div 
                 key={msg.id} 
-                className={`flex ${msg.sender === currentUser.name ? 'justify-end' : 'justify-start'}`}
+                className={`flex ${msg.sender === user?.name ? 'justify-end' : 'justify-start'}`}
               >
                 <div className={`p-3 rounded-lg shadow-sm max-w-xs ${
-                  msg.sender === currentUser.name 
+                  msg.sender === user?.name 
                     ? 'bg-emerald-400/50 backdrop-blur-lg text-white' 
                     : 'bg-white'
                 }`}>
-                  {msg.sender !== currentUser.name && (
+                  {msg.sender !== user?.name && (
                     <p className="text-xs text-gray-600 mb-1 font-medium">{msg.sender}</p>
                   )}
                   <p className="text-sm">{msg.text}</p>
                   <span className={`text-xs ${
-                    msg.sender === currentUser.name ? 'text-emerald-100' : 'text-gray-500'
+                    msg.sender === user?.name ? 'text-emerald-100' : 'text-gray-500'
                   }`}>
                     {formatTime(msg.timestamp)}
                   </span>

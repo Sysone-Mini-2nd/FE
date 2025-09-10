@@ -8,11 +8,13 @@ import {
   ViewTimeline,
   GitHub,
   CalendarMonth,
+  People,
 } from "@mui/icons-material";
-import { currentUser } from "../../data/userData";
+import { useAuth } from "../../hooks/useAuth";
 
 function Sidebar() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { user } = useAuth();
 
   const toggleCollapse = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -37,6 +39,13 @@ function Sidebar() {
       icon: <CalendarMonth />,
       path: "/sharecalendar",
     },
+    // MASTER 권한자에게만 인사관리 메뉴 표시
+    ...(user?.role === 'MASTER' ? [{
+      id: "hr",
+      label: "인사관리",
+      icon: <People />,
+      path: "/hr",
+    }] : []),
   ];
 
   return (
@@ -110,8 +119,8 @@ function Sidebar() {
                 <span className="text-white">👤</span>
               </div>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-white">{currentUser.name}</p>
-                <p className="text-xs text-white/70">{currentUser.department}</p>
+                <p className="text-sm font-semibold text-white">{user?.name}</p>
+                <p className="text-xs text-white/70">{user?.department}</p>
               </div>
             </div>
           </div>

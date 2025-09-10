@@ -10,8 +10,11 @@ const useChatStore = create((set, get) => ({
     // 예시: { 1: [message1, message2], 2: [message3, message4] }
   },
 
-  // 현재 사용자 
-  currentUser: { name: '현재사용자', id: 'current' },
+  // 현재 사용자 설정 (AuthContext에서 사용자 정보를 받아서 설정)
+  currentUser: null,
+  
+  // 현재 사용자 설정
+  setCurrentUser: (user) => set({ currentUser: user }),
 
   // 채팅방 추가
   addChatRoom: (newChatRoom) => set((state) => ({
@@ -22,11 +25,13 @@ const useChatStore = create((set, get) => ({
   // 메시지 전송
   sendMessage: (chatRoomId, messageText) => {
     const { currentUser } = get()
+    if (!currentUser) return null;
+    
     const newMessage = {
       id: Date.now(),
       text: messageText,
       sender: currentUser.name,
-      senderId: currentUser.id,
+      senderId: currentUser.id || currentUser.account_id,
       timestamp: new Date().toISOString(),
       type: 'text'
     }

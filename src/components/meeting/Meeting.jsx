@@ -5,11 +5,12 @@ import MeetingCreate from "./MeetingCreate";
 import MeetingDetail from "./MeetingDetail";
 import Dropdown from "../common/Dropdown";
 import useMeetingStore from "../../store/meetingStore";
-import { currentUser } from "../../data/userData";
+import { useAuth } from "../../hooks/useAuth";
 
 function Meeting() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
+  const { user } = useAuth();
 
   // Zustand store 사용
   const { 
@@ -55,7 +56,7 @@ function Meeting() {
   const handleSaveMeeting = (meetingData) => {
     const newMeeting = {
       title: meetingData.title,
-      organizer: currentUser.name,
+      organizer: user?.name || "Unknown",
       type: '기타',
       scheduledDate: new Date().toISOString(),
       location: meetingData.location,

@@ -27,7 +27,7 @@ function DataTable({
 
   return (
     <div className={`bg-white border-y border-gray-200 overflow-hidden ${className}`}>
-      <div className="overflow-x-auto">
+      <div>
         <table className="min-w-full">
           <thead className="border-b border-gray-200">
             {table.getHeaderGroups().map(headerGroup => (
@@ -48,9 +48,9 @@ function DataTable({
                       {header.column.getIsSorted() && (
                         <span className="text-gray-400">
                           {header.column.getIsSorted() === 'desc' ? (
-                            <ArrowDownward className="w-3 h-3" />
+                            <ArrowDownward/>
                           ) : (
-                            <ArrowUpward className="w-3 h-3" />
+                            <ArrowUpward/>
                           )}
                         </span>
                       )}

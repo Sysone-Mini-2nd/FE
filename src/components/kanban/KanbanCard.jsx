@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Draggable } from '@hello-pangea/dnd'
 import { 
   Edit, 
@@ -8,7 +8,7 @@ import {
   MoreVert
 } from '@mui/icons-material'
 
-function KanbanCard({ item, index, onUpdate, onDelete }) {
+function KanbanCard({ item, index, onUpdate, onDelete, onCardClick }) {
   const [isEditing, setIsEditing] = useState(false)
   const [editData, setEditData] = useState(item)
 
@@ -62,6 +62,7 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
           className={`rounded-md p-4 cursor-pointer transition-all duration-300 group relative overflow-hidden ${
             snapshot.isDragging ? 'rotate-6 ' : 'hover:bg-white/90'
           }`}
+          onClick={() => onCardClick && onCardClick(item)}
         >
           {/* 우선순위 배경 */}
           <div className={`absolute inset-0 ${getPriorityColor(item.priority)} backdrop-blur-sm`}></div>
@@ -76,6 +77,7 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
                     type="text"
                     value={editData.title}
                     onChange={(e) => setEditData({...editData, title: e.target.value})}
+                    onClick={(e) => e.stopPropagation()}
                     className="w-full font-medium text-gray-900 bg-white/50 backdrop-blur-sm border border-white/30 px-2 py-1 text-sm"
                     autoFocus
                   />
@@ -86,19 +88,28 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
               
               {/* 액션 메뉴 */}
               <div className="relative group/menu opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-1 hover:bg-white/50 backdrop-blur-sm rounded-full">
+                <button 
+                  className="p-1 hover:bg-white/50 backdrop-blur-sm rounded-full"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <MoreVert className="w-4 h-4 text-gray-500" />
                 </button>
                 <div className="absolute right-0 top-full mt-1 w-32 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 opacity-0 group-hover/menu:opacity-100 invisible group-hover/menu:visible transition-all z-20">
                   <button
-                    onClick={() => setIsEditing(!isEditing)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsEditing(!isEditing);
+                    }}
                     className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50 flex items-center gap-2"
                   >
                     <Edit className="w-3 h-3" />
                     편집
                   </button>
                   <button
-                    onClick={() => onDelete(item.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDelete(item.id);
+                    }}
                     className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50 flex items-center gap-2"
                   >
                     <Delete className="w-3 h-3" />
@@ -114,6 +125,7 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
                 <textarea
                   value={editData.description}
                   onChange={(e) => setEditData({...editData, description: e.target.value})}
+                  onClick={(e) => e.stopPropagation()}
                   className="w-full text-sm text-gray-600 bg-white/50 backdrop-blur-sm border border-white/30 px-2 py-1 resize-none"
                   rows={2}
                 />
@@ -168,13 +180,19 @@ function KanbanCard({ item, index, onUpdate, onDelete }) {
             {isEditing && (
               <div className="flex gap-2 mt-3 pt-3 border-t border-white/20">
                 <button
-                  onClick={handleSave}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSave();
+                  }}
                   className="flex-1 px-3 py-1 bg-blue-600/80 text-white text-sm backdrop-blur-sm hover:bg-blue-700/80 transition-colors"
                 >
                   저장
                 </button>
                 <button
-                  onClick={handleCancel}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCancel();
+                  }}
                   className="flex-1 px-3 py-1 bg-gray-500/20 text-gray-700 text-sm backdrop-blur-sm hover:bg-gray-500/30 transition-colors"
                 >
                   취소
