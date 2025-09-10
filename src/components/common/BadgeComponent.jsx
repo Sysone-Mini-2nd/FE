@@ -6,8 +6,8 @@ function BadgeComponent({ type, customConfig = {} }) {
       label: "Daily Scrum",
       className: "bg-purple-100 text-purple-800",
     },
-    "Sprint Planning Meeting": {
-      label: "Sprint Planning",
+    "Sprint Meeting": {
+      label: "Sprint Meeting",
       className: "bg-indigo-100 text-indigo-800",
     },
     "Sprint Review": {

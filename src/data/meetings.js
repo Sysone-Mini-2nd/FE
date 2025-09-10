@@ -14,7 +14,7 @@ export const meetingsData = [
     id: 2,
     title: "고객 마케팅을 위한 앱 개선",
     organizer: "홍길동",
-    type: "Sprint Planning Meeting",
+    type: "Sprint Meeting",
     scheduledDate: "2025-10-12T10:15:00",
     location: "제 2회의실",
     participants: ["홍길동", "김철수", "이영희"],

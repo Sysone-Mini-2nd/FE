@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
   MoreVert, 
@@ -12,6 +12,25 @@ import {
 
 function ProjectCard({ project, onAction }) {
   const navigate = useNavigate()
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  // 외부 클릭 시 메뉴 닫기
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false)
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isMenuOpen])
   const getStatusInfo = (status) => {
     switch (status) {
       case 'progress':
@@ -71,37 +90,61 @@ function ProjectCard({ project, onAction }) {
           </div>
           
           {/* 액션 메뉴 */}
-          <div className="relative group/menu">
-            <button className="p-1 hover:bg-white/50 backdrop-blur-sm rounded opacity-0 group-hover:opacity-100 transition-all">
-              <MoreVert className="w-4 h-4 text-gray-500" />
+          <div className="relative" ref={menuRef}>
+            <button 
+              className="p-1 hover:bg-white/50 backdrop-blur-sm rounded transition-all"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsMenuOpen(!isMenuOpen)
+              }}
+            >
+              <MoreVert className="w-4 h-4 text-gray-500"/>
             </button>
-            <div className="absolute right-0 mt-1 w-40 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 opacity-0 group-hover/menu:opacity-100 invisible group-hover/menu:visible transition-all z-10">
-              <button
-                onClick={() => onAction('view', project)}
-                className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
-              >
-                보기
-              </button>
-              <button
-                onClick={() => onAction('edit', project)}
-                className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
-              >
-                편집
-              </button>
-              <button
-                onClick={() => onAction('clone', project)}
-                className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
-              >
-                복제
-              </button>
-              <div className="border-t border-white/20 my-1"></div>
-              <button
-                onClick={() => onAction('delete', project)}
-                className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50"
-              >
-                삭제
-              </button>
-            </div>
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-1 w-40 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onAction('view', project)
+                    setIsMenuOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
+                >
+                  보기
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onAction('edit', project)
+                    setIsMenuOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
+                >
+                  편집
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onAction('clone', project)
+                    setIsMenuOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
+                >
+                  복제
+                </button>
+                <div className="border-t border-white/20 my-1"></div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    onAction('delete', project)
+                    setIsMenuOpen(false)
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50"
+                >
+                  삭제
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

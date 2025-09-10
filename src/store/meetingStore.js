@@ -5,7 +5,7 @@ const useMeetingStore = create((set) => ({
   // 상태
   meetings: meetingsData,
   selectedMeeting: null,
-  currentView: 'list', // 'list', 'detail', 'create'
+  currentView: 'list', // 'list', 'detail', 'create', 'edit'
   
   
   selectMeeting: (meeting) => set({ 
@@ -20,6 +20,11 @@ const useMeetingStore = create((set) => ({
   
   showCreate: () => set({ 
     currentView: 'create' 
+  }),
+  
+  showEdit: (meeting) => set({
+    currentView: 'edit',
+    selectedMeeting: meeting
   }),
   
   addMeeting: (newMeeting) => set((state) => ({

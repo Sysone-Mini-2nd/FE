@@ -46,7 +46,7 @@ function ProjectDetail() {
     { id: "timeline", label: "간트차트", icon: Timeline },
     { id: "meeting", label: "회의록", icon: MeetingRoom },
     { id: "team", label: "팀 관리", icon: PeopleAlt },
-    { id: "trouble", label: "장애 관리", icon: BugReport },
+    // { id: "trouble", label: "장애 관리", icon: BugReport },
   ];
 
   const getStatusColor = (status) => {

@@ -1,10 +1,11 @@
-import { useState } from "react";
 import {
   ArrowBack,
   CalendarToday,
   LocationOn,
   Edit,
   Delete,
+  Email,
+  Article,
 } from "@mui/icons-material";
 import BadgeComponent from "../common/BadgeComponent";
 import ParticipantList from "../common/ParticipantList";
@@ -57,14 +58,14 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
   // 메타데이터 구성
   const metadataItems = [
     { label: "작성자", value: meeting.organizer },
-    { 
-      label: "생성일", 
+    {
+      label: "생성일",
       value: meeting.createdAt
         ? new Date(meeting.createdAt).toLocaleDateString("ko-KR")
-        : new Date(meeting.scheduledDate).toLocaleDateString("ko-KR")
+        : new Date(meeting.scheduledDate).toLocaleDateString("ko-KR"),
     },
     { label: "회의 ID", value: `#${meeting.id}` },
-    { label: "상태", value: "완료", className: "text-green-400" }
+    { label: "상태", value: "완료", className: "text-green-400" },
   ];
 
   return (
@@ -85,7 +86,7 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
               </h1>
               <div className="flex items-center gap-4 mt-1">
                 <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <CalendarToday fontSize="small"/>
+                  <CalendarToday fontSize="small" />
                   <span>
                     {dateStr} {timeStr}
                   </span>
@@ -109,21 +110,42 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => onEdit(meeting)}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Edit className="w-4 h-4" />
-              편집
-            </button>
-            <button
-              onClick={handleDelete}
-              className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Delete className="w-4 h-4" />
-              삭제
-            </button>
+          <div className="flex flex-col items-end gap-6">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => onEdit(meeting)}
+                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Edit />
+                편집
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Delete />
+                삭제
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {}}
+                className="px-4 py-2 text-black hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Article />
+                AI 리포트 생성
+              </button>
+              <button
+                onClick={() => {
+                  /* 다운로드 기능 추가 */
+                }}
+                className="px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Email />
+                이메일 전송
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -144,7 +166,7 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
           </div>
 
           {/* 녹음 파일 (있는 경우) */}
-          <AudioPlayer 
+          <AudioPlayer
             audioFile={meeting.audioFile}
             createdAt={meeting.createdAt}
           />

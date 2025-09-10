@@ -73,9 +73,10 @@ function ProjectList({
         return b.progress - a.progress
       case 'endDate':
         return new Date(a.endDate) - new Date(b.endDate)
-      case 'priority':
+      case 'priority': {
         const priorityOrder = { high: 3, medium: 2, low: 1 }
         return priorityOrder[b.priority] - priorityOrder[a.priority]
+      }
       case 'created':
       default:
         return b.id - a.id
@@ -93,7 +94,7 @@ function ProjectList({
           onProjectUpdate(prev => prev.filter(p => p.id !== project.id))
         }
         break
-      case 'clone':
+      case 'clone': {
         const clonedProject = {
           ...project,
           id: Date.now(),
@@ -104,6 +105,7 @@ function ProjectList({
         }
         onProjectUpdate(prev => [...prev, clonedProject])
         break
+      }
       case 'star':
         onProjectUpdate(prev => prev.map(p => 
           p.id === project.id ? { ...p, isStarred: !p.isStarred } : p

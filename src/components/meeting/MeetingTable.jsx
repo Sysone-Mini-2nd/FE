@@ -2,7 +2,6 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { 
   CalendarToday,
   People,
-  MoreVert,
   Folder
 } from '@mui/icons-material'
 import DataTable from '../common/DataTable'
@@ -13,7 +12,7 @@ function MeetingTable({ meetings = [], onAction }) {
   const getTypeBadge = (type) => {
     const typeConfig = {
       'Daily Scrum': { label: 'Daily Scrum', className: ' text-purple-800' },
-      'Sprint Planning Meeting': { label: 'Sprint Planning', className: 'text-indigo-800' },
+      'Sprint Meeting': { label: 'Sprint Meeting', className: 'text-indigo-800' },
       'Sprint Review': { label: 'Sprint Review', className: 'text-green-800 ' },
       'Sprint Retrospective': { label: 'Sprint Retro', className: 'text-orange-800 ' },
       '기타': { label: '기타', className: 'text-gray-800 ' }
@@ -127,41 +126,8 @@ function MeetingTable({ meetings = [], onAction }) {
           </div>
         )
       },
-    }),
-    columnHelper.display({
-      id: 'actions',
-      header: '',
-      cell: info => (
-        <div className="relative group">
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <MoreVert className="w-4 h-4 text-gray-500" />
-          </button>
-          <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-sm py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all z-10">
-            <button
-              onClick={() => onAction('view', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              상세보기
-            </button>
-            <button
-              onClick={() => onAction('edit', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              편집
-            </button>
-            <div className="border-t border-gray-100 my-1"></div>
-            <button
-              onClick={() => onAction('delete', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
-            >
-              삭제
-            </button>
-          </div>
-        </div>
-      ),
-    }),
+    })
   ]
-
   return (
     <DataTable 
       data={meetings}
