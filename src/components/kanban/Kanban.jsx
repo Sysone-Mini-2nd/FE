@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import KanbanColumn from './KanbanColumn'
 import KanbanCard from './KanbanCard'
 import KanbanHeader from './KanbanHeader'
+import TaskDetail from '../common/TaskDetail'
 import { Add } from '@mui/icons-material'
 
 function Kanban({ projectId }) {
@@ -80,6 +81,8 @@ function Kanban({ projectId }) {
   }
 
   const [columns, setColumns] = useState(getProjectTasks(projectId))
+  const [selectedTask, setSelectedTask] = useState(null)
+  const [showTaskDetail, setShowTaskDetail] = useState(false)
 
   const handleDragEnd = (result) => {
     const { destination, source} = result //draggableId 
@@ -184,23 +187,60 @@ function Kanban({ projectId }) {
     setColumns(newColumns)
   }
 
+  const handleCardClick = (task) => {
+    // API 데이터 형식에 맞게 변환
+    const taskWithApiData = {
+      ...task,
+      id: task.id,
+      projectId: projectId,
+      memberId: 1, // 임시 값
+      memberName: task.assignee,
+      desc: task.description,
+      startDate: task.startDate || new Date().toISOString(),
+      endDate: task.dueDate || new Date().toISOString(),
+      status: task.status || 'TODO',
+      priority: task.priority || 'MEDIUM',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      tags: task.tags ? task.tags.map(tag => ({ name: tag })) : []
+    }
+    
+    setSelectedTask(taskWithApiData)
+    setShowTaskDetail(true)
+  }
+
+  const handleBackToKanban = () => {
+    setShowTaskDetail(false)
+    setSelectedTask(null)
+  }
+
   return (
     <div>
-      <KanbanHeader />
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex gap-6 py-4 min-w-max">
-            {Object.values(columns).map(column => (
-              <div key={column.id} className="w-80 flex-shrink-0">
-                <KanbanColumn
-                  column={column}
-                  onAddCard={() => addNewCard(column.id)}
-                  onUpdateCard={updateCard}
-                  onDeleteCard={deleteCard}
-                />
-              </div>
-            ))}
-          </div>
-        </DragDropContext>
+      {showTaskDetail ? (
+        <TaskDetail 
+          task={selectedTask} 
+          onBack={handleBackToKanban} 
+        />
+      ) : (
+        <>
+          <KanbanHeader />
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex gap-6 py-4 min-w-max">
+              {Object.values(columns).map(column => (
+                <div key={column.id} className="w-80 flex-shrink-0">
+                  <KanbanColumn
+                    column={column}
+                    onAddCard={() => addNewCard(column.id)}
+                    onUpdateCard={updateCard}
+                    onDeleteCard={deleteCard}
+                    onCardClick={handleCardClick}
+                  />
+                </div>
+              ))}
+            </div>
+          </DragDropContext>
+        </>
+      )}
     </div>
   )
 }

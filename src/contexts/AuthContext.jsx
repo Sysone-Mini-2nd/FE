@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
-import { currentUser } from '../data/userData';
+import { membersData } from '../data/employees';
 
 const AuthContext = createContext();
 
@@ -17,11 +17,22 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (username, password) => {
-    // API 호출을 통해 로그인 처리
-    if (username === 'admin' && password === 'password') {
-      setUser(currentUser);
-      localStorage.setItem('user', JSON.stringify(currentUser));
-      return currentUser;
+    // 회원 데이터에서 계정 정보 찾기
+    const member = membersData.find(
+      m => m.account_id === username && m.password === password && m.is_deleted === 0
+    );
+    
+    if (member) {
+      // 로그인 성공 - 마지막 로그인 시간 업데이트
+      const loggedInUser = {
+        ...member,
+        department: member.id === 5 ? "DX사업부" : "일반부서", // 김대호만 DX사업부
+        avatar: member.name.charAt(0)
+      };
+      
+      setUser(loggedInUser);
+      localStorage.setItem('user', JSON.stringify(loggedInUser));
+      return loggedInUser;
     } else {
       throw new Error('Invalid credentials');
     }

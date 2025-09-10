@@ -174,18 +174,6 @@ function ProjectDetail() {
               </div>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <button className="p-2 hover:bg-gray-100 transition-colors">
-              <Edit className="w-5 h-5" />
-            </button>
-            <button className="p-2 hover:bg-gray-100 transition-colors">
-              <Share className="w-5 h-5" />
-            </button>
-            <button className="p-2 hover:bg-gray-100 transition-colors">
-              <MoreVert className="w-5 h-5" />
-            </button>
-          </div>
         </div>
       </div>
 

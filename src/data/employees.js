@@ -1,4 +1,134 @@
-// 사원 목록 데이터
+// 회원 목록 데이터 (member 테이블 구조에 맞춤)
+export const membersData = [
+  { 
+    id: 1, 
+    account_id: 'seho.park', 
+    password: 'password123',
+    name: '박서호', 
+    email: 'seho.park@sysone.co.kr',
+    role: 'USER',
+    position: '사원',
+    last_login_at: '2024-09-09T10:30:00',
+    created_at: '2024-01-15T09:00:00',
+    updated_at: '2024-09-09T10:30:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 2, 
+    account_id: 'jimin.lee', 
+    password: 'password123',
+    name: '이지민', 
+    email: 'jimin.lee@sysone.co.kr',
+    role: 'USER',
+    position: '대리',
+    last_login_at: '2024-09-09T14:20:00',
+    created_at: '2024-02-01T09:00:00',
+    updated_at: '2024-09-09T14:20:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 3, 
+    account_id: 'woosik.choi', 
+    password: 'password123',
+    name: '최우식', 
+    email: 'woosik.choi@sysone.co.kr',
+    role: 'MANAGER',
+    position: '주임',
+    last_login_at: '2024-09-08T16:45:00',
+    created_at: '2024-01-20T09:00:00',
+    updated_at: '2024-09-08T16:45:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 4, 
+    account_id: 'sumin.lee', 
+    password: 'password123',
+    name: '이수민', 
+    email: 'sumin.lee@sysone.co.kr',
+    role: 'USER',
+    position: '사원',
+    last_login_at: '2024-09-09T11:15:00',
+    created_at: '2024-03-10T09:00:00',
+    updated_at: '2024-09-09T11:15:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 5, 
+    account_id: 'daeho.kim', 
+    password: 'master123',
+    name: '김대호', 
+    email: 'daeho.kim@sysone.co.kr',
+    role: 'MASTER',
+    position: 'DEV',
+    last_login_at: '2024-09-10T08:00:00',
+    created_at: '2023-11-01T09:00:00',
+    updated_at: '2024-09-10T08:00:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 6, 
+    account_id: 'cheolsu.kim', 
+    password: 'password123',
+    name: '김철수', 
+    email: 'cheolsu.kim@sysone.co.kr',
+    role: 'MASTER',
+    position: '과장',
+    last_login_at: '2024-09-09T08:30:00',
+    created_at: '2023-12-01T09:00:00',
+    updated_at: '2024-09-09T08:30:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 7, 
+    account_id: 'younghee.jung', 
+    password: 'password123',
+    name: '정영희', 
+    email: 'younghee.jung@sysone.co.kr',
+    role: 'USER',
+    position: '대리',
+    last_login_at: '2024-09-09T13:00:00',
+    created_at: '2024-02-15T09:00:00',
+    updated_at: '2024-09-09T13:00:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 8, 
+    account_id: 'minsu.park', 
+    password: 'password123',
+    name: '박민수', 
+    email: 'minsu.park@sysone.co.kr',
+    role: 'USER',
+    position: '사원',
+    last_login_at: '2024-09-08T17:20:00',
+    created_at: '2024-04-01T09:00:00',
+    updated_at: '2024-09-08T17:20:00',
+    is_deleted: 0,
+    pic_url: null
+  },
+  { 
+    id: 9, 
+    account_id: 'sujin.choi', 
+    password: 'password123',
+    name: '최수진', 
+    email: 'sujin.choi@sysone.co.kr',
+    role: 'USER',
+    position: '사원',
+    last_login_at: '2024-09-09T12:45:00',
+    created_at: '2024-05-20T09:00:00',
+    updated_at: '2024-09-09T12:45:00',
+    is_deleted: 0,
+    pic_url: null
+  }
+]
+
+// 기존 employeesData는 하위 호환성을 위해 유지
 export const employeesData = [
   { id: 1, name: '박서호', department: '개발팀', position: '사원' },
   { id: 2, name: '이지민', department: '디자인팀', position: '대리' },
