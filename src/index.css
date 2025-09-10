@@ -30,5 +30,16 @@ body {
 }
 
 .loginBtn {
-  @apply appearance-none bg-white duration-300 backdrop-blur-md relative inset-shadow-sm inset-shadow-black block w-full px-3 py-5 focus:outline-none placeholder-gray-500 rounded-4xl text-gray-900
+  @apply appearance-none bg-gray-50 duration-300 backdrop-blur-md relative inset-shadow-sm inset-shadow-black block w-full px-3 py-5 focus:outline-none placeholder-gray-500 rounded-4xl text-gray-900
+}
+
+/* 스크롤바 숨기기 */
+.hide-scrollbar {
+  /* IE, Edge 및 Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }

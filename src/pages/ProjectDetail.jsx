@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowBack,
-  Star,
-  StarBorder,
   Edit,
   Share,
   MoreVert,
@@ -41,7 +39,6 @@ function ProjectDetail() {
     team: ["김개발", "박디자인", "이기획"],
     completedTasks: 13,
     totalTasks: 20,
-    isStarred: true,
   };
 
   const tabs = [
@@ -49,8 +46,7 @@ function ProjectDetail() {
     { id: "timeline", label: "간트차트", icon: Timeline },
     { id: "meeting", label: "회의록", icon: MeetingRoom },
     { id: "team", label: "팀 관리", icon: PeopleAlt },
-    { id: "trouble", label: "장애 관리", icon: BugReport },
-    { id: "settings", label: "설정", icon: Settings },
+    // { id: "trouble", label: "장애 관리", icon: BugReport },
   ];
 
   const getStatusColor = (status) => {
@@ -134,13 +130,6 @@ function ProjectDetail() {
                   <h1 className="text-2xl font-bold text-gray-900">
                     {project.name}
                   </h1>
-                  <button className="p-1 transition-colors">
-                    {project.isStarred ? (
-                      <Star className="w-5 h-5 text-yellow-500" />
-                    ) : (
-                      <StarBorder className="w-5 h-5 text-black" />
-                    )}
-                  </button>
                   <span
                     className={`px-2 py-1 text-xs font-medium ${getStatusColor(
                       project.status

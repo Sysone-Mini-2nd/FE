@@ -1,4 +1,4 @@
-/* 간단하고 효율적인 애니메이션 */
+/* 애니메이션 */
 @keyframes gradientShift {
   0%,
   100% {
@@ -30,14 +30,14 @@
   }
 }
 
-/* 배경 그라디언트 */
+/* 배경 무지개 */
 .gradient-bg {
   background: linear-gradient(-45deg, #667eea, #764ba2, #4facfe, #00f2fe);
   background-size: 300% 300%;
   animation: gradientShift 20s ease infinite;
 }
 
-/* 텍스트 그라디언트 */
+/* 텍스트 무지개 */
 .text-gradient {
   background: linear-gradient(45deg, white, green, purple, #e3d768);
   background-size: 250% 200%;
@@ -72,7 +72,7 @@
   transition: all 0.3s ease;
 }
 
-/* 버튼 효과 - 간소화 */
+/* 버튼 효과*/
 .button-hover:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);

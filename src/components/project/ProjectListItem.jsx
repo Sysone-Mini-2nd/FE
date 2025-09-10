@@ -1,6 +1,4 @@
 import { 
-  Star, 
-  StarBorder, 
   MoreVert, 
   Group, 
   Schedule,
@@ -58,7 +56,7 @@ function ProjectListItem({ project, onAction }) {
             >
               {project.name}
             </h3>
-            <button
+            {/* <button
               onClick={() => onAction('star', project)}
               className="text-gray-400 hover:text-yellow-600 transition-colors flex-shrink-0"
             >
@@ -66,7 +64,7 @@ function ProjectListItem({ project, onAction }) {
                 <Star className="w-4 h-4 text-yellow-600" /> : 
                 <StarBorder className="w-4 h-4" />
               }
-            </button>
+            </button> */}
             <div className={`inline-flex items-center px-2 py-1 text-xs font-medium border ${statusInfo.color}`}>
               {statusInfo.label}
             </div>

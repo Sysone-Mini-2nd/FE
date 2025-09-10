@@ -19,8 +19,10 @@ function Meeting() {
     selectMeeting,
     showList,
     showCreate,
+    showEdit,
     addMeeting,
-    deleteMeeting 
+    deleteMeeting,
+    updateMeeting
   } = useMeetingStore();
 
   // 필터링된 회의 목록
@@ -40,7 +42,7 @@ function Meeting() {
         selectMeeting(meeting);
         break;
       case "edit":
-        console.log("회의 편집:", meeting);
+        showEdit(meeting);
         break;
       case "delete":
         if (window.confirm("이 회의록을 삭제하시겠습니까?")) {
@@ -65,11 +67,23 @@ function Meeting() {
     addMeeting(newMeeting);
   };
 
+  const handleUpdateMeeting = (meetingData) => {
+    const updatedMeeting = {
+      ...selectedMeeting,
+      title: meetingData.title,
+      location: meetingData.location,
+      participants: meetingData.participants,
+      description: meetingData.memo,
+      audioFile: meetingData.audioFile
+    };
+    updateMeeting(updatedMeeting);
+  };
+
   // 필터 옵션 정의
   const filterOptions = [
     { value: "all", label: "모든 타입" },
     { value: "Daily Scrum", label: "Daily Scrum" },
-    { value: "Sprint Planning Meeting", label: "Sprint Planning" },
+    { value: "Sprint Meeting", label: "Sprint Meeting" },
     { value: "Sprint Review", label: "Sprint Review" },
     { value: "Sprint Retrospective", label: "Sprint Retrospective" }
   ];
@@ -81,11 +95,18 @@ function Meeting() {
           onBack={showList}
           onSave={handleSaveMeeting}
         />
+      ) : currentView === 'edit' ? (
+        <MeetingCreate 
+          onBack={showList}
+          onSave={handleUpdateMeeting}
+          meeting={selectedMeeting}
+          isEditing={true}
+        />
       ) : currentView === 'detail' ? (
         <MeetingDetail
           meeting={selectedMeeting}
           onBack={showList}
-          onEdit={(meeting) => console.log("편집:", meeting)}
+          onEdit={(meeting) => showEdit(meeting)}
           onDelete={(meeting) => deleteMeeting(meeting.id)}
         />
       ) : (
