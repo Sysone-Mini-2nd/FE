@@ -34,12 +34,21 @@ echo "Docker Compose 설치 중..."
 sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
+# Nginx 설치 (SSL 인증서 발급용)
+echo "Nginx 설치 중..."
+sudo apt install -y nginx
+
 # 방화벽 설정 (UFW)
 echo "방화벽 설정 중..."
 sudo ufw allow OpenSSH
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw --force enable
+
+# 앱 디렉토리 생성
+echo "앱 디렉토리 생성 중..."
+sudo mkdir -p /home/ubuntu/app
+sudo chown ubuntu:ubuntu /home/ubuntu/app
 
 # 시스템 유틸리티 설치
 sudo apt install -y htop curl wget git vim
