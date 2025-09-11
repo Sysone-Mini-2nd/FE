@@ -11,10 +11,10 @@ const columnHelper = createColumnHelper()
 function MeetingTable({ meetings = [], onAction }) {
   const getTypeBadge = (type) => {
     const typeConfig = {
-      'Daily Scrum': { label: 'Daily Scrum', className: ' text-purple-800' },
-      'Sprint Meeting': { label: 'Sprint Meeting', className: 'text-indigo-800' },
-      'Sprint Review': { label: 'Sprint Review', className: 'text-green-800 ' },
-      'Sprint Retrospective': { label: 'Sprint Retro', className: 'text-orange-800 ' },
+      'SCRUM': { label: 'Daily Scrum', className: ' text-purple-800' },
+      'MEETING': { label: 'MEETING', className: 'text-indigo-800' },
+      'REVIEW': { label: 'Sprint Review', className: 'text-green-800 ' },
+      'RETROSPECTIVE': { label: 'Sprint Retro', className: 'text-orange-800 ' },
       '기타': { label: '기타', className: 'text-gray-800 ' }
     }
     const config = typeConfig[type] || typeConfig['기타']
@@ -51,9 +51,6 @@ function MeetingTable({ meetings = [], onAction }) {
               onClick={() => onAction('view', info.row.original)}
             >
               {info.getValue()}
-            </div>
-            <div className="text-sm text-gray-500 max-w-xs truncate">
-              {info.row.original.description || '설명 없음'}
             </div>
           </div>
         </div>
@@ -100,29 +97,12 @@ function MeetingTable({ meetings = [], onAction }) {
     columnHelper.accessor('participants', {
       header: '참여 인원',
       cell: info => {
-        const participants = info.getValue() || []
+        // 서버에서 participantCount를 제공하므로 이를 사용
+        const participantCount = info.row.original.participantCount || 0
         return (
           <div className="flex items-center gap-2">
             <People className="w-4 h-4 text-gray-400" />
-            <div className="flex items-center gap-1">
-              <span className="text-sm font-medium">{participants.length}명</span>
-              <div className="flex -space-x-1">
-                {participants.slice(0, 3).map((participant, index) => (
-                  <div
-                    key={index}
-                    className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-700 border border-white"
-                    title={participant}
-                  >
-                    {participant.slice(0, 1)}
-                  </div>
-                ))}
-                {participants.length > 3 && (
-                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-600 border border-white">
-                    +{participants.length - 3}
-                  </div>
-                )}
-              </div>
-            </div>
+            <span className="text-sm font-medium">{participantCount}명</span>
           </div>
         )
       },

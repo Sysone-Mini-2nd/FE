@@ -12,15 +12,11 @@ function ProjectHeader({
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
       {/* 페이지 제목 및 생성 버튼 */}
       <div className="flex items-center justify-between">
-        {/* <div>
-          <h1 className="text-3xl font-bold text-gray-900">프로젝트 관리</h1>
-          <p className="text-gray-600 mt-1">팀의 모든 프로젝트를 관리하고 추적하세요</p>
-        </div> */}
         <button
           onClick={onCreateProject}
           className="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 border border-blue-600 flex items-center gap-2 transition-colors"
         >
-          <Add className="w-5 h-5" />
+          <Add />
           새 프로젝트
         </button>
       </div>
@@ -81,7 +77,7 @@ function ProjectHeader({
           onClick={onCreateProject}
           className="hidden lg:flex bg-sky-500 hover:bg-sky-700 text-white px-4 py-2 border border-blue-600 items-center gap-2 transition-colors"
         >
-          <Add className="w-5 h-5" />
+          <Add/>
           새 프로젝트
         </button>
       </div>

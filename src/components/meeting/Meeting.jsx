@@ -1,36 +1,47 @@
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Add, Search, FilterList } from "@mui/icons-material";
 import MeetingTable from "./MeetingTable";
 import MeetingCreate from "./MeetingCreate";
 import MeetingDetail from "./MeetingDetail";
 import Dropdown from "../common/Dropdown";
+import { LoadingSpinner, ErrorFallback } from "../common/LoadingComponents";
 import useMeetingStore from "../../store/meetingStore";
-import { useAuth } from "../../hooks/useAuth";
 
 function Meeting() {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
-  const { user } = useAuth();
 
   // Zustand store 사용
   const { 
     meetings, 
     currentView, 
     selectedMeeting,
+    error,
+    pagination,
+    fetchMeetings,
     selectMeeting,
     showList,
     showCreate,
     showEdit,
-    addMeeting,
     deleteMeeting,
-    updateMeeting
+    refreshAfterCreate,
+    changePage
   } = useMeetingStore();
+
+  // 컴포넌트 마운트 시 회의록 목록 조회
+  useEffect(() => {
+    fetchMeetings(1); // 프로젝트 ID 1로 고정
+  }, [fetchMeetings]);
 
   // 필터링된 회의 목록
   const filteredMeetings = meetings.filter((meeting) => {
+    // 안전한 문자열 처리 - undefined/null 체크
+    const title = meeting.title || '';
+    const organizer = meeting.organizer || '';
+    
     const matchesSearch =
-      meeting.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      meeting.organizer.toLowerCase().includes(searchTerm.toLowerCase());
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      organizer.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === "all" || meeting.type === filterType;
 
     return matchesSearch && matchesFilter;
@@ -53,40 +64,40 @@ function Meeting() {
     }
   };
 
-  const handleSaveMeeting = (meetingData) => {
-    const newMeeting = {
-      title: meetingData.title,
-      organizer: user?.name || "Unknown",
-      type: '기타',
-      scheduledDate: new Date().toISOString(),
-      location: meetingData.location,
-      participants: meetingData.participants,
-      description: meetingData.memo,
-      audioFile: meetingData.audioFile,
-      createdAt: meetingData.createdAt
-    };
-    addMeeting(newMeeting);
+  const handleSaveMeeting = async (apiResponse) => {
+    try {
+      console.log('handleSaveMeeting 호출됨, API 응답:', apiResponse);
+      
+      // 회의록 생성 후 목록 새로고침
+      await refreshAfterCreate(1);
+      
+    } catch (error) {
+      console.error('handleSaveMeeting 에러:', error);
+      throw error;
+    }
   };
 
-  const handleUpdateMeeting = (meetingData) => {
-    const updatedMeeting = {
-      ...selectedMeeting,
-      title: meetingData.title,
-      location: meetingData.location,
-      participants: meetingData.participants,
-      description: meetingData.memo,
-      audioFile: meetingData.audioFile
-    };
-    updateMeeting(updatedMeeting);
+  const handleUpdateMeeting = async (apiResponse) => {
+    try {
+      console.log('handleUpdateMeeting 호출됨, API 응답:', apiResponse);
+      
+      // 회의록 수정 후 목록 새로고침
+      await fetchMeetings(1, pagination.page, pagination.size);
+      showList();
+      
+    } catch (error) {
+      console.error('handleUpdateMeeting 에러:', error);
+      throw error;
+    }
   };
 
-  // 필터 옵션 정의
+  // 필터 옵션을 서버 응답에 맞게 수정
   const filterOptions = [
     { value: "all", label: "모든 타입" },
-    { value: "Daily Scrum", label: "Daily Scrum" },
-    { value: "Sprint Meeting", label: "Sprint Meeting" },
-    { value: "Sprint Review", label: "Sprint Review" },
-    { value: "Sprint Retrospective", label: "Sprint Retrospective" }
+    { value: "SCRUM", label: "Daily Scrum" },
+    { value: "MEETING", label: "MEETING" },
+    { value: "REVIEW", label: "Sprint Review" },
+    { value: "RETROSPECTIVE", label: "Sprint Retrospective" }
   ];
 
   return (
@@ -155,13 +166,43 @@ function Meeting() {
             </div>
           </div>
 
-          {/* 검색 및 필터 */}
-
           {/* 회의 테이블 */}
-          <MeetingTable
-            meetings={filteredMeetings}
-            onAction={handleMeetingAction}
-          />
+          {error ? (
+            <ErrorFallback 
+              error={{ message: error }}
+              onRetry={() => fetchMeetings(1)}
+            />
+          ) : (
+            <Suspense fallback={<LoadingSpinner message="회의록 목록을 불러오는 중..." />}>
+              <MeetingTable
+                meetings={filteredMeetings}
+                onAction={handleMeetingAction}
+              />
+              
+              {/* 페이지네이션 */}
+              {pagination.totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-4">
+                  <button
+                    onClick={() => changePage(pagination.page - 1)}
+                    disabled={!pagination.hasPrevious}
+                    className="px-3 py-1 rounded border disabled:opacity-50"
+                  >
+                    이전
+                  </button>
+                  <span className="px-3 py-1">
+                    {pagination.page} / {pagination.totalPages}
+                  </span>
+                  <button
+                    onClick={() => changePage(pagination.page + 1)}
+                    disabled={!pagination.hasNext}
+                    className="px-3 py-1 rounded border disabled:opacity-50"
+                  >
+                    다음
+                  </button>
+                </div>
+              )}
+            </Suspense>
+          )}
         </>
       )}
     </div>

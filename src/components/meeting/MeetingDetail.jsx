@@ -158,7 +158,8 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
             <h2 className="text-xl font-semibold mb-2">회의 내용</h2>
             <div className="rounded-lg p-4 border border-gray-400">
               <p className="whitespace-pre-wrap leading-relaxed text-lg">
-                {meeting.description ||
+                {meeting.content ||
+                  meeting.description ||
                   meeting.memo ||
                   "회의 내용이 기록되지 않았습니다."}
               </p>
