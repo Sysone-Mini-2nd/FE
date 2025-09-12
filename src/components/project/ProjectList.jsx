@@ -1,6 +1,5 @@
 import React from 'react'
 import ProjectCard from './ProjectCard'
-import ProjectListItem from './ProjectListItem'
 import ProjectTable from './ProjectTable'
 
 function ProjectList({ 
@@ -138,19 +137,6 @@ function ProjectList({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {sortedProjects.map(project => (
             <ProjectCard
-              key={project.id}
-              project={project}
-              onAction={handleProjectAction}
-            />
-          ))}
-        </div>
-      )
-    
-    case 'list':
-      return (
-        <div className="space-y-2">
-          {sortedProjects.map(project => (
-            <ProjectListItem
               key={project.id}
               project={project}
               onAction={handleProjectAction}

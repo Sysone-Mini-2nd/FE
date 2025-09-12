@@ -49,17 +49,6 @@ function ProjectHeader({
             <ViewModule className="w-4 h-4" />
           </button>
           <button
-            onClick={() => onViewTypeChange('list')}
-            className={`p-2 transition-colors border-l border-r border-gray-300 ${
-              viewType === 'list' 
-                ? 'bg-gray-100 text-blue-600' 
-                : 'text-gray-600 hover:bg-gray-50'
-            }`}
-            title="리스트"
-          >
-            <ViewList className="w-4 h-4" />
-          </button>
-          <button
             onClick={() => onViewTypeChange('table')}
             className={`p-2 transition-colors ${
               viewType === 'table' 

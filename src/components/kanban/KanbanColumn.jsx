@@ -16,9 +16,9 @@ function KanbanColumn({ column, onAddCard, onUpdateCard, onDeleteCard, onCardCli
               {column.items.length}
             </span>
           </div>
-          <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+          {/* <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
             <MoreHoriz className="w-5 h-5" />
-          </button>
+          </button> */}
         </div>
         
         <button

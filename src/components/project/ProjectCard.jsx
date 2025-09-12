@@ -131,6 +131,16 @@ function ProjectCard({ project, onAction }) {
             </button>
             {isMenuOpen && (
               <div className="absolute right-0 mt-1 w-40 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20">
+                {/* <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onAction("view", project);
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
+                >
+                  보기
+                </button> */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();

@@ -33,6 +33,14 @@ body {
   @apply appearance-none bg-gray-50 duration-300 backdrop-blur-md relative inset-shadow-sm inset-shadow-black block w-full px-3 py-5 focus:outline-none placeholder-gray-500 rounded-4xl text-gray-900
 }
 
+.deleteBtn {
+  @apply px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2
+}
+
+.editBtn {
+  @apply px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2
+}
+
 /* 스크롤바 숨기기 */
 .hide-scrollbar {
   /* IE, Edge 및 Firefox */
