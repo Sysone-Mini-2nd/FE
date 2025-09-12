@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { ArrowBack, Mic, Stop, PlayArrow, Pause } from "@mui/icons-material";
 import { employeesData } from "../../data/employees";
 import Dropdown from '../common/Dropdown';
-import { LoadingSpinner } from '../common/LoadingComponents';
+import { LoadingSpinner } from '../common/loading/LoadingComponents';
 import { useCreateMeeting, useUpdateMeeting } from '../../hooks/useMeetingQueries';
 
 function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {

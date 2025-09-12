@@ -134,32 +134,12 @@ function ProjectCard({ project, onAction }) {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    onAction("view", project);
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
-                >
-                  보기
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
                     onAction("edit", project);
                     setIsMenuOpen(false);
                   }}
                   className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
                 >
                   편집
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAction("clone", project);
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
-                >
-                  복제
                 </button>
                 <div className="border-t border-white/20 my-1"></div>
                 <button

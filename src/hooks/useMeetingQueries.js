@@ -7,7 +7,7 @@ export function useMeetings(projectId = 1, page = 1, size = 10) {
     queryKey: ['meetings', projectId, page, size],
     queryFn: () => getMeetings(projectId, page, size),
     staleTime: 2 * 60 * 1000, // 2분간 신선한 데이터
-    cacheTime: 10 * 60 * 1000, // 10분간 캐시 유지
+    cacheTime: 1 * 60 * 1000, // 10분간 캐시 유지
     refetchOnWindowFocus: true,
     select: (response) => {
       if (response.statusCode === 200) {
