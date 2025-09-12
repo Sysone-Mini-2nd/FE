@@ -22,7 +22,6 @@ function Kanban({ projectId }) {
             description: '새로운 대시보드 UI 디자인 검토 및 피드백',
             assignee: '김디자인',
             priority: 'medium',
-            tags: ['디자인', 'UI'],
             dueDate: '2024-03-15'
           },
           {
@@ -31,7 +30,6 @@ function Kanban({ projectId }) {
             description: '사용자 관리 시스템을 위한 DB 스키마 설계',
             assignee: '박개발',
             priority: 'high',
-            tags: ['백엔드', 'DB'],
             dueDate: '2024-03-20'
           }
         ]
@@ -47,7 +45,6 @@ function Kanban({ projectId }) {
             description: '사용자 인증 API 개발 진행 중',
             assignee: '이백엔드',
             priority: 'high',
-            tags: ['API', '백엔드'],
             dueDate: '2024-03-18'
           },
           {
@@ -56,7 +53,6 @@ function Kanban({ projectId }) {
             description: '재사용 가능한 UI 컴포넌트 개발',
             assignee: '최프론트',
             priority: 'medium',
-            tags: ['프론트엔드', '컴포넌트'],
             dueDate: '2024-03-25'
           }
         ]
@@ -72,7 +68,6 @@ function Kanban({ projectId }) {
             description: '프로젝트 구조 및 개발 환경 설정 완료',
             assignee: '박팀장',
             priority: 'high',
-            tags: ['설정', '환경구축'],
             dueDate: '2024-03-10'
           }
         ]

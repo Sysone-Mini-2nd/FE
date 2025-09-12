@@ -80,7 +80,7 @@ function Sidebar() {
           {!sidebarCollapsed && (
             <div className="flex-1 pl-4">
               <h6 className="text-lg font-bold text-white">SYSONE</h6>
-              <p className="text-xs font-black text-gray-200">Task Manager</p>
+              <p className="text-xs font-black text-gray-">Task Manager</p>
             </div>
           )}
         </div>

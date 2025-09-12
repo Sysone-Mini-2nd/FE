@@ -1,15 +1,18 @@
 import { useState, useRef } from "react";
 import { ArrowBack, Mic, Stop, PlayArrow, Pause } from "@mui/icons-material";
 import { employeesData } from "../../data/employees";
-import Dropdown from '../common/Dropdown'
+import Dropdown from '../common/Dropdown';
+import { LoadingSpinner } from '../common/LoadingComponents';
+import { useCreateMeeting, useUpdateMeeting } from '../../hooks/useMeetingQueries';
 
 function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
   const [meetingData, setMeetingData] = useState({
     title: meeting?.title || "",
-    location: meeting?.location || "",
+    place: meeting?.location || meeting?.place || "",
     participants: meeting?.participants || [],
-    memo: meeting?.description || meeting?.memo || "",
-    type: meeting?.type || "기타",
+    content: meeting?.description || meeting?.memo || meeting?.content || "",
+    type: meeting?.type || "MEETING",
+    progressDate: meeting?.progressDate || new Date().toISOString().slice(0, -1) + '+09:00',
   });
 
   const [isRecording, setIsRecording] = useState(false);
@@ -23,13 +26,18 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
 
-  // 회의 타입 옵션
+  // React Query mutations
+  const createMutation = useCreateMeeting();
+  const updateMutation = useUpdateMeeting();
+
+  // 현재 진행 중인 mutation이 있는지 확인
+  const isLoading = createMutation.isPending || updateMutation.isPending;
+
   const meetingTypeOptions = [
-    { value: 'Daily Scrum', label: 'Daily Scrum' },
-    { value: 'Sprint Meeting', label: 'Sprint Meeting' },
-    { value: 'Sprint Review', label: 'Sprint Review' },
-    { value: 'Sprint Retrospective', label: 'Sprint Retrospective' },
-    { value: '기타', label: '기타' }
+    { value: 'SCRUM', label: 'Daily Scrum' },
+    { value: 'MEETING', label: '일반 회의' },
+    { value: 'REVIEW', label: 'Sprint Review' },
+    { value: 'RETROSPECTIVE', label: 'Sprint Retrospective' }
   ];
 
   // 입력값 변경 핸들러
@@ -40,13 +48,13 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
     }));
   };
 
-  // 참석자 선택/해제
+  // 참석자 선택/해제 - ID 기반으로 수정
   const toggleParticipant = (employee) => {
     setMeetingData((prev) => ({
       ...prev,
-      participants: prev.participants.includes(employee.name)
-        ? prev.participants.filter((name) => name !== employee.name)
-        : [...prev.participants, employee.name],
+      participants: prev.participants.includes(employee.id)
+        ? prev.participants.filter((id) => id !== employee.id)
+        : [...prev.participants, employee.id],
     }));
   };
 
@@ -123,31 +131,78 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
       .padStart(2, "0")}`;
   };
 
-  // 저장 핸들러
-  const handleSave = () => {
+  // 저장 핸들러 - React Query mutations 사용
+  const handleSave = async () => {
     if (!meetingData.title.trim()) {
       alert("제목을 입력해주세요.");
       return;
     }
 
-    const meetingToSave = {
-      ...meetingData,
-      audioFile: audioBlob,
-      createdAt: new Date().toISOString(),
+    // API 요청에 필요한 데이터 형태로 변환
+    const requestData = {
+      title: meetingData.title,
+      content: meetingData.content,
+      type: meetingData.type,
+      progressDate: meetingData.progressDate,
+      place: meetingData.place,
+      participantIds: meetingData.participants
     };
 
-    onSave(meetingToSave);
+    const projectId = 1; // 현재는 1번 프로젝트만 있다고 가정
+
+    try {
+      let result;
+      if (isEditing && meeting?.id) {
+        // 수정 모드
+        result = await updateMutation.mutateAsync({
+          projectId,
+          meetingId: meeting.id,
+          meetingData: requestData
+        });
+      } else {
+        // 생성 모드
+        result = await createMutation.mutateAsync({
+          projectId,
+          meetingData: requestData
+        });
+      }
+
+      console.log('API 응답:', result); // 응답 확인용 로그
+
+      // 성공 시 콜백 호출
+      try {
+        onSave && onSave(result); // 응답 데이터를 콜백에 전달
+      } catch (callbackError) {
+        console.error('onSave 콜백 에러:', callbackError);
+        // 콜백 에러는 사용자에게 알리지 않고 콘솔에만 로그
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      alert("회의록 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
     <div className="min-h-full">
+      {/* 로딩 중일 때 전체 화면 오버레이 */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6">
+            <LoadingSpinner 
+              message={isEditing ? "회의록을 수정하는 중..." : "회의록을 저장하는 중..."} 
+            />
+          </div>
+        </div>
+      )}
+
       {/* 헤더 */}
       <div>
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <button
               onClick={onBack}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              disabled={isLoading}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
             >
               <ArrowBack className="w-7 h-7 text-gray-600" />
             </button>
@@ -155,15 +210,21 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+              disabled={isLoading}
+              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
             >
               취소
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-green-400 text-white rounded-lg transition-colors"
+              disabled={isLoading}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                isLoading 
+                  ? 'bg-gray-400 text-white cursor-not-allowed' 
+                  : 'bg-green-400 text-white hover:bg-green-500'
+              }`}
             >
-              {isEditing ? "수정" : "저장"}
+              {isLoading ? '처리중...' : isEditing ? '수정' : '저장'}
             </button>
           </div>
         </div>
@@ -197,9 +258,9 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
                 </label>
                 <input
                   type="text"
-                  value={meetingData.location}
+                  value={meetingData.place}
                   onChange={(e) =>
-                    handleInputChange("location", e.target.value)
+                    handleInputChange("place", e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="회의실을 입력하세요"
@@ -251,7 +312,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
                           <input
                             type="checkbox"
                             checked={meetingData.participants.includes(
-                              employee.name
+                              employee.id
                             )}
                             onChange={() => {}}
                             className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
@@ -270,25 +331,26 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
                   )}
                 </div>
 
-                {/* 선택된 참석자 표시 */}
+                {/* 선택된 참석자 표시 - 이름으로 표시하되 ID 기반으로 관리 */}
                 {meetingData.participants.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {meetingData.participants.map((participant, index) => (
-                      <span
-                        key={index}
-                        className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800"
-                      >
-                        {participant}
-                        <button
-                          onClick={() =>
-                            toggleParticipant({ name: participant })
-                          }
-                          className="ml-1 hover:text-blue-600"
+                    {meetingData.participants.map((participantId) => {
+                      const participant = employeesData.find(emp => emp.id === participantId);
+                      return participant ? (
+                        <span
+                          key={participantId}
+                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800"
                         >
-                          ×
-                        </button>
-                      </span>
-                    ))}
+                          {participant.name}
+                          <button
+                            onClick={() => toggleParticipant(participant)}
+                            className="ml-1 hover:text-blue-600"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ) : null;
+                    })}
                   </div>
                 )}
               </div>
@@ -308,14 +370,14 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
               </div>
             </div>
 
-            {/* 메모 */}
+            {/* 메모를 content로 변경 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                메모
+                회의 내용
               </label>
               <textarea
-                value={meetingData.memo}
-                onChange={(e) => handleInputChange("memo", e.target.value)}
+                value={meetingData.content}
+                onChange={(e) => handleInputChange("content", e.target.value)}
                 rows={6}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="회의 내용을 입력하세요"
