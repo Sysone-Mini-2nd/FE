@@ -114,14 +114,14 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => onEdit(meeting)}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
+                className="editBtn"
               >
-                <Edit />
+                <Edit/>
                 편집
               </button>
               <button
                 onClick={handleDelete}
-                className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+                className="deleteBtn"
               >
                 <Delete />
                 삭제
@@ -151,13 +151,13 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
       </div>
 
       {/* 메인 컨텐츠 */}
-      <div className="flex gap-6 mt-2">
-        <div className="flex-[3] space-y-4">
+      <div className="grid grid-cols-5 gap-6">
+        <div className="col-span-3">
           {/* 회의 내용 */}
-          <div>
-            <h2 className="text-xl font-semibold mb-2">회의 내용</h2>
-            <div className="rounded-lg p-4 border border-gray-400">
-              <p className="whitespace-pre-wrap leading-relaxed text-lg">
+          <div className="rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-3">회의 내용</h2>
+            <div className="rounded-lg p-4 border border-gray-200 bg-gray-50">
+              <p className="whitespace-pre-wrap leading-relaxed text-gray-700 break-words">
                 {meeting.content ||
                   meeting.description ||
                   meeting.memo ||
@@ -167,18 +167,25 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
           </div>
 
           {/* 녹음 파일 (있는 경우) */}
-          <AudioPlayer
-            audioFile={meeting.audioFile}
-            createdAt={meeting.createdAt}
-          />
+          {/* <div className="rounded-lg p-6">
+            <AudioPlayer
+              audioFile={meeting.audioFile}
+              createdAt={meeting.createdAt}
+            />
+          </div> */}
 
           {/* 메타 정보 */}
-          <MeetingMetadata data={metadataItems} />
+          <div className="rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-3">회의 정보</h2>
+            <MeetingMetadata data={metadataItems} />
+          </div>
         </div>
 
-        {/* 우측 영역 (2/5) - AI 정리 창 */}
-        <div className="flex-[2] mt-9">
-          <AISummaryPanel summary={meeting.aiSummary} />
+        {/* 우측 영역 - AI 정리 창 */}
+        <div className="col-span-2">
+          <div className="rounded-lg mt-16">
+            <AISummaryPanel summary={meeting.aiSummary} />
+          </div>
         </div>
       </div>
     </div>

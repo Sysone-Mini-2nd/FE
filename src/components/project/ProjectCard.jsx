@@ -131,7 +131,7 @@ function ProjectCard({ project, onAction }) {
             </button>
             {isMenuOpen && (
               <div className="absolute right-0 mt-1 w-40 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20">
-                <button
+                {/* <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onAction("view", project);
@@ -140,7 +140,7 @@ function ProjectCard({ project, onAction }) {
                   className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
                 >
                   보기
-                </button>
+                </button> */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
@@ -151,7 +151,7 @@ function ProjectCard({ project, onAction }) {
                 >
                   편집
                 </button>
-                <button
+                {/* <button
                   onClick={(e) => {
                     e.stopPropagation();
                     onAction("clone", project);
@@ -160,7 +160,7 @@ function ProjectCard({ project, onAction }) {
                   className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
                 >
                   복제
-                </button>
+                </button> */}
                 <div className="border-t border-white/20 my-1"></div>
                 <button
                   onClick={(e) => {
