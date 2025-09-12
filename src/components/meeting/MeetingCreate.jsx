@@ -11,7 +11,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
     place: meeting?.location || meeting?.place || "",
     participants: meeting?.participants || [],
     content: meeting?.description || meeting?.memo || meeting?.content || "",
-    type: meeting?.type || "MEETING", // ETC → MEETING으로 변경
+    type: meeting?.type || "MEETING",
     progressDate: meeting?.progressDate || new Date().toISOString().slice(0, -1) + '+09:00',
   });
 
@@ -33,7 +33,6 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
   // 현재 진행 중인 mutation이 있는지 확인
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
-  // 회의 타입 옵션 (서버 Enum: REVIEW, SCRUM, MEETING, RETROSPECTIVE)
   const meetingTypeOptions = [
     { value: 'SCRUM', label: 'Daily Scrum' },
     { value: 'MEETING', label: '일반 회의' },

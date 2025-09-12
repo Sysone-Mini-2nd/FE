@@ -1,4 +1,4 @@
-import api from './axios';
+import api from './client';
 
 // 회의록 생성
 export const createMeeting = async (projectId, meetingData) => {
