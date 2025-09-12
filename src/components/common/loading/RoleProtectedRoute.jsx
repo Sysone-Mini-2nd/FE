@@ -1,5 +1,5 @@
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth.jsx';
+import { useAuth } from '../../../hooks/useAuth.jsx';
 
 function RoleProtectedRoute({ children, requiredRole, fallback = null }) {
   const { user, isAuthenticated, loading } = useAuth();

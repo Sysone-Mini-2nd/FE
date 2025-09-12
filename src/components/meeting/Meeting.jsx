@@ -4,7 +4,7 @@ import MeetingTable from "./MeetingTable";
 import MeetingCreate from "./MeetingCreate";
 import MeetingDetail from "./MeetingDetail";
 import Dropdown from "../common/Dropdown";
-import { LoadingSpinner, ErrorFallback } from "../common/LoadingComponents";
+import { LoadingSpinner, ErrorFallback } from "../common/loading/LoadingComponents";
 import useMeetingStore from "../../store/meetingStore";
 
 function Meeting() {

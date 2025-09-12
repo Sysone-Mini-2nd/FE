@@ -17,7 +17,6 @@ import Kanban from "../components/kanban/Kanban";
 import GanttChart from "../components/ganttchart/GanttChart";
 import Meeting from "../components/meeting/Meeting";
 import TeamManagement from "../components/teammanage/TeamManagement";
-import Trouble from "../components/trouble/Trouble";
 import SettingsTab from "../components/setting/Settings";
 
 function ProjectDetail() {
@@ -46,7 +45,6 @@ function ProjectDetail() {
     { id: "timeline", label: "간트차트", icon: Timeline },
     { id: "meeting", label: "회의록", icon: MeetingRoom },
     { id: "team", label: "팀 관리", icon: PeopleAlt },
-    // { id: "trouble", label: "장애 관리", icon: BugReport },
   ];
 
   const getStatusColor = (status) => {
@@ -102,8 +100,6 @@ function ProjectDetail() {
         return <Meeting />;
       case "team":
         return <TeamManagement project={project} />;
-      case "trouble":
-        return <Trouble />;
       case "settings":
         return <SettingsTab />;
       default:
@@ -122,7 +118,7 @@ function ProjectDetail() {
                 onClick={() => navigate("/projects")}
                 className="p-2 hover:bg-white/50 transition-colors"
               >
-                <ArrowBack className="w-5 h-5" />
+                <ArrowBack/>
               </button>
 
               <div>

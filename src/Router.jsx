@@ -6,8 +6,8 @@ import ProjectManager from "./pages/ProjectManager";
 import ProjectDetail from "./pages/ProjectDetail";
 import ShareCalendar from "./pages/ShareCalendar";
 import HumanResources from "./pages/HumanResources";
-import PrivateRoute from "./components/PrivateRoute";
-import RoleProtectedRoute from "./components/RoleProtectedRoute";
+import PrivateRoute from "./components/common/loading/PrivateRoute";
+import RoleProtectedRoute from "./components/common/loading/RoleProtectedRoute";
 
 const router = createBrowserRouter([
   {
