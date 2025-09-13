@@ -211,7 +211,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
             <button
               onClick={onBack}
               disabled={isLoading}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+              className="cancelBtn"
             >
               취소
             </button>
@@ -220,8 +220,8 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
               disabled={isLoading}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 isLoading 
-                  ? 'bg-gray-400 text-white cursor-not-allowed' 
-                  : 'bg-green-400 text-white hover:bg-green-500'
+                  ? 'cancelBtn' 
+                  : 'createBtn'
               }`}
             >
               {isLoading ? '처리중...' : isEditing ? '수정' : '저장'}
