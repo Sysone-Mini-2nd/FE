@@ -63,20 +63,19 @@ const useMeetingStore = create((set, get) => ({
       const response = await getMeetingDetail(projectId, meetingId);
       
       if (response.statusCode === 200) {
-        // 서버 응답을 프론트엔드 데이터 구조로 변환
         const meetingDetail = {
           id: meetingId,
           title: response.data.title,
           organizer: response.data.writerName,
-          type: listMeeting?.type || 'MEETING', // 목록에서 가져온 타입 사용
+          type: listMeeting?.type || 'MEETING', 
           scheduledDate: response.data.progressDate,
           location: response.data.place,
-          participants: response.data.participants, // [{ id, name }] 형태
+          participants: response.data.participants, 
           participantCount: response.data.participants?.length || 0,
-          content: response.data.content, // 상세 내용
-          description: response.data.content, // 호환성을 위해 동일하게 설정
-          memo: response.data.content, // 호환성을 위해 동일하게 설정
-          createdAt: response.data.progressDate, // 생성일이 없으므로 진행일로 대체
+          content: response.data.content,
+          description: response.data.content, 
+          memo: response.data.content, 
+          createdAt: response.data.progressDate, 
         };
 
         set({ 
@@ -129,6 +128,7 @@ const useMeetingStore = create((set, get) => ({
     } catch (error) {
       console.error('회의록 삭제 실패:', error);
       set({ error: error.message });
+      throw error; 
     }
   },
   

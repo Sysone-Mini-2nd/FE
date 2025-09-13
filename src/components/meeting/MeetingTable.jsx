@@ -8,7 +8,7 @@ import DataTable from '../common/DataTable'
 
 const columnHelper = createColumnHelper()
 
-function MeetingTable({ meetings = [], onAction }) {
+function MeetingTable({ meetings = [], onAction, loading = false }) {
   const getTypeBadge = (type) => {
     const typeConfig = {
       'SCRUM': { label: 'Daily Scrum', className: ' text-purple-800' },
@@ -108,12 +108,15 @@ function MeetingTable({ meetings = [], onAction }) {
       },
     })
   ]
+
   return (
     <DataTable 
       data={meetings}
       columns={columns}
       onRowClick={(meeting) => onAction('view', meeting)}
       emptyMessage="회의록이 없습니다."
+      loading={loading}
+      skeletonRows={10}
     />
   )
 }

@@ -33,6 +33,10 @@ body {
   @apply appearance-none bg-gray-50 duration-300 backdrop-blur-md relative inset-shadow-sm inset-shadow-black block w-full px-3 py-5 focus:outline-none placeholder-gray-500 rounded-4xl text-gray-900
 }
 
+.loginBtn2{
+  @apply relative w-full hover:inset-shadow-sm hover:inset-shadow-black/35 hover:duration-150 flex justify-center p-4 border border-transparent text-lg font-bold rounded-lg text-white focus:outline-none bg-green-400
+}
+
 .deleteBtn {
   @apply px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2
 }
@@ -54,4 +58,14 @@ body {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* Skeleton UI 애니메이션 */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
