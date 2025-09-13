@@ -87,30 +87,6 @@ function ProjectTable({ projects, onAction }) {
       header: '담당자',
       cell: info => <span className="text-sm">{info.getValue()}</span>,
     }),
-    columnHelper.accessor('team', {
-      header: '팀원',
-      cell: info => (
-        <div className="flex items-center gap-1">
-          <span className="text-sm">{info.getValue().length}명</span>
-          <div className="flex -space-x-1">
-            {info.getValue().slice(0, 3).map((member, index) => (
-              <div
-                key={index}
-                className="bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-700 border border-white"
-                title={member}
-              >
-                {member.slice(0, 1)}
-              </div>
-            ))}
-            {info.getValue().length > 3 && (
-              <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-600 border border-white">
-                +{info.getValue().length - 3}
-              </div>
-            )}
-          </div>
-        </div>
-      ),
-    }),
     columnHelper.accessor('endDate', {
       header: '마감일',
       cell: info => {

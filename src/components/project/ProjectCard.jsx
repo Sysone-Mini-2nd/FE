@@ -190,7 +190,6 @@ function ProjectCard({ project, onAction }) {
           <span>
             {project.completedTasks}/{project.totalTasks} 작업
           </span>
-          <span>{project.team.length}명</span>
           <span>{new Date(project.endDate).toLocaleDateString()}</span>
           {isOverdue && <span className="text-red-600 font-medium">지연</span>}
         </div>
@@ -198,13 +197,6 @@ function ProjectCard({ project, onAction }) {
         {/* 담당자 */}
         <div className="mt-3 pt-3 text-xs flex justify-between ">
           <span className="selected-none text-gray-500">PM: {project.manager}</span>
-          <span >
-            {Array.isArray(project.team)
-              ? project.team.length > 3
-                ? project.team.slice(0, 3).join(", ") + "..."
-                : project.team.join(", ")
-              : project.team}
-          </span>
         </div>
       </div>
     </div>

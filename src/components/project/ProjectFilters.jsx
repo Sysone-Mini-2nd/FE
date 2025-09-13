@@ -26,22 +26,6 @@ function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
     { value: "low", label: "낮음" }
   ];
 
-  const assigneeOptions = [
-    { value: "all", label: "모든 담당자" },
-    { value: "Kim Manager", label: "Kim Manager" },
-    { value: "Lee Manager", label: "Lee Manager" },
-    { value: "Park Manager", label: "Park Manager" },
-    { value: "Choi Manager", label: "Choi Manager" }
-  ];
-
-  const periodOptions = [
-    { value: "all", label: "모든 기간" },
-    { value: "thisWeek", label: "이번 주" },
-    { value: "thisMonth", label: "이번 달" },
-    { value: "thisQuarter", label: "이번 분기" },
-    { value: "overdue", label: "지연됨" }
-  ];
-
   const sortOptions = [
     { value: "created", label: "생성일순" },
     { value: "name", label: "이름순" },
@@ -76,21 +60,6 @@ function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
             width="w-36"
           />
 
-          {/* 담당자 필터 */}
-          <Dropdown
-            options={assigneeOptions}
-            value={filters.assignee}
-            onChange={(value) => handleFilterChange('assignee', value)}
-            width="w-36"
-          />
-
-          {/* 기간 필터 */}
-          <Dropdown
-            options={periodOptions}
-            value={filters.period}
-            onChange={(value) => handleFilterChange('period', value)}
-            width="w-28"
-          />
         </div>
 
         {/* 정렬 섹션 */}

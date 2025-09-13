@@ -49,13 +49,13 @@ function ProjectDetail() {
 
   const getStatusColor = (status) => {
     switch (status) {
-      case "planning":
+      case "TODO":
         return "bg-gray-100 text-gray-800";
-      case "progress":
+      case "IN_PROGRESS":
         return "bg-blue-100 text-blue-800";
-      case "review":
+      case "REVIEW":
         return "bg-yellow-100 text-yellow-800";
-      case "completed":
+      case "DONE":
         return "bg-green-100 text-green-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -64,13 +64,13 @@ function ProjectDetail() {
 
   const getStatusText = (status) => {
     switch (status) {
-      case "planning":
+      case "TODO":
         return "계획중";
-      case "progress":
+      case "IN_PROGRESS":
         return "진행중";
-      case "review":
+      case "REVIEW":
         return "검토중";
-      case "completed":
+      case "DONE":
         return "완료";
       default:
         return "알 수 없음";
@@ -79,11 +79,13 @@ function ProjectDetail() {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case "high":
+      case "WARNING":
         return "text-red-600";
-      case "medium":
+      case "HIGH":
+        return "text-red-600";
+      case "MEDIUM":
         return "text-yellow-600";
-      case "low":
+      case "LOW":
         return "text-green-600";
       default:
         return "text-gray-600";
@@ -95,9 +97,9 @@ function ProjectDetail() {
       case "kanban":
         return <Kanban projectId={id} />;
       case "timeline":
-        return <GanttChart />;
+        return <GanttChart projectId={id}/>;
       case "meeting":
-        return <Meeting />;
+        return <Meeting projectId={id}/>;
       case "team":
         return <TeamManagement project={project} />;
       case "settings":
