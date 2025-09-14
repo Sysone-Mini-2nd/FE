@@ -64,22 +64,25 @@ function ProjectTable({ projects, onAction }) {
     }),
     columnHelper.accessor('progressRate', {
       header: '진행률',
-      cell: info => (
-        <div className="flex items-center gap-2">
-          <div className="flex-1 bg-gray-200 h-2 rounded-full min-w-[60px]">
-            <div
-              className={`h-2 rounded-full transition-all duration-300 ${
-                info.getValue() >= 80 ? 'bg-green-600' : 
-                info.getValue() >= 50 ? 'bg-blue-600' : 'bg-gray-400'
-              }`}
-              style={{ width: `${info.getValue()}%` }}
-            />
+      cell: info => {
+        const value = Math.round(info.getValue());
+        return (
+          <div className="flex items-center gap-2">
+            <div className="flex-1 bg-gray-200 h-2 rounded-full min-w-[60px]">
+              <div
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  value >= 80 ? 'bg-green-600' :
+                    value >= 50 ? 'bg-blue-600' : 'bg-gray-400'
+                }`}
+                style={{ width: `${value}%` }}
+              />
+            </div>
+            <span className="text-sm text-gray-700 min-w-[35px]">
+          {value}%
+        </span>
           </div>
-          <span className="text-sm text-gray-700 min-w-[35px]">
-            {info.getValue()}%
-          </span>
-        </div>
-      ),
+        );
+      },
     }),
     columnHelper.accessor('pmName', {
       header: '담당자',

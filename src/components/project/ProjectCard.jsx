@@ -50,7 +50,8 @@ function ProjectCard({ project, onAction }) {
   const statusInfo = getStatusInfo(project.status);
   
   // API에 progress가 없으므로 status 기반으로 계산
-  const progress = project.status === 'DONE' ? 100 : project.status === 'TODO' ? 0 : (project.progress || 50); // 기본값 50
+  // const progress = project.status === 'DONE' ? 100 : project.status === 'TODO' ? 0 : (project.progress || 50); // 기본값 50
+  const progress = Math.round(project.progressRate);
 
   const progressColor = progress >= 80 ? "bg-green-600" : progress >= 50 ? "bg-blue-600" : "bg-gray-400";
 
