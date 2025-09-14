@@ -154,7 +154,7 @@ function TaskDetail({ task: initialTask, onBack, members }) {
           </div>
 
           <div className="col-span-2">
-            <TaskComments />
+            <TaskComments task={task} />
           </div>
         </div>
       </div>
