@@ -4,8 +4,8 @@ import { useAuth } from '../../hooks/useAuth.jsx';
 function Header() {
   const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -42,7 +42,7 @@ function Header() {
             className="p-2 text-white hover:bg-white/30 rounded-lg"
             title="로그아웃"
           >
-            <Logout className="w-5 h-5" />
+            <Logout />
           </button>
         </div>
       </div>

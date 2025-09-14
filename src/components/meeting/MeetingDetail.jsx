@@ -12,8 +12,12 @@ import ParticipantList from "../common/ParticipantList";
 import MeetingMetadata from "../common/MeetingMetadata";
 import AudioPlayer from "../common/AudioPlayer";
 import AISummaryPanel from "../common/AISummaryPanel";
+import { useToast } from "../../hooks/useToast";
 
 function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
+  // Toast hook
+  const { showError } = useToast();
+
   if (!meeting) {
     return (
       <div className="min-h-full flex items-center justify-center">
@@ -49,9 +53,13 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
   const { dateStr, timeStr } = formatDateTime(meeting.scheduledDate);
 
   // 삭제 확인
-  const handleDelete = () => {
-    if (window.confirm("이 회의록을 삭제하시겠습니까?")) {
-      onDelete(meeting);
+  const handleDelete = async () => {
+    try {
+      await onDelete(meeting);
+      // showSuccess는 부모 컴포넌트에서 처리
+    } catch (error) {
+      console.error('삭제 실패:', error);
+      showError("회의록 삭제 중 오류가 발생했습니다.");
     }
   };
 

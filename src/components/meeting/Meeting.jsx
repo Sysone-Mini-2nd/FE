@@ -6,6 +6,7 @@ import MeetingDetail from "./MeetingDetail";
 import Dropdown from "../common/Dropdown";
 import { LoadingSpinner, ErrorFallback } from "../common/loading/LoadingComponents";
 import useMeetingStore from "../../store/meetingStore";
+import { useToast } from "../../hooks/useToast";
 
 function Meeting() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,6 +17,7 @@ function Meeting() {
     meetings, 
     currentView, 
     selectedMeeting,
+    loading,
     error,
     pagination,
     fetchMeetings,
@@ -27,6 +29,9 @@ function Meeting() {
     refreshAfterCreate,
     changePage
   } = useMeetingStore();
+
+  // Toast hook
+  const { showSuccess, showError } = useToast();
 
   // 컴포넌트 마운트 시 회의록 목록 조회
   useEffect(() => {
@@ -47,6 +52,17 @@ function Meeting() {
     return matchesSearch && matchesFilter;
   });
 
+  // 삭제 확인 함수
+  const handleDeleteConfirm = async (meeting) => {
+    try {
+      await deleteMeeting(meeting.id);
+      showSuccess("회의록이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error('삭제 실패:', error);
+      showError("회의록 삭제 중 오류가 발생했습니다.");
+    }
+  };
+
   // 간단해진 액션 핸들러들
   const handleMeetingAction = (action, meeting) => {
     switch (action) {
@@ -55,11 +71,6 @@ function Meeting() {
         break;
       case "edit":
         showEdit(meeting);
-        break;
-      case "delete":
-        if (window.confirm("이 회의록을 삭제하시겠습니까?")) {
-          deleteMeeting(meeting.id);
-        }
         break;
     }
   };
@@ -119,7 +130,7 @@ function Meeting() {
           meeting={selectedMeeting}
           onBack={showList}
           onEdit={(meeting) => showEdit(meeting)}
-          onDelete={(meeting) => deleteMeeting(meeting.id)}
+          onDelete={handleDeleteConfirm}
         />
       ) : (
         <>
@@ -145,7 +156,7 @@ function Meeting() {
 
                   {/* 필터 */}
                   <div className="flex items-center gap-2">
-                    <FilterList className="text-gray-400 w-4 h-4" />
+                    <FilterList className="text-gray-400" />
                     <Dropdown
                       options={filterOptions}
                       value={filterType}
@@ -158,7 +169,7 @@ function Meeting() {
                     onClick={showCreate}
                     className="createBtn"
                   >
-                    <Add className="w-4 h-4" />
+                    <Add />
                     회의 생성
                   </button>
                 </div>
@@ -173,14 +184,15 @@ function Meeting() {
               onRetry={() => fetchMeetings(1)}
             />
           ) : (
-            <Suspense fallback={<LoadingSpinner message="회의록 목록을 불러오는 중..." />}>
+            <>
               <MeetingTable
                 meetings={filteredMeetings}
                 onAction={handleMeetingAction}
+                loading={loading}
               />
               
-              {/* 페이지네이션 */}
-              {pagination.totalPages > 1 && (
+              {/* 페이지네이션 - 로딩 중이 아닐 때만 표시 */}
+              {!loading && pagination.totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-4">
                   <button
                     onClick={() => changePage(pagination.page - 1)}
@@ -201,7 +213,7 @@ function Meeting() {
                   </button>
                 </div>
               )}
-            </Suspense>
+            </>
           )}
         </>
       )}

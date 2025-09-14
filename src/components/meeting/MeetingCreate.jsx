@@ -4,6 +4,7 @@ import { employeesData } from "../../data/employees";
 import Dropdown from '../common/Dropdown';
 import { LoadingSpinner } from '../common/loading/LoadingComponents';
 import { useCreateMeeting, useUpdateMeeting } from '../../hooks/useMeetingQueries';
+import { useToast } from '../../hooks/useToast';
 
 function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
   const [meetingData, setMeetingData] = useState({
@@ -29,6 +30,9 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
   // React Query mutations
   const createMutation = useCreateMeeting();
   const updateMutation = useUpdateMeeting();
+  
+  // Toast hook
+  const { showSuccess, showError } = useToast();
 
   // 현재 진행 중인 mutation이 있는지 확인
   const isLoading = createMutation.isPending || updateMutation.isPending;
@@ -92,7 +96,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
       }, 1000);
     } catch (error) {
       console.error("마이크 접근 권한이 필요합니다:", error);
-      alert("마이크 접근 권한이 필요합니다.");
+      showError("마이크 접근 권한이 필요합니다.");
     }
   };
 
@@ -134,7 +138,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
   // 저장 핸들러 - React Query mutations 사용
   const handleSave = async () => {
     if (!meetingData.title.trim()) {
-      alert("제목을 입력해주세요.");
+      showError("제목을 입력해주세요.");
       return;
     }
 
@@ -159,12 +163,14 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
           meetingId: meeting.id,
           meetingData: requestData
         });
+        showSuccess("회의록이 성공적으로 수정되었습니다.");
       } else {
         // 생성 모드
         result = await createMutation.mutateAsync({
           projectId,
           meetingData: requestData
         });
+        showSuccess("회의록이 성공적으로 저장되었습니다.");
       }
 
       console.log('API 응답:', result); // 응답 확인용 로그
@@ -178,7 +184,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
       }
     } catch (error) {
       console.error('API Error:', error);
-      alert("회의록 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+      showError("회의록 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
     }
   };
 
@@ -211,7 +217,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
             <button
               onClick={onBack}
               disabled={isLoading}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+              className="cancelBtn"
             >
               취소
             </button>
@@ -220,8 +226,8 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
               disabled={isLoading}
               className={`px-4 py-2 rounded-lg transition-colors ${
                 isLoading 
-                  ? 'bg-gray-400 text-white cursor-not-allowed' 
-                  : 'bg-green-400 text-white hover:bg-green-500'
+                  ? 'cancelBtn' 
+                  : 'createBtn'
               }`}
             >
               {isLoading ? '처리중...' : isEditing ? '수정' : '저장'}

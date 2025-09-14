@@ -3,7 +3,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import KanbanColumn from './KanbanColumn'
 import KanbanCard from './KanbanCard'
 import KanbanHeader from './KanbanHeader'
-import TaskDetail from '../common/TaskDetail'
+import TaskDetail from '../common/task/TaskDetail'
 import { Add } from '@mui/icons-material'
 
 function Kanban({ projectId }) {
@@ -43,7 +43,7 @@ function Kanban({ projectId }) {
             id: `${projectId}-3`,
             title: 'API 개발',
             description: '사용자 인증 API 개발 진행 중',
-            assignee: '이백엔드',
+            assignee: '이백퍼',
             priority: 'high',
             dueDate: '2024-03-18'
           },
