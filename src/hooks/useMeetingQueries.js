@@ -2,7 +2,7 @@ import { useQuery, useMutation, useQueryClient, useSuspenseQuery } from '@tansta
 import { getMeetings, deleteMeeting as deleteMeetingAPI, getMeetingDetail, createMeeting, updateMeeting } from '../api/meetingAPI';
 
 // 회의록 목록 조회
-export function useMeetings(projectId = 1, page = 1, size = 10) {
+export function useMeetings(projectId, page = 1, size = 10) {
   return useQuery({
     queryKey: ['meetings', projectId, page, size],
     queryFn: () => getMeetings(projectId, page, size),
@@ -22,7 +22,8 @@ export function useMeetings(projectId = 1, page = 1, size = 10) {
             participants: [],
             participantCount: meeting.attendeeCount,
             description: meeting.content,
-            createdAt: meeting.progressTime
+            createdAt: meeting.progressTime,
+            summary : meeting.aiSummary
           })),
           pagination: {
             page: response.data.page,
@@ -40,7 +41,7 @@ export function useMeetings(projectId = 1, page = 1, size = 10) {
 }
 
 // Suspense와 함께 사용할 회의록 목록
-export function useSuspenseMeetings(projectId = 1, page = 1, size = 10) {
+export function useSuspenseMeetings(projectId , page = 1, size = 10) {
   return useSuspenseQuery({
     queryKey: ['meetings', projectId, page, size],
     queryFn: () => getMeetings(projectId, page, size),
@@ -111,6 +112,7 @@ export function useMeetingDetail(projectId, meetingId, enabled = true) {
           description: response.data.content,
           memo: response.data.content,
           createdAt: response.data.progressDate,
+          summary : response.data.aiSummary,
         };
       }
       throw new Error('Failed to fetch meeting detail');
@@ -180,7 +182,7 @@ export function useCreateMeeting() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ projectId, meetingData }) => createMeeting(projectId, meetingData),
+    mutationFn: ({ projectId, meetingData, audioFile }) => createMeeting(projectId, meetingData, audioFile),
     onSuccess: (data, variables) => {
       // 성공 시 관련 쿼리들 무효화
       queryClient.invalidateQueries({ queryKey: ['meetings', variables.projectId] });
