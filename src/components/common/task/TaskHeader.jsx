@@ -2,28 +2,29 @@ import { ArrowBack, Person, Flag, Assignment, Schedule } from "@mui/icons-materi
 import Dropdown from "../Dropdown";
 import { membersData } from "../../../data/employees";
 
-function TaskHeader({ 
-  task, 
-  isEditing, 
-  editData, 
-  setEditData, 
-  onBack, 
-  children 
+function TaskHeader({
+  task,
+  isEditing,
+  editData,
+  setEditData,
+  onBack,
+  children,
+  members
 }) {
   // 드롭다운 옵션 데이터
   const statusOptions = [
     { value: "TODO", label: "할 일" },
-    { value: "PROGRESS", label: "진행 중" },
+    { value: "IN_PROGRESS", label: "진행 중" },
     { value: "DONE", label: "완료" },
   ];
 
   const priorityOptions = [
     { value: "HIGH", label: "높음" },
-    { value: "MEDIUM", label: "보통" },
+    { value: "NORMAL", label: "보통" },
     { value: "LOW", label: "낮음" },
   ];
 
-  const memberOptions = membersData.map((member) => ({
+  const memberOptions = members.map((member) => ({
     value: member.id,
     label: member.name,
   }));
@@ -44,7 +45,7 @@ function TaskHeader({
     switch (priority?.toUpperCase()) {
       case "HIGH":
         return { label: "높음", color: "text-red-600 bg-red-50" };
-      case "MEDIUM":
+      case "NORMAL":
         return { label: "보통", color: "text-yellow-600 bg-yellow-50" };
       case "LOW":
         return { label: "낮음", color: "text-green-600 bg-green-50" };
@@ -58,7 +59,7 @@ function TaskHeader({
     switch (status?.toUpperCase()) {
       case "TODO":
         return { label: "할 일", color: "text-gray-600 bg-gray-100" };
-      case "PROGRESS":
+      case "IN_PROGRESS":
         return { label: "진행 중", color: "text-blue-600 bg-blue-100" };
       case "DONE":
         return { label: "완료", color: "text-green-600 bg-green-100" };
