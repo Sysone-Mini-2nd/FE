@@ -1,47 +1,40 @@
-import React from 'react'
-import { Folder, PlayArrow, CheckCircle, Schedule, Warning } from '@mui/icons-material'
+import React from 'react';
 
-function ProjectStats({ projects }) {
-  const stats = {
-    total: projects.length,
-    inProgress: projects.filter(p => p.status === 'progress').length,
-    completed: projects.filter(p => p.status === 'completed').length,
-    planning: projects.filter(p => p.status === 'planning').length,
-    overdue: projects.filter(p => {
-      const endDate = new Date(p.endDate)
-      const today = new Date()
-      return p.status === 'progress' && endDate < today
-    }).length
-  }
+// 1. props로 projects 배열 대신, 이미 계산된 total, stats, delayed 값을 받습니다.
+function ProjectStats({ total = 0, stats = {}, delayed = 0 }) {
 
+  // 2. 프론트엔드에서 직접 계산하던 복잡한 로직을 모두 제거합니다.
+
+  // 3. props로 받은 데이터를 사용하여 statCards 배열을 직접 생성합니다.
   const statCards = [
     {
       title: '전체',
-      value: stats.total,
+      value: total, // total prop 사용
       color: 'text-blue-600'
     },
     {
       title: '진행중',
-      value: stats.inProgress,
+      value: stats.IN_PROGRESS || 0, // stats 객체의 IN_PROGRESS 키 사용
       color: 'text-green-600'
     },
     {
       title: '완료',
-      value: stats.completed,
+      value: stats.DONE || 0, // stats 객체의 DONE 키 사용
       color: 'text-gray-600'
     },
     {
       title: '계획중',
-      value: stats.planning,
+      value: stats.TODO || 0, // stats 객체의 TODO 키 사용
       color: 'text-yellow-600'
     },
     {
       title: '지연',
-      value: stats.overdue,
+      value: delayed, // delayed prop 사용
       color: 'text-red-600'
     }
-  ]
+  ];
 
+  // 4. 렌더링 부분은 그대로 유지합니다.
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       {statCards.map((stat, index) => (
@@ -58,7 +51,7 @@ function ProjectStats({ projects }) {
         </div>
       ))}
     </div>
-  )
+  );
 }
 
-export default ProjectStats
+export default ProjectStats;

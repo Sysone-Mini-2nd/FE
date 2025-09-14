@@ -1,21 +1,19 @@
-import React from 'react'
-import { createColumnHelper } from '@tanstack/react-table'
-import { 
-  MoreVert
-} from '@mui/icons-material'
-import DataTable from '../common/DataTable'
+import React from 'react';
+import { createColumnHelper } from '@tanstack/react-table';
+import { MoreVert } from '@mui/icons-material';
+import DataTable from '../common/DataTable';
 
-const columnHelper = createColumnHelper()
+const columnHelper = createColumnHelper();
 
 function ProjectTable({ projects, onAction }) {
   const getStatusBadge = (status) => {
     const statusConfig = {
-      'progress': { label: '진행중', className: 'bg-green-100 text-green-800 border-green-200' },
-      'completed': { label: '완료', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-      'paused': { label: '일시정지', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-      'planning': { label: '계획중', className: 'bg-gray-100 text-gray-800 border-gray-200' }
+      'IN_PROGRESS': { label: '진행중', className: 'bg-green-100 text-green-800 border-green-200' },
+      'DONE': { label: '완료', className: 'bg-blue-100 text-blue-800 border-blue-200' },
+      'PAUSED': { label: '일시정지', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+      'TODO': { label: '계획중', className: 'bg-gray-100 text-gray-800 border-gray-200' }
     }
-    const config = statusConfig[status] || statusConfig['planning']
+    const config = statusConfig[status] || statusConfig['TODO']
     return (
       <span className={`px-2 py-1 text-xs font-medium border rounded ${config.className}`}>
         {config.label}
@@ -25,11 +23,11 @@ function ProjectTable({ projects, onAction }) {
 
   const getPriorityBadge = (priority) => {
     const priorityConfig = {
-      'high': { label: '높음', className: 'bg-red-100 text-red-800 border-red-200' },
-      'medium': { label: '보통', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-      'low': { label: '낮음', className: 'bg-green-100 text-green-800 border-green-200' }
+      'HIGH': { label: '높음', className: 'bg-red-100 text-red-800 border-red-200' },
+      'NORMAL': { label: '보통', className: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
+      'LOW': { label: '낮음', className: 'bg-green-100 text-green-800 border-green-200' }
     }
-    const config = priorityConfig[priority] || priorityConfig['medium']
+    const config = priorityConfig[priority] || priorityConfig['NORMAL']
     return (
       <span className={`px-2 py-1 text-xs font-medium border rounded ${config.className}`}>
         {config.label}
@@ -50,7 +48,7 @@ function ProjectTable({ projects, onAction }) {
               {info.getValue()}
             </div>
             <div className="text-sm text-gray-500 max-w-xs truncate">
-              {info.row.original.description}
+              {info.row.original.desc}
             </div>
           </div>
         </div>
@@ -64,7 +62,7 @@ function ProjectTable({ projects, onAction }) {
       header: '우선순위',
       cell: info => getPriorityBadge(info.getValue()),
     }),
-    columnHelper.accessor('progress', {
+    columnHelper.accessor('progressRate', {
       header: '진행률',
       cell: info => (
         <div className="flex items-center gap-2">
@@ -83,19 +81,28 @@ function ProjectTable({ projects, onAction }) {
         </div>
       ),
     }),
-    columnHelper.accessor('manager', {
+    columnHelper.accessor('pmName', {
       header: '담당자',
       cell: info => <span className="text-sm">{info.getValue()}</span>,
     }),
+
+    // 1. "시작일" 컬럼을 추가합니다.
+    columnHelper.accessor('startDate', {
+      header: '시작일',
+      // 2. toLocaleDateString()을 사용하여 날짜 형식만 표시합니다.
+      cell: info => <span className="text-sm">{new Date(info.getValue()).toLocaleDateString()}</span>,
+    }),
+
     columnHelper.accessor('endDate', {
       header: '마감일',
       cell: info => {
         const endDate = new Date(info.getValue())
-        const isOverdue = endDate < new Date() && info.row.original.status === 'progress'
+        const isOverdue = endDate < new Date() && info.row.original.status === 'IN_PROGRESS'
         const daysRemaining = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24))
         
         return (
           <div>
+            {/* 2. toLocaleDateString()을 사용하여 날짜 형식만 표시합니다. */}
             <div className="text-sm">
               {endDate.toLocaleDateString()}
             </div>
@@ -127,14 +134,20 @@ function ProjectTable({ projects, onAction }) {
           </button>
           <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-sm py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all z-10">
             <button
-              onClick={() => onAction('edit', info.row.original)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAction('edit', info.row.original);
+              }}
               className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
             >
               편집
             </button>
             <div className="border-t border-gray-100 my-1"></div>
             <button
-              onClick={() => onAction('delete', info.row.original)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onAction('delete', info.row.original);
+              }}
               className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
             >
               삭제
@@ -155,4 +168,4 @@ function ProjectTable({ projects, onAction }) {
   )
 }
 
-export default ProjectTable
+export default ProjectTable;
