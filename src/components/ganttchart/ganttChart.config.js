@@ -32,7 +32,7 @@ export const staticEditorShape = [
     { key: "end", type: "date", label: "종료일" },
     { key: "duration", type: "counter", label: "기간 (일)" },
     // 우선순위 옵션에 '중간'을 추가합니다.
-    { key: "priority", type: "select", label: "우선순위", options: [{ id: "low", label: "낮음" }, { id: "normal", label: "중간" }, { id: "high", label: "높음" }] },
+    { key: "priority", type: "select", label: "우선순위", options: [{ id: "low", label: "낮음" }, { id: "normal", label: "중간" }, { id: "high", label: "높음" }, {id: "warning", label: "긴급"}] },
     { key: "assignee", type: "select", label: "담당자", options: [] }
 ];
 

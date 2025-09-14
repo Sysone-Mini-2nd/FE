@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react"; // useContext 추가
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowBack,
@@ -12,7 +12,9 @@ import GanttChart from "../components/ganttchart/GanttChart";
 import Meeting from "../components/meeting/Meeting";
 import TeamManagement from "../components/teammanage/TeamManagement";
 import { useProjectDetail } from "../hooks/useProjectQueries";
+import AuthContext from "../contexts/AuthContext"; // AuthContext import
 
+// --- Helper Functions ---
 const getStatusColor = (status) => {
   switch (status) {
     case 'TODO': return 'bg-gray-100 text-gray-800';
@@ -56,7 +58,11 @@ function ProjectDetail() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("kanban");
 
+  const { user } = useContext(AuthContext); // 현재 사용자 정보 가져오기
   const { data: project, isLoading, isError } = useProjectDetail(projectId);
+
+  // 현재 사용자가 이 프로젝트의 PM인지 확인
+  const isCurrentUserPM = project?.pmId === user?.id;
 
   const tabs = [
     { id: "kanban", label: "칸반 보드", icon: Assignment },
@@ -68,14 +74,14 @@ function ProjectDetail() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "kanban":
-        // Kanban 컴포넌트에 members 데이터를 props로 전달합니다.
-        return <Kanban projectId={projectId} members={project.members} />;
+        return <Kanban projectId={projectId} />;
       case "timeline":
         return <GanttChart projectId={projectId} />;
       case "meeting":
         return <Meeting projectId={projectId} />;
       case "team":
-        return <TeamManagement members={project.members} />;
+        // isCurrentUserPM 값을 prop으로 전달
+        return <TeamManagement members={project.members} isPM={isCurrentUserPM} projectId={projectId} />;
       default:
         return null;
     }

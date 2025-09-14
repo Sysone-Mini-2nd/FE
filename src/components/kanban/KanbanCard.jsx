@@ -56,13 +56,7 @@ function KanbanCard({ item, index, onCardClick, onDelete }) {
                 </button>
                 {isMenuOpen && (
                   <div className="absolute right-0 top-full mt-1 w-32 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20 rounded-md">
-                    <button 
-                      // onClick={handleEditClick} // 편집 기능은 추후 구현
-                      className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100/50 flex items-center gap-2 disabled:opacity-50" disabled>
-                      <Edit className="w-3 h-3" />
-                      편집
-                    </button>
-                    <button 
+                    <button
                       onClick={handleDeleteClick}
                       className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50 flex items-center gap-2">
                       <Delete className="w-3 h-3" />

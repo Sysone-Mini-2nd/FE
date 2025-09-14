@@ -26,6 +26,7 @@ function PriorityTasks() {
 
   const getPriorityLabel = (priority) => {
     switch(priority) {
+      case 'warning' : return '🚨 긴급';
       case 'high': return '🔴 높음';
       case 'medium': return '🟡 보통';
       case 'low': return '🟢 낮음';

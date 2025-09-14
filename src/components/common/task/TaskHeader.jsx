@@ -19,6 +19,7 @@ function TaskHeader({
   ];
 
   const priorityOptions = [
+    { value: "WARNING", label: "긴급"},
     { value: "HIGH", label: "높음" },
     { value: "NORMAL", label: "보통" },
     { value: "LOW", label: "낮음" },
@@ -43,6 +44,8 @@ function TaskHeader({
   // 우선순위 표시
   const getPriorityInfo = (priority) => {
     switch (priority?.toUpperCase()) {
+      case "WARNING":
+        return { label: "긴급", color: "text-orange-600 bg-orange-50" };
       case "HIGH":
         return { label: "높음", color: "text-red-600 bg-red-50" };
       case "NORMAL":

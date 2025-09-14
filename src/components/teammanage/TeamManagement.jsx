@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
 import { Add, Close, Send, Delete } from '@mui/icons-material';
 import { useFloatingChat } from '../../hooks/chat/useFloatingChat';
 import useChatStore from '../../store/chatStore';
@@ -8,8 +7,7 @@ import { useMemberQueries } from '../../hooks/useMemberQueries';
 import { useAddProjectMember, useDeleteProjectMember } from '../../hooks/useProjectQueries';
 
 // onAddMember prop은 더 이상 필요 없으므로 제거합니다.
-function TeamManagement({ members: teamMembers = [] }) {
-  const { id: projectId } = useParams(); // 2. URL에서 projectId를 가져옵니다.
+function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
   const [selectedMember, setSelectedMember] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
@@ -88,9 +86,12 @@ function TeamManagement({ members: teamMembers = [] }) {
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">팀 관리</h3>
-        <button onClick={() => setShowAddModal(true)} className="createBtn">
-          <Add className="w-4 h-4" /> 팀원 추가
-        </button>
+        {isPM && (
+          <button onClick={() => setShowAddModal(true)} className="createBtn">
+            <Add className="w-4 h-4" />
+            팀원 추가
+          </button>
+        )}
       </div>
       
       <div className="space-y-4">
@@ -111,11 +112,15 @@ function TeamManagement({ members: teamMembers = [] }) {
                 <div className="text-sm text-gray-600">{member.role === 'PM' ? '프로젝트 매니저' : '팀 멤버'}</div>
               </div>
             </div>
-            {/* 6. PM이 아닌 멤버에게만 삭제 버튼을 표시합니다. */}
-            {member.role !== 'PM' && (
-              <button onClick={(e) => handleDeleteMember(e, member.id)} className="p-2 text-gray-400 hover:text-red-500 rounded-full transition-colors">
-                <Delete className="w-5 h-5" />
-              </button>
+            {isPM && (
+              <td className="px-6 py-4 text-right">
+                {/* PM 자신은 삭제할 수 없도록 처리 */}
+                {member.role !== 'PM' && (
+                  <button onClick={(e) => handleDeleteMember(e, member.id)} className="p-2 text-gray-400 hover:text-red-500 rounded-full transition-colors">
+                    <Delete className="w-5 h-5" />
+                  </button>
+                )}
+              </td>
             )}
           </div>
         ))}
