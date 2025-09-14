@@ -13,8 +13,6 @@ import Meeting from "../components/meeting/Meeting";
 import TeamManagement from "../components/teammanage/TeamManagement";
 import { useProjectDetail } from "../hooks/useProjectQueries";
 
-// --- Helper Functions ---
-// API 응답(대문자 Enum)에 맞춰 헬퍼 함수를 수정합니다.
 const getStatusColor = (status) => {
   switch (status) {
     case 'TODO': return 'bg-gray-100 text-gray-800';
@@ -70,7 +68,8 @@ function ProjectDetail() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "kanban":
-        return <Kanban projectId={projectId} />;
+        // Kanban 컴포넌트에 members 데이터를 props로 전달합니다.
+        return <Kanban projectId={projectId} members={project.members} />;
       case "timeline":
         return <GanttChart projectId={projectId} />;
       case "meeting":
@@ -92,7 +91,6 @@ function ProjectDetail() {
 
   return (
     <div className="space-y-4">
-      {/* --- 1. 프로젝트 헤더 정보를 실제 데이터로 복원 --- */}
       <div className="border-b border-gray-200 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -124,7 +122,6 @@ function ProjectDetail() {
         </div>
       </div>
 
-      {/* 탭 네비게이션 */}
       <div className="border-b border-gray-200">
         <div className="flex">
           {tabs.map((tab) => (
@@ -144,7 +141,6 @@ function ProjectDetail() {
         </div>
       </div>
 
-      {/* 탭 콘텐츠 */}
       <div className="flex-1 overflow-auto pt-4">
         {renderTabContent()}
       </div>

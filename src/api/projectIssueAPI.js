@@ -13,13 +13,13 @@ export const getProjectIssues = async (projectId, filters = {}) => {
     }
 };
 
-// 이슈 상세 조회
+// 이슈 상세 조회 (projectId 파라미터 제거)
 export const getIssueDetail = async (issueId) => {
     try {
         const response = await api.get(`/issues/${issueId}`);
         return response.data;
     } catch (error) {
-        console.error('이슈 상세 조회 실패:', error);
+        console.error(`이슈 상세 조회 실패 (ID: ${issueId}):`, error);
         throw error;
     }
 };
@@ -50,7 +50,6 @@ export const updateIssue = async (issueId, issueData) => {
 export const patchIssue = async (issueId, issueData) => {
     try {
         const response = await api.patch(`/issues/${issueId}`, issueData);
-        console.log(response.data);
         return response.data;
     } catch (error) {
         console.error('이슈 부분 수정 실패:', error);
