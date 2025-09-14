@@ -41,16 +41,50 @@ export const updateProject = async (projectData) => {
   }
 };
 
-/**
- * 프로젝트를 삭제합니다.
- * @param {string | number} projectId - 삭제할 프로젝트의 ID
- */
+export const analyzeRequirements = async (formData) => {
+  try {
+    const response = await api.post('/requirements/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('요구사항 분석 실패:', error);
+    throw error;
+  }
+};
+
 export const deleteProject = async (projectId) => {
   try {
     const response = await api.delete(`/projects/${projectId}`);
     return response.data;
   } catch (error) {
     console.error(`프로젝트 삭제 실패 (ID: ${projectId}):`, error);
+    throw error;
+  }
+};
+
+// --- 팀원 추가/삭제 API 수정 ---
+
+export const createProjectMember = async (projectId, memberId) => {
+  try {
+    // memberId를 JSON 객체로 감싸서 전송합니다.
+    const response = await api.post(`/projects/${projectId}/members`, memberId);
+    return response.data;
+  } catch (error) {
+    console.error(`프로젝트 멤버 생성 실패 (ID: ${projectId}):`, error);
+    throw error;
+  }
+};
+
+export const deleteProjectMember = async (projectId, memberId) => {
+  try {
+    // DELETE 요청 시 body는 { data: ... } 객체 안에 넣어주어야 합니다.
+    const response = await api.delete(`/projects/${projectId}/members`, { data: { memberId } });
+    return response.data;
+  } catch (error) {
+    console.error(`프로젝트 멤버 삭제 실패 (ID: ${projectId}):`, error);
     throw error;
   }
 };
