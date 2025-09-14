@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-// 1. deleteProject 함수를 추가로 import 합니다.
-import { getProjects, getProjectDetail, createProject, updateProject, deleteProject } from '../api/projectAPI';
+import {
+  getProjects, 
+  getProjectDetail, 
+  createProject, 
+  updateProject, 
+  deleteProject, 
+  analyzeRequirements, 
+  createProjectMember, 
+  deleteProjectMember 
+} from '../api/projectAPI';
 
 export function useProjects(filters = {}) {
   return useQuery({
@@ -30,6 +38,10 @@ export function useProjectDetail(projectId) {
   });
 }
 
+export function useAnalyzeRequirements() {
+  return useMutation({ mutationFn: analyzeRequirements });
+}
+
 export function useCreateProject() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -51,16 +63,32 @@ export function useUpdateProject() {
   });
 }
 
-/**
- * 프로젝트 삭제를 위한 뮤테이션 훅
- */
 export function useDeleteProject() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteProject,
     onSuccess: () => {
-      // 성공 시 'projects' 쿼리를 무효화하여 목록을 자동으로 새로고침합니다.
       queryClient.invalidateQueries({ queryKey: ['projects'] });
+    },
+  });
+}
+
+export function useAddProjectMember() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ projectId, memberId }) => createProjectMember(projectId, { memberId }), // 백엔드 API 형식에 맞게 body를 객체로 전달
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['projects', variables.projectId] });
+    },
+  });
+}
+
+export function useDeleteProjectMember() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ projectId, memberId }) => deleteProjectMember(projectId, memberId),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['projects', variables.projectId] });
     },
   });
 }

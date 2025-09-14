@@ -13,9 +13,9 @@ export function useProjectIssues(projectId, filters = {}) {
     return useQuery({
         queryKey: ['issues', projectId, filters],
         queryFn: () => getProjectIssues(projectId, filters),
-        staleTime: 0, // 캐시를 즉시 stale로 처리하여 항상 최신 데이터 확인
-        cacheTime: 5 * 60 * 1000, // 5분간 캐시 유지
-        refetchOnWindowFocus: false, // 창 포커스 시 자동 refetch 비활성화
+        staleTime: 0, 
+        cacheTime: 5 * 60 * 1000, 
+        refetchOnWindowFocus: false, 
         select: (response) => {
             if (response && response.data && Array.isArray(response.data.issues)) {
                 return response.data.issues.map((issue) => ({
@@ -37,32 +37,29 @@ export function useProjectIssues(projectId, filters = {}) {
     });
 }
 
-// 이슈 상세 조회
-export function useIssueDetail(projectId, issueId) {
+// 이슈 상세 조회 (projectId 파라미터 제거)
+export function useIssueDetail(issueId) {
     return useQuery({
-        queryKey: ['issues', projectId, issueId],
+        // queryKey에서도 projectId 제거
+        queryKey: ['issues', issueId],
         queryFn: () => getIssueDetail(issueId),
         enabled: !!issueId, // issueId가 있을 때만 쿼리 실행
-        select: (response) => response.data
+        select: (response) => response.data // API 응답에서 실제 데이터만 선택
     });
 }
 
+// 이슈 생성 mutation (사용자 요청에 따라 이 부분은 수정하지 않습니다)
 export function useCreateIssue() {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: ({ projectId, issueData }) => createIssue(projectId, issueData),
 
-        // 🟢 낙관적 업데이트: 서버 응답 기다리기 전에 UI에 반영
         onMutate: async ({ projectId, issueData }) => {
             await queryClient.cancelQueries(['issues', projectId]);
-
-            // 이전 데이터 저장
             const previousIssues = queryClient.getQueryData(['issues', projectId]);
-
-            // 낙관적으로 새로운 이슈 추가
             const optimisticIssue = {
-                id: `temp-${Date.now()}`, // 임시 ID
+                id: `temp-${Date.now()}`,
                 title: issueData.title,
                 desc: issueData.desc,
                 memberName: issueData.memberName,
@@ -73,18 +70,15 @@ export function useCreateIssue() {
                 endDate: issueData.endDate,
                 tags: issueData.tags || [],
                 dDay: issueData.dday || null,
-                isOptimistic: true, // 임시 이슈 식별용 플래그
+                isOptimistic: true,
             };
-
             queryClient.setQueryData(['issues', projectId], (oldIssues = []) => [
                 ...oldIssues,
                 optimisticIssue,
             ]);
-
             return { previousIssues, projectId, tempId: optimisticIssue.id };
         },
 
-        // 🟢 서버 요청 실패하면 롤백
         onError: (err, variables, context) => {
             if (context?.previousIssues) {
                 queryClient.setQueryData(['issues', context.projectId], context.previousIssues);
@@ -92,7 +86,6 @@ export function useCreateIssue() {
             console.error('이슈 생성 실패:', err);
         },
 
-        // 🟢 서버 요청 성공 시 실제 데이터로 교체
         onSuccess: (response, variables, context) => {
             const newIssue = {
                 id: response.data.id,
@@ -107,23 +100,18 @@ export function useCreateIssue() {
                 tags: response.data.tags,
                 dDay: response.data.dday,
             };
-
             queryClient.setQueryData(['issues', variables.projectId], (oldIssues = []) => {
                 return oldIssues.map((issue) => {
-                    // 임시 이슈를 실제 이슈로 교체
                     if (issue.isOptimistic || issue.id === context?.tempId) {
                         return newIssue;
                     }
                     return issue;
                 });
             });
-
             console.log('✅ 새로운 이슈 생성 완료:', newIssue);
         },
 
-        // 🟢 서버 데이터 최종 동기화
         onSettled: (_, __, { projectId }) => {
-            // 약간의 지연을 두고 무효화하여 대기 중인 업데이트가 처리될 시간을 확보
             setTimeout(() => {
                 queryClient.invalidateQueries(['issues', projectId]);
             }, 200);
@@ -145,12 +133,8 @@ export function useUpdateIssue() {
         },
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['issues', variables.projectId] });
-            queryClient.invalidateQueries({ queryKey: ['issues', variables.projectId, variables.issueId] });
-            console.log('✅ 이슈 업데이트 완료:', variables.issueId);
+            queryClient.invalidateQueries({ queryKey: ['issues', variables.issueId] });
         },
-        onError: (error, variables) => {
-            console.error('이슈 업데이트 실패:', error, variables);
-        }
     });
 }
 
@@ -162,10 +146,6 @@ export function useDeleteIssue() {
         mutationFn: ({ issueId }) => deleteIssueAPI(issueId),
         onSuccess: (data, variables) => {
             queryClient.invalidateQueries({ queryKey: ['issues', variables.projectId] });
-            console.log('✅ 이슈 삭제 완료:', variables.issueId);
         },
-        onError: (error, variables) => {
-            console.error('이슈 삭제 실패:', error, variables);
-        }
     });
 }
