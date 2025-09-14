@@ -9,7 +9,7 @@ function ProjectStats({ total = 0, stats = {}, delayed = 0 }) {
   const statCards = [
     {
       title: '전체',
-      value: total, // total prop 사용
+      value: total || 0, // total prop 사용
       color: 'text-blue-600'
     },
     {
@@ -29,7 +29,7 @@ function ProjectStats({ total = 0, stats = {}, delayed = 0 }) {
     },
     {
       title: '지연',
-      value: delayed, // delayed prop 사용
+      value: delayed || 0, // delayed prop 사용
       color: 'text-red-600'
     }
   ];
