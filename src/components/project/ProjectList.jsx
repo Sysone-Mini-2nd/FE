@@ -1,6 +1,5 @@
 import React from 'react'
 import ProjectCard from './ProjectCard'
-import ProjectListItem from './ProjectListItem'
 import ProjectTable from './ProjectTable'
 
 function ProjectList({ 
@@ -73,9 +72,10 @@ function ProjectList({
         return b.progress - a.progress
       case 'endDate':
         return new Date(a.endDate) - new Date(b.endDate)
-      case 'priority':
+      case 'priority': {
         const priorityOrder = { high: 3, medium: 2, low: 1 }
         return priorityOrder[b.priority] - priorityOrder[a.priority]
+      }
       case 'created':
       default:
         return b.id - a.id
@@ -93,7 +93,7 @@ function ProjectList({
           onProjectUpdate(prev => prev.filter(p => p.id !== project.id))
         }
         break
-      case 'clone':
+      case 'clone': {
         const clonedProject = {
           ...project,
           id: Date.now(),
@@ -104,6 +104,7 @@ function ProjectList({
         }
         onProjectUpdate(prev => [...prev, clonedProject])
         break
+      }
       case 'star':
         onProjectUpdate(prev => prev.map(p => 
           p.id === project.id ? { ...p, isStarred: !p.isStarred } : p
@@ -136,19 +137,6 @@ function ProjectList({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {sortedProjects.map(project => (
             <ProjectCard
-              key={project.id}
-              project={project}
-              onAction={handleProjectAction}
-            />
-          ))}
-        </div>
-      )
-    
-    case 'list':
-      return (
-        <div className="space-y-2">
-          {sortedProjects.map(project => (
-            <ProjectListItem
               key={project.id}
               project={project}
               onAction={handleProjectAction}

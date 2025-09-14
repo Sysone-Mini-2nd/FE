@@ -4,12 +4,8 @@ function AISummaryPanel({
   summary, 
   title = "AI 정리", 
   className = "bg-gray-100 rounded-lg p-6 border border-gray-200",
-  
-  
 }) {
-  const defaultSummary = `
-                    
-임시 예시 텍스트:
+  const defaultSummary = `임시 예시 텍스트:
 
 📝 주요 안건
 • 고객 마케팅을 위한 앱 개선 방안 논의

@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Add, Search, FilterList } from "@mui/icons-material";
 import MeetingTable from "./MeetingTable";
 import MeetingCreate from "./MeetingCreate";
 import MeetingDetail from "./MeetingDetail";
 import Dropdown from "../common/Dropdown";
+import { LoadingSpinner, ErrorFallback } from "../common/loading/LoadingComponents";
 import useMeetingStore from "../../store/meetingStore";
-import { currentUser } from "../../data/userData";
+import { useToast } from "../../hooks/useToast";
 
 function Meeting() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -16,22 +17,51 @@ function Meeting() {
     meetings, 
     currentView, 
     selectedMeeting,
+    loading,
+    error,
+    pagination,
+    fetchMeetings,
     selectMeeting,
     showList,
     showCreate,
-    addMeeting,
-    deleteMeeting 
+    showEdit,
+    deleteMeeting,
+    refreshAfterCreate,
+    changePage
   } = useMeetingStore();
+
+  // Toast hook
+  const { showSuccess, showError } = useToast();
+
+  // 컴포넌트 마운트 시 회의록 목록 조회
+  useEffect(() => {
+    fetchMeetings(1); // 프로젝트 ID 1로 고정
+  }, [fetchMeetings]);
 
   // 필터링된 회의 목록
   const filteredMeetings = meetings.filter((meeting) => {
+    // 안전한 문자열 처리 - undefined/null 체크
+    const title = meeting.title || '';
+    const organizer = meeting.organizer || '';
+    
     const matchesSearch =
-      meeting.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      meeting.organizer.toLowerCase().includes(searchTerm.toLowerCase());
+      title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      organizer.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === "all" || meeting.type === filterType;
 
     return matchesSearch && matchesFilter;
   });
+
+  // 삭제 확인 함수
+  const handleDeleteConfirm = async (meeting) => {
+    try {
+      await deleteMeeting(meeting.id);
+      showSuccess("회의록이 성공적으로 삭제되었습니다.");
+    } catch (error) {
+      console.error('삭제 실패:', error);
+      showError("회의록 삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   // 간단해진 액션 핸들러들
   const handleMeetingAction = (action, meeting) => {
@@ -40,38 +70,45 @@ function Meeting() {
         selectMeeting(meeting);
         break;
       case "edit":
-        console.log("회의 편집:", meeting);
-        break;
-      case "delete":
-        if (window.confirm("이 회의록을 삭제하시겠습니까?")) {
-          deleteMeeting(meeting.id);
-        }
+        showEdit(meeting);
         break;
     }
   };
 
-  const handleSaveMeeting = (meetingData) => {
-    const newMeeting = {
-      title: meetingData.title,
-      organizer: currentUser.name,
-      type: '기타',
-      scheduledDate: new Date().toISOString(),
-      location: meetingData.location,
-      participants: meetingData.participants,
-      description: meetingData.memo,
-      audioFile: meetingData.audioFile,
-      createdAt: meetingData.createdAt
-    };
-    addMeeting(newMeeting);
+  const handleSaveMeeting = async (apiResponse) => {
+    try {
+      console.log('handleSaveMeeting 호출됨, API 응답:', apiResponse);
+      
+      // 회의록 생성 후 목록 새로고침
+      await refreshAfterCreate(1);
+      
+    } catch (error) {
+      console.error('handleSaveMeeting 에러:', error);
+      throw error;
+    }
   };
 
-  // 필터 옵션 정의
+  const handleUpdateMeeting = async (apiResponse) => {
+    try {
+      console.log('handleUpdateMeeting 호출됨, API 응답:', apiResponse);
+      
+      // 회의록 수정 후 목록 새로고침
+      await fetchMeetings(1, pagination.page, pagination.size);
+      showList();
+      
+    } catch (error) {
+      console.error('handleUpdateMeeting 에러:', error);
+      throw error;
+    }
+  };
+
+  // 필터 옵션을 서버 응답에 맞게 수정
   const filterOptions = [
     { value: "all", label: "모든 타입" },
-    { value: "Daily Scrum", label: "Daily Scrum" },
-    { value: "Sprint Planning Meeting", label: "Sprint Planning" },
-    { value: "Sprint Review", label: "Sprint Review" },
-    { value: "Sprint Retrospective", label: "Sprint Retrospective" }
+    { value: "SCRUM", label: "Daily Scrum" },
+    { value: "MEETING", label: "MEETING" },
+    { value: "REVIEW", label: "Sprint Review" },
+    { value: "RETROSPECTIVE", label: "Sprint Retrospective" }
   ];
 
   return (
@@ -81,12 +118,19 @@ function Meeting() {
           onBack={showList}
           onSave={handleSaveMeeting}
         />
+      ) : currentView === 'edit' ? (
+        <MeetingCreate 
+          onBack={showList}
+          onSave={handleUpdateMeeting}
+          meeting={selectedMeeting}
+          isEditing={true}
+        />
       ) : currentView === 'detail' ? (
         <MeetingDetail
           meeting={selectedMeeting}
           onBack={showList}
-          onEdit={(meeting) => console.log("편집:", meeting)}
-          onDelete={(meeting) => deleteMeeting(meeting.id)}
+          onEdit={(meeting) => showEdit(meeting)}
+          onDelete={handleDeleteConfirm}
         />
       ) : (
         <>
@@ -112,7 +156,7 @@ function Meeting() {
 
                   {/* 필터 */}
                   <div className="flex items-center gap-2">
-                    <FilterList className="text-gray-400 w-4 h-4" />
+                    <FilterList className="text-gray-400" />
                     <Dropdown
                       options={filterOptions}
                       value={filterType}
@@ -125,7 +169,7 @@ function Meeting() {
                     onClick={showCreate}
                     className="createBtn"
                   >
-                    <Add className="w-4 h-4" />
+                    <Add />
                     회의 생성
                   </button>
                 </div>
@@ -133,13 +177,44 @@ function Meeting() {
             </div>
           </div>
 
-          {/* 검색 및 필터 */}
-
           {/* 회의 테이블 */}
-          <MeetingTable
-            meetings={filteredMeetings}
-            onAction={handleMeetingAction}
-          />
+          {error ? (
+            <ErrorFallback 
+              error={{ message: error }}
+              onRetry={() => fetchMeetings(1)}
+            />
+          ) : (
+            <>
+              <MeetingTable
+                meetings={filteredMeetings}
+                onAction={handleMeetingAction}
+                loading={loading}
+              />
+              
+              {/* 페이지네이션 - 로딩 중이 아닐 때만 표시 */}
+              {!loading && pagination.totalPages > 1 && (
+                <div className="flex justify-center items-center gap-2 mt-4">
+                  <button
+                    onClick={() => changePage(pagination.page - 1)}
+                    disabled={!pagination.hasPrevious}
+                    className="px-3 py-1 rounded border disabled:opacity-50"
+                  >
+                    이전
+                  </button>
+                  <span className="px-3 py-1">
+                    {pagination.page} / {pagination.totalPages}
+                  </span>
+                  <button
+                    onClick={() => changePage(pagination.page + 1)}
+                    disabled={!pagination.hasNext}
+                    className="px-3 py-1 rounded border disabled:opacity-50"
+                  >
+                    다음
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </>
       )}
     </div>

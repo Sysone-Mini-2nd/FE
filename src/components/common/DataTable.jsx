@@ -9,13 +9,16 @@ import {
   ArrowUpward,
   ArrowDownward
 } from '@mui/icons-material'
+import { Skeleton } from '@mui/material'
 
 function DataTable({ 
   data = [], 
   columns = [], 
   className = "",
   onRowClick = null,
-  emptyMessage = "데이터가 없습니다."
+  emptyMessage = "데이터가 없습니다.",
+  loading = false,
+  skeletonRows = 5
 }) {
   const table = useReactTable({
     data,
@@ -25,9 +28,35 @@ function DataTable({
     getSortedRowModel: getSortedRowModel(),
   })
 
+  // 스켈레톤 로우 생성 함수
+  const renderSkeletonRow = (rowIndex, columnCount) => (
+    <tr 
+      key={`skeleton-${rowIndex}`}
+      className={`${rowIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100`}
+    >
+      {Array.from({ length: columnCount }).map((_, colIndex) => (
+        <td key={`skeleton-cell-${rowIndex}-${colIndex}`} className="px-4 py-4">
+          <Skeleton 
+            variant="text" 
+            width={`${Math.floor(Math.random() * 40) + 60}%`}
+            height={20}
+          />
+        </td>
+      ))}
+    </tr>
+  )
+
+  // 스켈레톤 로우들 생성
+  const renderSkeletonRows = () => {
+    const columnCount = columns.length || 4 // 기본값 4개 컬럼
+    return Array.from({ length: skeletonRows }).map((_, index) => 
+      renderSkeletonRow(index, columnCount)
+    )
+  }
+
   return (
-    <div className={`bg-white border-y border-gray-200 overflow-hidden ${className}`}>
-      <div className="overflow-x-auto">
+    <div className={`bg-white border-y select-none border-gray-200 overflow-hidden ${className}`}>
+      <div>
         <table className="min-w-full">
           <thead className="border-b border-gray-200">
             {table.getHeaderGroups().map(headerGroup => (
@@ -48,9 +77,9 @@ function DataTable({
                       {header.column.getIsSorted() && (
                         <span className="text-gray-400">
                           {header.column.getIsSorted() === 'desc' ? (
-                            <ArrowDownward className="w-3 h-3" />
+                            <ArrowDownward/>
                           ) : (
-                            <ArrowUpward className="w-3 h-3" />
+                            <ArrowUpward/>
                           )}
                         </span>
                       )}
@@ -61,7 +90,11 @@ function DataTable({
             ))}
           </thead>
           <tbody className="bg-white">
-            {table.getRowModel().rows.length === 0 ? (
+            {loading ? (
+              // 로딩 중일 때 스켈레톤 표시
+              renderSkeletonRows()
+            ) : table.getRowModel().rows.length === 0 ? (
+              // 데이터가 없을 때
               <tr>
                 <td 
                   colSpan={columns.length} 
@@ -71,6 +104,7 @@ function DataTable({
                 </td>
               </tr>
             ) : (
+              // 실제 데이터 표시
               table.getRowModel().rows.map((row, index) => (
                 <tr 
                   key={row.id} 

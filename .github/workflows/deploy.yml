@@ -56,29 +56,40 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
-    - name: Deploy to EC2
+    - name: Deploy to EC2 with HTTPS
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USERNAME }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          # Stop and remove existing container
-          sudo docker stop sysone-fe || true
-          sudo docker rm sysone-fe || true
+          cd /home/ubuntu
           
-          # Remove old image
+          # 환경 변수 파일 생성/업데이트
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
+          
+          # HTTPS Docker Compose 파일이 있는지 확인
+          if [ ! -f "docker-compose.https.yml" ]; then
+            echo "❌ HTTPS 설정이 되어있지 않습니다!"
+            echo "먼저 서버에서 add-https-to-existing.sh 스크립트를 실행해주세요."
+            exit 1
+          fi
+          
+          # 기존 컨테이너 중지 및 제거
+          sudo docker-compose -f docker-compose.https.yml down || true
+          
+          # 오래된 이미지 제거
           sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/sysone-fe:latest || true
           
-          # Pull latest image
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/sysone-fe:latest
+          # 최신 이미지 풀 및 실행
+          sudo docker-compose -f docker-compose.https.yml pull
+          sudo docker-compose -f docker-compose.https.yml up -d
           
-          # Run new container
-          sudo docker run -d \
-            --name sysone-fe \
-            --restart unless-stopped \
-            -p 80:80 \
-            ${{ secrets.DOCKER_USERNAME }}/sysone-fe:latest
-            
-          # Clean up unused images
+          # 사용하지 않는 이미지 정리
           sudo docker image prune -f
+          
+          # 배포 상태 확인
+          sleep 10
+          sudo docker-compose -f docker-compose.https.yml ps
+          
+          echo "✅ HTTPS 배포 완료: https://sysonetaskmanager.store"

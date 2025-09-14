@@ -1,5 +1,5 @@
 import { Close, Minimize, ArrowBack } from '@mui/icons-material'
-import { currentUser } from '../../../data/userData'
+import { useAuth } from '../../../hooks/useAuth'
 
 const ChatHeader = ({ 
   currentView, 
@@ -9,12 +9,14 @@ const ChatHeader = ({
   onToggleMinimize, 
   onToggleChat 
 }) => {
+  const { user } = useAuth();
+  
   const getHeaderTitle = () => {
     switch (currentView) {
-      case 'list': return currentUser.name
+      case 'list': return user?.name || 'User'
       case 'chat': return selectedChat?.name
       case 'createChat': return '사원 검색'
-      default: return currentUser.name
+      default: return user?.name || 'User'
     }
   }
 
@@ -37,13 +39,13 @@ const ChatHeader = ({
         <div className="flex items-center gap-2">
           {currentView === 'list' && (
             <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm">
-              {currentUser.avatar}
+              {user?.avatar || user?.name?.charAt(0) || 'U'}
             </div>
           )}
           <div>
             <h3 className="font-bold text-sm">{getHeaderTitle()}</h3>
             {currentView === 'list' && (
-              <p className="text-xs text-emerald-100">{currentUser.email}</p>
+              <p className="text-xs text-emerald-100">{user?.email}</p>
             )}
           </div>
         </div>

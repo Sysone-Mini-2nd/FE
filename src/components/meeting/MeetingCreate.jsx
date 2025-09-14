@@ -1,13 +1,19 @@
-import { useState, useRef } from 'react';
-import { ArrowBack, Mic, Stop, PlayArrow, Pause } from '@mui/icons-material';
-import { employeesData } from '../../data/employees';
+import { useState, useRef } from "react";
+import { ArrowBack, Mic, Stop, PlayArrow, Pause } from "@mui/icons-material";
+import { employeesData } from "../../data/employees";
+import Dropdown from '../common/Dropdown';
+import { LoadingSpinner } from '../common/loading/LoadingComponents';
+import { useCreateMeeting, useUpdateMeeting } from '../../hooks/useMeetingQueries';
+import { useToast } from '../../hooks/useToast';
 
-function MeetingCreate({ onBack, onSave }) {
+function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
   const [meetingData, setMeetingData] = useState({
-    title: '',
-    location: '',
-    participants: [],
-    memo: ''
+    title: meeting?.title || "",
+    place: meeting?.location || meeting?.place || "",
+    participants: meeting?.participants || [],
+    content: meeting?.description || meeting?.memo || meeting?.content || "",
+    type: meeting?.type || "MEETING",
+    progressDate: meeting?.progressDate || new Date().toISOString().slice(0, -1) + '+09:00',
   });
 
   const [isRecording, setIsRecording] = useState(false);
@@ -21,21 +27,38 @@ function MeetingCreate({ onBack, onSave }) {
   const intervalRef = useRef(null);
   const audioRef = useRef(null);
 
+  // React Query mutations
+  const createMutation = useCreateMeeting();
+  const updateMutation = useUpdateMeeting();
+  
+  // Toast hook
+  const { showSuccess, showError } = useToast();
+
+  // 현재 진행 중인 mutation이 있는지 확인
+  const isLoading = createMutation.isPending || updateMutation.isPending;
+
+  const meetingTypeOptions = [
+    { value: 'SCRUM', label: 'Daily Scrum' },
+    { value: 'MEETING', label: '일반 회의' },
+    { value: 'REVIEW', label: 'Sprint Review' },
+    { value: 'RETROSPECTIVE', label: 'Sprint Retrospective' }
+  ];
+
   // 입력값 변경 핸들러
   const handleInputChange = (field, value) => {
-    setMeetingData(prev => ({
+    setMeetingData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  // 참석자 선택/해제
+  // 참석자 선택/해제 - ID 기반으로 수정
   const toggleParticipant = (employee) => {
-    setMeetingData(prev => ({
+    setMeetingData((prev) => ({
       ...prev,
-      participants: prev.participants.includes(employee.name)
-        ? prev.participants.filter(name => name !== employee.name)
-        : [...prev.participants, employee.name]
+      participants: prev.participants.includes(employee.id)
+        ? prev.participants.filter((id) => id !== employee.id)
+        : [...prev.participants, employee.id],
     }));
   };
 
@@ -54,11 +77,13 @@ function MeetingCreate({ onBack, onSave }) {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioBlob = new Blob(audioChunksRef.current, {
+          type: "audio/wav",
+        });
         setAudioBlob(audioBlob);
-        
+
         // 스트림 정리
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach((track) => track.stop());
       };
 
       mediaRecorder.start();
@@ -67,12 +92,11 @@ function MeetingCreate({ onBack, onSave }) {
 
       // 녹음 시간 타이머
       intervalRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1);
+        setRecordingTime((prev) => prev + 1);
       }, 1000);
-
     } catch (error) {
-      console.error('마이크 접근 권한이 필요합니다:', error);
-      alert('마이크 접근 권한이 필요합니다.');
+      console.error("마이크 접근 권한이 필요합니다:", error);
+      showError("마이크 접근 권한이 필요합니다.");
     }
   };
 
@@ -106,60 +130,118 @@ function MeetingCreate({ onBack, onSave }) {
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${mins.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
   };
 
-  // 저장 핸들러
-  const handleSave = () => {
+  // 저장 핸들러 - React Query mutations 사용
+  const handleSave = async () => {
     if (!meetingData.title.trim()) {
-      alert('제목을 입력해주세요.');
+      showError("제목을 입력해주세요.");
       return;
     }
 
-    const meetingToSave = {
-      ...meetingData,
-      audioFile: audioBlob,
-      createdAt: new Date().toISOString()
+    // API 요청에 필요한 데이터 형태로 변환
+    const requestData = {
+      title: meetingData.title,
+      content: meetingData.content,
+      type: meetingData.type,
+      progressDate: meetingData.progressDate,
+      place: meetingData.place,
+      participantIds: meetingData.participants
     };
 
-    onSave(meetingToSave);
+    const projectId = 1; // 현재는 1번 프로젝트만 있다고 가정
+
+    try {
+      let result;
+      if (isEditing && meeting?.id) {
+        // 수정 모드
+        result = await updateMutation.mutateAsync({
+          projectId,
+          meetingId: meeting.id,
+          meetingData: requestData
+        });
+        showSuccess("회의록이 성공적으로 수정되었습니다.");
+      } else {
+        // 생성 모드
+        result = await createMutation.mutateAsync({
+          projectId,
+          meetingData: requestData
+        });
+        showSuccess("회의록이 성공적으로 저장되었습니다.");
+      }
+
+      console.log('API 응답:', result); // 응답 확인용 로그
+
+      // 성공 시 콜백 호출
+      try {
+        onSave && onSave(result); // 응답 데이터를 콜백에 전달
+      } catch (callbackError) {
+        console.error('onSave 콜백 에러:', callbackError);
+        // 콜백 에러는 사용자에게 알리지 않고 콘솔에만 로그
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      showError("회의록 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
     <div className="min-h-full">
+      {/* 로딩 중일 때 전체 화면 오버레이 */}
+      {isLoading && (
+        <div className="modal">
+          <div className="rounded-lg p-6">
+            <LoadingSpinner 
+              message={isEditing ? "회의록을 수정하는 중..." : "회의록을 저장하는 중..."} 
+            />
+          </div>
+        </div>
+      )}
+
       {/* 헤더 */}
       <div>
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={onBack}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowBack className="w-7 h-7 text-gray-600" />
-              </button>
-            </div>
-            <div className="flex items-center gap-3">
-              <button
-                onClick={onBack}
-                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                취소
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 bg-green-400 text-white rounded-lg transition-colors"
-              >
-                저장
-              </button>
-            </div>
+        <div className="flex items-center justify-between h-16">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onBack}
+              disabled={isLoading}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+            >
+              <ArrowBack className="w-7 h-7 text-gray-600" />
+            </button>
           </div>
-
+          <div className="flex items-center gap-3">
+            <button
+              onClick={onBack}
+              disabled={isLoading}
+              className="cancelBtn"
+            >
+              취소
+            </button>
+            <button
+              onClick={handleSave}
+              disabled={isLoading}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                isLoading 
+                  ? 'cancelBtn' 
+                  : 'createBtn'
+              }`}
+            >
+              {isLoading ? '처리중...' : isEditing ? '수정' : '저장'}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* 메인 컨텐츠 */}
       <div>
         <div className="">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">회의록 생성</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-6">
+            {isEditing ? "회의록 편집" : "회의록 생성"}
+          </h2>
 
           <div className="space-y-6">
             {/* 제목과 회의실 */}
@@ -171,7 +253,7 @@ function MeetingCreate({ onBack, onSave }) {
                 <input
                   type="text"
                   value={meetingData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="회의 제목을 입력하세요"
                 />
@@ -182,88 +264,126 @@ function MeetingCreate({ onBack, onSave }) {
                 </label>
                 <input
                   type="text"
-                  value={meetingData.location}
-                  onChange={(e) => handleInputChange('location', e.target.value)}
+                  value={meetingData.place}
+                  onChange={(e) =>
+                    handleInputChange("place", e.target.value)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="회의실을 입력하세요"
                 />
               </div>
             </div>
 
-            {/* 회의 인원 */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                회의 인원
-              </label>
-              <div className="relative">
-                <button
-                  onClick={() => setShowParticipantDropdown(!showParticipantDropdown)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-left hover:bg-gray-50 flex items-center justify-between"
-                >
-                  <span className="text-gray-500">
-                    {meetingData.participants.length > 0 
-                      ? `${meetingData.participants.length}명 선택됨` 
-                      : '회의 참석자를 선택하세요'
+            {/* 회의 인원과 회의 타입 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  회의 인원
+                </label>
+                <div className="relative">
+                  <button
+                    onClick={() =>
+                      setShowParticipantDropdown(!showParticipantDropdown)
                     }
-                  </span>
-                  <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-left hover:bg-gray-50 flex items-center justify-between"
+                  >
+                    <span className="text-gray-500">
+                      {meetingData.participants.length > 0
+                        ? `${meetingData.participants.length}명 선택됨`
+                        : "회의 참석자를 선택하세요"}
+                    </span>
+                    <svg
+                      className="w-4 h-4 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
 
-                {showParticipantDropdown && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                    {employeesData.map((employee) => (
-                      <div
-                        key={employee.id}
-                        className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                        onClick={() => toggleParticipant(employee)}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={meetingData.participants.includes(employee.name)}
-                          onChange={() => {}}
-                          className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                        />
-                        <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900">{employee.name}</div>
-                          <div className="text-xs text-gray-500">{employee.department} · {employee.position}</div>
+                  {showParticipantDropdown && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                      {employeesData.map((employee) => (
+                        <div
+                          key={employee.id}
+                          className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
+                          onClick={() => toggleParticipant(employee)}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={meetingData.participants.includes(
+                              employee.id
+                            )}
+                            onChange={() => {}}
+                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
+                          />
+                          <div className="ml-3">
+                            <div className="text-sm font-medium text-gray-900">
+                              {employee.name}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {employee.department} · {employee.position}
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 선택된 참석자 표시 - 이름으로 표시하되 ID 기반으로 관리 */}
+                {meetingData.participants.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {meetingData.participants.map((participantId) => {
+                      const participant = employeesData.find(emp => emp.id === participantId);
+                      return participant ? (
+                        <span
+                          key={participantId}
+                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                          {participant.name}
+                          <button
+                            onClick={() => toggleParticipant(participant)}
+                            className="ml-1 hover:text-blue-600"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ) : null;
+                    })}
                   </div>
                 )}
               </div>
 
-              {/* 선택된 참석자 표시 */}
-              {meetingData.participants.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {meetingData.participants.map((participant, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800"
-                    >
-                      {participant}
-                      <button
-                        onClick={() => toggleParticipant({ name: participant })}
-                        className="ml-1 hover:text-blue-600"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              )}
+              {/* 회의 타입 */}
+              <div>
+                <label className="block w-full text-sm font-medium text-gray-700 mb-2">
+                  회의 타입
+                </label>
+                <Dropdown
+                  options={meetingTypeOptions}
+                  value={meetingData.type}
+                  onChange={(value) => handleInputChange("type", value)}
+                  placeholder="회의 타입을 선택하세요"
+                  width="w-full"
+                />
+              </div>
             </div>
 
-            {/* 메모 */}
+            {/* 메모를 content로 변경 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                메모
+                회의 내용
               </label>
               <textarea
-                value={meetingData.memo}
-                onChange={(e) => handleInputChange('memo', e.target.value)}
+                value={meetingData.content}
+                onChange={(e) => handleInputChange("content", e.target.value)}
                 rows={6}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="회의 내용을 입력하세요"
@@ -278,7 +398,7 @@ function MeetingCreate({ onBack, onSave }) {
                     onClick={startRecording}
                     className="inline-flex items-center gap-2 px-6 py-6 bg-red-600 text-white rounded-full hover:bg-red-700 transition-colors"
                   >
-                    <Mic/>
+                    <Mic />
                   </button>
                 )}
 
@@ -286,7 +406,9 @@ function MeetingCreate({ onBack, onSave }) {
                   <div className="space-y-4">
                     <div className="flex items-center justify-center gap-4">
                       <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                      <span className="text-lg font-black">{formatTime(recordingTime)}</span>
+                      <span className="text-lg font-black">
+                        {formatTime(recordingTime)}
+                      </span>
                     </div>
                     <button
                       onClick={stopRecording}
@@ -307,8 +429,12 @@ function MeetingCreate({ onBack, onSave }) {
                       onClick={togglePlayback}
                       className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                     >
-                      {isPlaying ? <Pause className="w-4 h-4" /> : <PlayArrow className="w-4 h-4" />}
-                      {isPlaying ? '일시정지' : '재생'}
+                      {isPlaying ? (
+                        <Pause className="w-4 h-4" />
+                      ) : (
+                        <PlayArrow className="w-4 h-4" />
+                      )}
+                      {isPlaying ? "일시정지" : "재생"}
                     </button>
                     <button
                       onClick={startRecording}

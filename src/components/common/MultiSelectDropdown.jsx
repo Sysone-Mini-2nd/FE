@@ -1,5 +1,4 @@
-import React from 'react';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { ExpandMore, Close, Check } from '@mui/icons-material';
 
 /**
@@ -12,7 +11,6 @@ import { ExpandMore, Close, Check } from '@mui/icons-material';
  * @param {string} props.className - 추가 CSS 클래스
  * @param {boolean} props.disabled - 비활성화 여부
  * @param {string} props.width - 드롭다운 너비 (CSS 클래스)
- * @param {string} props.anchor - 드롭다운 위치 (기본: 'bottom start')
  * @param {number} props.maxDisplay - 최대 표시할 선택된 항목 수 (기본: 2)
  */
 function MultiSelectDropdown({
@@ -23,127 +21,104 @@ function MultiSelectDropdown({
   className = '',
   disabled = false,
   width = 'w-full',
-  anchor = 'bottom start',
   maxDisplay = 2
 }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
   // 현재 선택된 옵션들 찾기
   const selectedOptions = options.filter(option => values.includes(option.value));
-  
-  // 표시할 텍스트 생성
-  const getDisplayText = () => {
-    if (selectedOptions.length === 0) return placeholder;
-    if (selectedOptions.length <= maxDisplay) {
-      return selectedOptions.map(option => option.label).join(', ');
-    }
-    return `${selectedOptions.slice(0, maxDisplay).map(option => option.label).join(', ')} +${selectedOptions.length - maxDisplay}`;
-  };
 
-  const handleToggleOption = (optionValue) => {
+  // 외부 클릭 감지
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  const handleToggleOption = useCallback((optionValue) => {
+    if (!onChange) return;
+    
     const newValues = values.includes(optionValue)
       ? values.filter(v => v !== optionValue)
       : [...values, optionValue];
     onChange(newValues);
-  };
+  }, [onChange, values]);
 
-  const handleRemoveOption = (optionValue, e) => {
-    e.stopPropagation();
-    const newValues = values.filter(v => v !== optionValue);
-    onChange(newValues);
-  };
+  const handleClearAll = useCallback(() => {
+    if (onChange) {
+      onChange([]);
+    }
+  }, [onChange]);
 
-  const handleClearAll = (e) => {
-    e.stopPropagation();
-    onChange([]);
-  };
+  const displayText = selectedOptions.length === 0 
+    ? placeholder 
+    : selectedOptions.length <= maxDisplay 
+      ? selectedOptions.map(option => option.label).join(', ')
+      : `${selectedOptions.slice(0, maxDisplay).map(option => option.label).join(', ')} +${selectedOptions.length - maxDisplay}개`;
 
   return (
-    <Menu as="div" className={`relative ${width}`}>
-      <MenuButton
+    <div ref={dropdownRef} className={`relative ${width}`}>
+      <button
+        type="button"
         disabled={disabled}
-        className={`
-          w-full px-3 py-2 text-left border border-gray-300 rounded-lg 
-          focus:ring-2 focus:ring-blue-500 focus:border-transparent
-          hover:border-gray-400 transition-colors duration-200
-          disabled:bg-gray-100 disabled:cursor-not-allowed
-          flex items-center justify-between min-h-[40px]
-          ${className}
-        `}
+        className={`dropdownmenu ${className}`}
+        onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex-1 min-w-0">
-          {selectedOptions.length === 0 ? (
-            <span className="text-gray-500">{placeholder}</span>
-          ) : selectedOptions.length <= maxDisplay ? (
-            <div className="flex flex-wrap gap-1">
-              {selectedOptions.map(option => (
-                <span
-                  key={option.value}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-blue-100 text-blue-800 rounded"
-                >
-                  {option.label}
-                  <button
-                    onClick={(e) => handleRemoveOption(option.value, e)}
-                    className="hover:bg-blue-200 rounded"
-                  >
-                    <Close className="h-3 w-3" />
-                  </button>
-                </span>
-              ))}
-            </div>
-          ) : (
-            <span className="text-gray-900 truncate">
-              {getDisplayText()}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-1 ml-2">
+        <span className={`block truncate ${selectedOptions.length === 0 ? 'text-gray-500' : 'text-gray-900'}`}>
+          {displayText}
+        </span>
+        <ExpandMore 
+          className={`ml-2 h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+        />
+      </button>
+
+      {isOpen && (
+        <div className={`absolute left-0 mt-1 ${width} dropdownitem`}>
           {selectedOptions.length > 0 && (
             <button
-              onClick={handleClearAll}
-              className="p-0.5 hover:bg-gray-200 rounded"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleClearAll();
+              }}
+              className="w-full px-3 py-2 text-left text-sm transition-colors duration-150 border-b border-gray-200 flex items-center gap-2 hover:bg-red-50 text-red-600"
             >
-              <Close className="h-3 w-3 text-gray-400" />
+              <Close/>
+              모든 선택 해제
             </button>
           )}
-          <ExpandMore 
-            className={`h-4 w-4 text-gray-400 transition-transform duration-200 ui-open:rotate-180`} 
-          />
+          {options.map((option) => {
+            const isSelected = values.includes(option.value);
+            return (
+              <button
+                key={option.value}
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleToggleOption(option.value);
+                }}
+                className="w-full px-3 py-2 text-left text-sm transition-colors duration-150 flex items-center justify-between hover:bg-blue-50 text-gray-900"
+              >
+                <span>{option.label}</span>
+                {isSelected && (
+                  <Check className="text-blue-600" />
+                )}
+              </button>
+            );
+          })}
         </div>
-      </MenuButton>
-
-      <MenuItems
-        anchor={anchor}
-        className={`
-          z-50 mt-1 max-h-60 overflow-auto rounded-lg bg-white py-1 shadow-lg 
-          ring-1 ring-black ring-opacity-5 focus:outline-none
-          transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0
-          ${width}
-        `}
-        transition
-      >
-        {options.map((option) => {
-          const isSelected = values.includes(option.value);
-          return (
-            <MenuItem key={option.value}>
-              {({ focus }) => (
-                <button
-                  onClick={() => handleToggleOption(option.value)}
-                  className={`
-                    w-full px-3 py-2 text-left text-sm transition-colors duration-150
-                    flex items-center justify-between
-                    ${focus ? 'bg-blue-50 text-blue-900' : 'text-gray-900'}
-                  `}
-                >
-                  <span>{option.label}</span>
-                  {isSelected && (
-                    <Check className="h-4 w-4 text-blue-600" />
-                  )}
-                </button>
-              )}
-            </MenuItem>
-          );
-        })}
-      </MenuItems>
-    </Menu>
+      )}
+    </div>
   );
 }
 

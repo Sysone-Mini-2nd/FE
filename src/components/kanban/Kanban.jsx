@@ -3,6 +3,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import KanbanColumn from './KanbanColumn'
 import KanbanCard from './KanbanCard'
 import KanbanHeader from './KanbanHeader'
+import TaskDetail from '../common/task/TaskDetail'
 import { Add } from '@mui/icons-material'
 
 function Kanban({ projectId }) {
@@ -21,7 +22,6 @@ function Kanban({ projectId }) {
             description: '새로운 대시보드 UI 디자인 검토 및 피드백',
             assignee: '김디자인',
             priority: 'medium',
-            tags: ['디자인', 'UI'],
             dueDate: '2024-03-15'
           },
           {
@@ -30,7 +30,6 @@ function Kanban({ projectId }) {
             description: '사용자 관리 시스템을 위한 DB 스키마 설계',
             assignee: '박개발',
             priority: 'high',
-            tags: ['백엔드', 'DB'],
             dueDate: '2024-03-20'
           }
         ]
@@ -44,9 +43,8 @@ function Kanban({ projectId }) {
             id: `${projectId}-3`,
             title: 'API 개발',
             description: '사용자 인증 API 개발 진행 중',
-            assignee: '이백엔드',
+            assignee: '이백퍼',
             priority: 'high',
-            tags: ['API', '백엔드'],
             dueDate: '2024-03-18'
           },
           {
@@ -55,7 +53,6 @@ function Kanban({ projectId }) {
             description: '재사용 가능한 UI 컴포넌트 개발',
             assignee: '최프론트',
             priority: 'medium',
-            tags: ['프론트엔드', '컴포넌트'],
             dueDate: '2024-03-25'
           }
         ]
@@ -71,7 +68,6 @@ function Kanban({ projectId }) {
             description: '프로젝트 구조 및 개발 환경 설정 완료',
             assignee: '박팀장',
             priority: 'high',
-            tags: ['설정', '환경구축'],
             dueDate: '2024-03-10'
           }
         ]
@@ -80,6 +76,8 @@ function Kanban({ projectId }) {
   }
 
   const [columns, setColumns] = useState(getProjectTasks(projectId))
+  const [selectedTask, setSelectedTask] = useState(null)
+  const [showTaskDetail, setShowTaskDetail] = useState(false)
 
   const handleDragEnd = (result) => {
     const { destination, source} = result //draggableId 
@@ -184,23 +182,60 @@ function Kanban({ projectId }) {
     setColumns(newColumns)
   }
 
+  const handleCardClick = (task) => {
+    // API 데이터 형식에 맞게 변환
+    const taskWithApiData = {
+      ...task,
+      id: task.id,
+      projectId: projectId,
+      memberId: 1, // 임시 값
+      memberName: task.assignee,
+      desc: task.description,
+      startDate: task.startDate || new Date().toISOString(),
+      endDate: task.dueDate || new Date().toISOString(),
+      status: task.status || 'TODO',
+      priority: task.priority || 'MEDIUM',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      tags: task.tags ? task.tags.map(tag => ({ name: tag })) : []
+    }
+    
+    setSelectedTask(taskWithApiData)
+    setShowTaskDetail(true)
+  }
+
+  const handleBackToKanban = () => {
+    setShowTaskDetail(false)
+    setSelectedTask(null)
+  }
+
   return (
     <div>
-      <KanbanHeader />
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex gap-6 py-4 min-w-max">
-            {Object.values(columns).map(column => (
-              <div key={column.id} className="w-80 flex-shrink-0">
-                <KanbanColumn
-                  column={column}
-                  onAddCard={() => addNewCard(column.id)}
-                  onUpdateCard={updateCard}
-                  onDeleteCard={deleteCard}
-                />
-              </div>
-            ))}
-          </div>
-        </DragDropContext>
+      {showTaskDetail ? (
+        <TaskDetail 
+          task={selectedTask} 
+          onBack={handleBackToKanban} 
+        />
+      ) : (
+        <>
+          <KanbanHeader />
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <div className="flex gap-6 py-4 min-w-max">
+              {Object.values(columns).map(column => (
+                <div key={column.id} className="w-80 flex-shrink-0">
+                  <KanbanColumn
+                    column={column}
+                    onAddCard={() => addNewCard(column.id)}
+                    onUpdateCard={updateCard}
+                    onDeleteCard={deleteCard}
+                    onCardClick={handleCardClick}
+                  />
+                </div>
+              ))}
+            </div>
+          </DragDropContext>
+        </>
+      )}
     </div>
   )
 }

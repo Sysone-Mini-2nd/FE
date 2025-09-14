@@ -31,11 +31,6 @@ function KanbanHeader() {
             <Add className="w-4 h-4" />
             새 작업
           </button> */}
-          
-          {/* 더보기 메뉴 */}
-          <button className="p-2 text-gray-500 hover:bg-gray-100 transition-colors">
-            <MoreVert className="w-5 h-5" />
-          </button>
         </div>
       </div>
     </div>

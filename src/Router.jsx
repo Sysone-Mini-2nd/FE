@@ -5,7 +5,9 @@ import Dashboard from "./pages/Dashboard";
 import ProjectManager from "./pages/ProjectManager";
 import ProjectDetail from "./pages/ProjectDetail";
 import ShareCalendar from "./pages/ShareCalendar";
-import PrivateRoute from "./components/PrivateRoute";
+import HumanResources from "./pages/HumanResources";
+import PrivateRoute from "./components/common/loading/PrivateRoute";
+import RoleProtectedRoute from "./components/common/loading/RoleProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -39,6 +41,14 @@ const router = createBrowserRouter([
       {
         path: "sharecalendar",
         element: <ShareCalendar/>,
+      },
+      {
+        path: "hr",
+        element: (
+          <RoleProtectedRoute requiredRole="MASTER">
+            <HumanResources/>
+          </RoleProtectedRoute>
+        ),
       },
 
     ],

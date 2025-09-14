@@ -3,7 +3,7 @@ import { Droppable } from '@hello-pangea/dnd'
 import KanbanCard from './KanbanCard'
 import { Add, MoreHoriz } from '@mui/icons-material'
 
-function KanbanColumn({ column, onAddCard, onUpdateCard, onDeleteCard }) {
+function KanbanColumn({ column, onAddCard, onUpdateCard, onDeleteCard, onCardClick }) {
   return (
     <div className="bg-gray-50 border border-gray-200 h-full flex flex-col">
       {/* 컬럼 헤더 */}
@@ -16,9 +16,9 @@ function KanbanColumn({ column, onAddCard, onUpdateCard, onDeleteCard }) {
               {column.items.length}
             </span>
           </div>
-          <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+          {/* <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
             <MoreHoriz className="w-5 h-5" />
-          </button>
+          </button> */}
         </div>
         
         <button
@@ -47,6 +47,7 @@ function KanbanColumn({ column, onAddCard, onUpdateCard, onDeleteCard }) {
                 index={index}
                 onUpdate={onUpdateCard}
                 onDelete={onDeleteCard}
+                onCardClick={onCardClick}
               />
             ))}
             {provided.placeholder}

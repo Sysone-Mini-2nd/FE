@@ -2,20 +2,19 @@ import { createColumnHelper } from '@tanstack/react-table'
 import { 
   CalendarToday,
   People,
-  MoreVert,
   Folder
 } from '@mui/icons-material'
 import DataTable from '../common/DataTable'
 
 const columnHelper = createColumnHelper()
 
-function MeetingTable({ meetings = [], onAction }) {
+function MeetingTable({ meetings = [], onAction, loading = false }) {
   const getTypeBadge = (type) => {
     const typeConfig = {
-      'Daily Scrum': { label: 'Daily Scrum', className: ' text-purple-800' },
-      'Sprint Planning Meeting': { label: 'Sprint Planning', className: 'text-indigo-800' },
-      'Sprint Review': { label: 'Sprint Review', className: 'text-green-800 ' },
-      'Sprint Retrospective': { label: 'Sprint Retro', className: 'text-orange-800 ' },
+      'SCRUM': { label: 'Daily Scrum', className: ' text-purple-800' },
+      'MEETING': { label: 'MEETING', className: 'text-indigo-800' },
+      'REVIEW': { label: 'Sprint Review', className: 'text-green-800 ' },
+      'RETROSPECTIVE': { label: 'Sprint Retro', className: 'text-orange-800 ' },
       '기타': { label: '기타', className: 'text-gray-800 ' }
     }
     const config = typeConfig[type] || typeConfig['기타']
@@ -52,9 +51,6 @@ function MeetingTable({ meetings = [], onAction }) {
               onClick={() => onAction('view', info.row.original)}
             >
               {info.getValue()}
-            </div>
-            <div className="text-sm text-gray-500 max-w-xs truncate">
-              {info.row.original.description || '설명 없음'}
             </div>
           </div>
         </div>
@@ -101,65 +97,16 @@ function MeetingTable({ meetings = [], onAction }) {
     columnHelper.accessor('participants', {
       header: '참여 인원',
       cell: info => {
-        const participants = info.getValue() || []
+        // 서버에서 participantCount를 제공하므로 이를 사용
+        const participantCount = info.row.original.participantCount || 0
         return (
           <div className="flex items-center gap-2">
             <People className="w-4 h-4 text-gray-400" />
-            <div className="flex items-center gap-1">
-              <span className="text-sm font-medium">{participants.length}명</span>
-              <div className="flex -space-x-1">
-                {participants.slice(0, 3).map((participant, index) => (
-                  <div
-                    key={index}
-                    className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-700 border border-white"
-                    title={participant}
-                  >
-                    {participant.slice(0, 1)}
-                  </div>
-                ))}
-                {participants.length > 3 && (
-                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-600 border border-white">
-                    +{participants.length - 3}
-                  </div>
-                )}
-              </div>
-            </div>
+            <span className="text-sm font-medium">{participantCount}명</span>
           </div>
         )
       },
-    }),
-    columnHelper.display({
-      id: 'actions',
-      header: '',
-      cell: info => (
-        <div className="relative group">
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <MoreVert className="w-4 h-4 text-gray-500" />
-          </button>
-          <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-sm py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all z-10">
-            <button
-              onClick={() => onAction('view', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              상세보기
-            </button>
-            <button
-              onClick={() => onAction('edit', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              편집
-            </button>
-            <div className="border-t border-gray-100 my-1"></div>
-            <button
-              onClick={() => onAction('delete', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
-            >
-              삭제
-            </button>
-          </div>
-        </div>
-      ),
-    }),
+    })
   ]
 
   return (
@@ -168,6 +115,8 @@ function MeetingTable({ meetings = [], onAction }) {
       columns={columns}
       onRowClick={(meeting) => onAction('view', meeting)}
       emptyMessage="회의록이 없습니다."
+      loading={loading}
+      skeletonRows={10}
     />
   )
 }

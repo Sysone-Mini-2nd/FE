@@ -96,7 +96,7 @@ function ProjectTable({ projects, onAction }) {
             {info.getValue().slice(0, 3).map((member, index) => (
               <div
                 key={index}
-                className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-700 border border-white"
+                className="bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-700 border border-white"
                 title={member}
               >
                 {member.slice(0, 1)}
@@ -151,22 +151,10 @@ function ProjectTable({ projects, onAction }) {
           </button>
           <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-sm py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all z-10">
             <button
-              onClick={() => onAction('view', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              보기
-            </button>
-            <button
               onClick={() => onAction('edit', info.row.original)}
               className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
             >
               편집
-            </button>
-            <button
-              onClick={() => onAction('clone', info.row.original)}
-              className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              복제
             </button>
             <div className="border-t border-gray-100 my-1"></div>
             <button

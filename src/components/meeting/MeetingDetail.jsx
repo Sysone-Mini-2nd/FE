@@ -1,18 +1,23 @@
-import { useState } from "react";
 import {
   ArrowBack,
   CalendarToday,
   LocationOn,
   Edit,
   Delete,
+  Email,
+  Article,
 } from "@mui/icons-material";
 import BadgeComponent from "../common/BadgeComponent";
 import ParticipantList from "../common/ParticipantList";
 import MeetingMetadata from "../common/MeetingMetadata";
 import AudioPlayer from "../common/AudioPlayer";
 import AISummaryPanel from "../common/AISummaryPanel";
+import { useToast } from "../../hooks/useToast";
 
 function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
+  // Toast hook
+  const { showError } = useToast();
+
   if (!meeting) {
     return (
       <div className="min-h-full flex items-center justify-center">
@@ -48,23 +53,27 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
   const { dateStr, timeStr } = formatDateTime(meeting.scheduledDate);
 
   // 삭제 확인
-  const handleDelete = () => {
-    if (window.confirm("이 회의록을 삭제하시겠습니까?")) {
-      onDelete(meeting);
+  const handleDelete = async () => {
+    try {
+      await onDelete(meeting);
+      // showSuccess는 부모 컴포넌트에서 처리
+    } catch (error) {
+      console.error('삭제 실패:', error);
+      showError("회의록 삭제 중 오류가 발생했습니다.");
     }
   };
 
   // 메타데이터 구성
   const metadataItems = [
     { label: "작성자", value: meeting.organizer },
-    { 
-      label: "생성일", 
+    {
+      label: "생성일",
       value: meeting.createdAt
         ? new Date(meeting.createdAt).toLocaleDateString("ko-KR")
-        : new Date(meeting.scheduledDate).toLocaleDateString("ko-KR")
+        : new Date(meeting.scheduledDate).toLocaleDateString("ko-KR"),
     },
     { label: "회의 ID", value: `#${meeting.id}` },
-    { label: "상태", value: "완료", className: "text-green-400" }
+    { label: "상태", value: "완료", className: "text-green-400" },
   ];
 
   return (
@@ -85,7 +94,7 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
               </h1>
               <div className="flex items-center gap-4 mt-1">
                 <div className="flex items-center gap-1 text-sm text-gray-600">
-                  <CalendarToday fontSize="small"/>
+                  <CalendarToday fontSize="small" />
                   <span>
                     {dateStr} {timeStr}
                   </span>
@@ -109,34 +118,56 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => onEdit(meeting)}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Edit className="w-4 h-4" />
-              편집
-            </button>
-            <button
-              onClick={handleDelete}
-              className="px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
-            >
-              <Delete className="w-4 h-4" />
-              삭제
-            </button>
+          <div className="flex flex-col items-end gap-6">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => onEdit(meeting)}
+                className="editBtn"
+              >
+                <Edit/>
+                편집
+              </button>
+              <button
+                onClick={handleDelete}
+                className="deleteBtn"
+              >
+                <Delete />
+                삭제
+              </button>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {}}
+                className="px-4 py-2 text-black hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Article />
+                AI 리포트 생성
+              </button>
+              <button
+                onClick={() => {
+                  /* 다운로드 기능 추가 */
+                }}
+                className="px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-2"
+              >
+                <Email />
+                이메일 전송
+              </button>
+            </div>
           </div>
         </div>
       </div>
 
       {/* 메인 컨텐츠 */}
-      <div className="flex gap-6 mt-2">
-        <div className="flex-[3] space-y-4">
+      <div className="grid grid-cols-5 gap-6">
+        <div className="col-span-3">
           {/* 회의 내용 */}
-          <div>
-            <h2 className="text-xl font-semibold mb-2">회의 내용</h2>
-            <div className="rounded-lg p-4 border border-gray-400">
-              <p className="whitespace-pre-wrap leading-relaxed text-lg">
-                {meeting.description ||
+          <div className="rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-3">회의 내용</h2>
+            <div className="rounded-lg p-4 border border-gray-200 bg-gray-50">
+              <p className="whitespace-pre-wrap leading-relaxed text-gray-700 break-words">
+                {meeting.content ||
+                  meeting.description ||
                   meeting.memo ||
                   "회의 내용이 기록되지 않았습니다."}
               </p>
@@ -144,18 +175,25 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
           </div>
 
           {/* 녹음 파일 (있는 경우) */}
-          <AudioPlayer 
-            audioFile={meeting.audioFile}
-            createdAt={meeting.createdAt}
-          />
+          {/* <div className="rounded-lg p-6">
+            <AudioPlayer
+              audioFile={meeting.audioFile}
+              createdAt={meeting.createdAt}
+            />
+          </div> */}
 
           {/* 메타 정보 */}
-          <MeetingMetadata data={metadataItems} />
+          <div className="rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-3">회의 정보</h2>
+            <MeetingMetadata data={metadataItems} />
+          </div>
         </div>
 
-        {/* 우측 영역 (2/5) - AI 정리 창 */}
-        <div className="flex-[2] mt-9">
-          <AISummaryPanel summary={meeting.aiSummary} />
+        {/* 우측 영역 - AI 정리 창 */}
+        <div className="col-span-2">
+          <div className="rounded-lg mt-16">
+            <AISummaryPanel summary={meeting.aiSummary} />
+          </div>
         </div>
       </div>
     </div>

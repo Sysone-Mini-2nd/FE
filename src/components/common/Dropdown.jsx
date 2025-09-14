@@ -11,7 +11,6 @@ import { ExpandMore } from '@mui/icons-material';
  * @param {string} props.className - 추가 CSS 클래스
  * @param {boolean} props.disabled - 비활성화 여부
  * @param {string} props.width - 드롭다운 너비 (CSS 클래스)
- * @param {string} props.anchor - 드롭다운 위치 (기본: 'bottom start')
  */
 function Dropdown({
   options = [],
@@ -20,12 +19,18 @@ function Dropdown({
   placeholder = '선택하세요',
   className = '',
   disabled = false,
-  width = 'w-full',
-  anchor = 'bottom start'
+  width = 'w-full'
 }) {
   // 현재 선택된 옵션 찾기
   const selectedOption = options.find(option => option.value === value);
   const displayText = selectedOption ? selectedOption.label : placeholder;
+
+  // onChange 핸들러
+  const handleOptionSelect = (optionValue) => {
+    if (onChange) {
+      onChange(optionValue);
+    }
+  };
 
   return (
     <Menu as="div" className={`relative ${width}`}>
@@ -44,17 +49,18 @@ function Dropdown({
       </MenuButton>
 
       <MenuItems
-        anchor={anchor}
-        className={`dropdownitem
-          ${width}
-        `}
+        className={`absolute left-0 mt-1 ${width} dropdownitem`}
         transition
       >
         {options.map((option) => (
           <MenuItem key={option.value}>
             {({ focus }) => (
               <button
-                onClick={() => onChange(option.value)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleOptionSelect(option.value);
+                }}
                 className={`
                   w-full px-3 py-2 text-left rounded-lg text-sm transition-colors duration-150
                   ${focus ? 'bg-green-100 text-black' : 'text-gray-900'}

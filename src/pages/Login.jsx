@@ -87,7 +87,7 @@ function Login() {
           <div>
             <button
               type="submit"
-              className="relative w-full hover:inset-shadow-sm hover:inset-shadow-black/35 hover: duration-150 flex justify-center p-4 border border-transparent text-lg font-bold rounded-4xl text-white focus:outline-none bg-green-400"
+              className="loginBtn2"
             >
               로그인
             </button>
