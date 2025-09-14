@@ -67,7 +67,7 @@ function MemberTable({ members, onEdit, onDelete }) {
             <Edit />
           </button>
           <button
-            onClick={() => onDelete(row.original.id)}
+            onClick={() => onDelete(row.original)}
             className="p-1 text-red-400 hover:bg-red-50 rounded-full"
           >
             <Delete />
