@@ -120,7 +120,7 @@ function Sidebar() {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">{user?.name}</p>
-                <p className="text-xs text-white/70">{user?.department}</p>
+                <p className="text-xs text-white/70">{user?.position}</p>
               </div>
             </div>
           </div>

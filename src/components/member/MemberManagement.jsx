@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useMemberQueries } from '../../hooks/useMemberQueries';
+import { useToast } from '../../hooks/useToast';
 import MemberTable from './MemberTable';
 import MemberModal from './MemberModal';
 import MemberHeader from './MemberHeader';
+import ConfirmDialog from '../common/ConfirmDialog';
 
 function MemberManagement() {
   const {
@@ -17,8 +19,17 @@ function MemberManagement() {
     isDeleting
   } = useMemberQueries();
 
+  const { showSuccess, showError } = useToast();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState(null);
+  const [confirmDialog, setConfirmDialog] = useState({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: null,
+    type: 'warning'
+  });
   const [formData, setFormData] = useState({
     accountId: '',
     password: '',
@@ -58,7 +69,7 @@ function MemberManagement() {
     setEditingMember(member);
     setFormData({
       accountId: member.accountId,
-      password: '', // 수정 시에는 비밀번호 필드 비움
+      password: '', 
       role: member.role,
       email: member.email,
       name: member.name,
@@ -69,15 +80,22 @@ function MemberManagement() {
   };
 
   // 회원 삭제
-  const handleDeleteMember = async (memberId) => {
-    if (window.confirm('정말로 이 회원을 삭제하시겠습니까?')) {
-      const result = await removeMember(memberId);
-      if (result.success) {
-        alert('회원이 성공적으로 삭제되었습니다.');
-      } else {
-        alert('회원 삭제에 실패했습니다: ' + result.error);
+  const handleDeleteMember = async (member) => {
+    setConfirmDialog({
+      isOpen: true,
+      title: '회원 삭제',
+      message: `정말로 ${member.name} 회원을 삭제하시겠습니까?\n삭제된 회원 정보는 복구할 수 없습니다.`,
+      type: 'danger',
+      onConfirm: async () => {
+        setConfirmDialog(prev => ({ ...prev, isOpen: false }));
+        const result = await removeMember(member.id);
+        if (result.success) {
+          showSuccess('회원이 성공적으로 삭제되었습니다.');
+        } else {
+          showError('회원 삭제에 실패했습니다: ' + result.error);
+        }
       }
-    }
+    });
   };
 
   // 폼 제출 핸들러 (React Query의 뮤테이션 상태 활용)
@@ -100,9 +118,9 @@ function MemberManagement() {
 
     if (result.success) {
       setIsModalOpen(false);
-      alert(editingMember ? '회원 정보가 수정되었습니다.' : '새 회원이 등록되었습니다.');
+      showSuccess(editingMember ? '회원 정보가 수정되었습니다.' : '새 회원이 등록되었습니다.');
     } else {
-      alert('작업에 실패했습니다: ' + result.error);
+      showError('작업에 실패했습니다: ' + result.error);
     }
   };
   
@@ -110,6 +128,11 @@ function MemberManagement() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingMember(null);
+  };
+
+  // 확인 다이얼로그 닫기
+  const handleCloseConfirmDialog = () => {
+    setConfirmDialog(prev => ({ ...prev, isOpen: false }));
   };
 
   if (loading) {
@@ -150,6 +173,17 @@ function MemberManagement() {
         onFormChange={handleFormChange}
         onSubmit={handleSubmit}
         isSubmitting={isAdding || isEditing}
+      />
+
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        type={confirmDialog.type}
+        confirmText="삭제"
+        cancelText="취소"
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={handleCloseConfirmDialog}
       />
     </div>
   );

@@ -113,7 +113,7 @@ function ProjectCard({ project, onAction }) {
                 {project.name}
               </h3>
             </div>
-            <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+            <p className="text-sm text-gray-600 line-clamp-2 mb-3 min-h-10">
               {project.description}
             </p>
           </div>

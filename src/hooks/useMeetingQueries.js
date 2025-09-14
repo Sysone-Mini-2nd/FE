@@ -6,8 +6,6 @@ export function useMeetings(projectId = 1, page = 1, size = 10) {
   return useQuery({
     queryKey: ['meetings', projectId, page, size],
     queryFn: () => getMeetings(projectId, page, size),
-    staleTime: 2 * 60 * 1000, // 2분간 신선한 데이터
-    cacheTime: 1 * 60 * 1000, // 10분간 캐시 유지
     refetchOnWindowFocus: true,
     select: (response) => {
       if (response.statusCode === 200) {
@@ -95,7 +93,6 @@ export function useMeetingDetail(projectId, meetingId, enabled = true) {
     queryKey: ['meeting-detail', projectId, meetingId],
     queryFn: () => getMeetingDetail(projectId, meetingId),
     enabled: enabled && !!meetingId,
-    staleTime: 5 * 60 * 1000,
     select: (response) => {
       if (response.statusCode === 200) {
         return {
@@ -167,7 +164,6 @@ export function usePrefetchNextPage(projectId, currentPage, totalPages, size = 1
       queryClient.prefetchQuery({
         queryKey: ['meetings', projectId, currentPage + 1, size],
         queryFn: () => getMeetings(projectId, currentPage + 1, size),
-        staleTime: 2 * 60 * 1000
       });
     }
   };

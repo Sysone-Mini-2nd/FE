@@ -1,16 +1,61 @@
-import React from 'react'
+import { useQuery } from '@tanstack/react-query';
+import { fetchProjectDashboard } from '../../api/dashboardAPI';
 
-function WeeklySchedule() {
+function WeeklySchedule({ selectedProjectId }) {
+  const { data: dashboardData, isLoading, error } = useQuery({
+    queryKey: ['projectDashboard', selectedProjectId],
+    queryFn: () => fetchProjectDashboard(selectedProjectId),
+    enabled: !!selectedProjectId,
+  });
 
-  //예시 데이터
-  const today = new Date();
-  const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
+  const weekendIssues = dashboardData?.data?.weekendIssues?.weekendIssue || {};
   
-  const scheduleItems = [
-    { time: '09:00', title: '팀 스탠드업 미팅', type: 'meeting' },
-    { time: '14:00', title: 'UI 디자인 리뷰', type: 'review' },
-    { time: '16:30', title: '클라이언트 미팅', type: 'meeting' },
-  ];
+  const weekDays = ['월', '화', '수', '목', '금', '토', '일'];
+  const today = new Date();
+  const currentDay = today.getDay() === 0 ? 7 : today.getDay(); // 일요일을 7로 변환
+
+  // 상태별 색상 매핑
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'TODO': return 'bg-gray-400';
+      case 'PROGRESS': return 'bg-blue-400';
+      case 'REVIEW': return 'bg-orange-400';
+      case 'DONE': return 'bg-green-400';
+      default: return 'bg-gray-400';
+    }
+  };
+
+  const getStatusText = (status) => {
+    switch (status) {
+      case 'TODO': return '할 일';
+      case 'PROGRESS': return '진행중';
+      case 'REVIEW': return '검토';
+      case 'DONE': return '완료';
+      default: return status;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">이번 주 일정</h3>
+        <div className="flex items-center justify-center h-64">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !selectedProjectId) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">이번 주 일정</h3>
+        <div className="flex items-center justify-center h-64 text-gray-500">
+          {!selectedProjectId ? '프로젝트를 선택해주세요' : '데이터를 불러올 수 없습니다'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
@@ -18,37 +63,70 @@ function WeeklySchedule() {
       
       {/* 미니 캘린더 */}
       <div className="grid grid-cols-7 gap-1 mb-4">
-        {weekDays.map((day, index) => (
-          <div key={index} className="text-center">
-            <div className="text-xs text-gray-500 mb-1">{day}</div>
-            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm ${
-              index === today.getDay() - 1 
-                ? 'bg-blue-500 text-white' 
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}>
-              {index + 1}
+        {weekDays.map((day, index) => {
+          const dayNumber = index + 1;
+          const dayIssues = weekendIssues[dayNumber] || [];
+          const isToday = dayNumber === currentDay;
+          
+          return (
+            <div key={index} className="text-center">
+              <div className="text-xs text-gray-500 mb-1">{day}</div>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm relative ${
+                isToday 
+                  ? 'bg-blue-500 text-white' 
+                  : 'text-gray-700 hover:bg-gray-100'
+              }`}>
+                {dayNumber}
+                {dayIssues.length > 0 && (
+                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    {dayIssues.length}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* 오늘 일정 */}
       <div className="space-y-3">
-        <h4 className="text-sm font-medium text-gray-700">오늘 일정</h4>
-        {scheduleItems.map((item, index) => (
-          <div key={index} className="flex items-center p-2 bg-gray-50 rounded-lg">
-            <div className={`w-2 h-2 rounded-full mr-3 ${
-              item.type === 'meeting' ? 'bg-blue-400' : 'bg-green-400'
-            }`}></div>
-            <div className="flex-1">
-              <div className="text-sm font-medium text-gray-900">{item.title}</div>
-              <div className="text-xs text-gray-500">{item.time}</div>
-            </div>
+        <h4 className="text-sm font-medium text-gray-700">
+          오늘 일정 ({weekDays[currentDay - 1]})
+        </h4>
+        
+        {weekendIssues[currentDay] && weekendIssues[currentDay].length > 0 ? (
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {weekendIssues[currentDay].map((issue) => (
+              <div key={issue.id} className="flex items-center p-2 bg-gray-50 rounded-lg">
+                <div className={`w-2 h-2 rounded-full mr-3 ${getStatusColor(issue.status)}`}></div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-gray-900 truncate">{issue.title}</div>
+                  <div className="text-xs text-gray-500 flex items-center gap-2">
+                    <span>{new Date(issue.date).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
+                    <span className="text-xs px-1 py-0.5 rounded text-white" style={{ backgroundColor: getStatusColor(issue.status).replace('bg-', '#') }}>
+                      {getStatusText(issue.status)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          <div className="text-sm text-gray-500 text-center py-4">
+            오늘 예정된 이슈가 없습니다
+          </div>
+        )}
+
+        {/* 주간 요약 */}
+        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
+          <div className="text-sm text-blue-700 font-medium mb-1">이번 주 요약</div>
+          <div className="text-xs text-blue-600">
+            총 {Object.values(weekendIssues).flat().length}개 이슈 예정
+          </div>
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default WeeklySchedule
