@@ -8,9 +8,12 @@ import { LoadingSpinner, ErrorFallback } from "../common/loading/LoadingComponen
 import useMeetingStore from "../../store/meetingStore";
 import { useToast } from "../../hooks/useToast";
 
-function Meeting() {
+function Meeting({ projectId }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
+
+    console.log('Meeting에서 받은 projectId:', projectId);
+  console.log('projectId 타입:', typeof projectId);
 
   // Zustand store 사용
   const { 
@@ -35,8 +38,10 @@ function Meeting() {
 
   // 컴포넌트 마운트 시 회의록 목록 조회
   useEffect(() => {
-    fetchMeetings(1); // 프로젝트 ID 1로 고정
-  }, [fetchMeetings]);
+    if (projectId) {
+      fetchMeetings(projectId, 1, 10);
+    }
+  }, [projectId, fetchMeetings]);
 
   // 필터링된 회의 목록
   const filteredMeetings = meetings.filter((meeting) => {
@@ -55,7 +60,7 @@ function Meeting() {
   // 삭제 확인 함수
   const handleDeleteConfirm = async (meeting) => {
     try {
-      await deleteMeeting(meeting.id);
+      await deleteMeeting(meeting.id, projectId);
       showSuccess("회의록이 성공적으로 삭제되었습니다.");
     } catch (error) {
       console.error('삭제 실패:', error);
@@ -67,7 +72,7 @@ function Meeting() {
   const handleMeetingAction = (action, meeting) => {
     switch (action) {
       case "view":
-        selectMeeting(meeting);
+        selectMeeting(meeting, projectId);
         break;
       case "edit":
         showEdit(meeting);
@@ -80,7 +85,7 @@ function Meeting() {
       console.log('handleSaveMeeting 호출됨, API 응답:', apiResponse);
       
       // 회의록 생성 후 목록 새로고침
-      await refreshAfterCreate(1);
+      await refreshAfterCreate(projectId);
       
     } catch (error) {
       console.error('handleSaveMeeting 에러:', error);
@@ -93,7 +98,7 @@ function Meeting() {
       console.log('handleUpdateMeeting 호출됨, API 응답:', apiResponse);
       
       // 회의록 수정 후 목록 새로고침
-      await fetchMeetings(1, pagination.page, pagination.size);
+      await fetchMeetings(projectId, pagination.page, pagination.size);
       showList();
       
     } catch (error) {
@@ -117,6 +122,7 @@ function Meeting() {
         <MeetingCreate 
           onBack={showList}
           onSave={handleSaveMeeting}
+          projectId={projectId}
         />
       ) : currentView === 'edit' ? (
         <MeetingCreate 
@@ -124,6 +130,7 @@ function Meeting() {
           onSave={handleUpdateMeeting}
           meeting={selectedMeeting}
           isEditing={true}
+          projectId={projectId}
         />
       ) : currentView === 'detail' ? (
         <MeetingDetail
@@ -181,7 +188,7 @@ function Meeting() {
           {error ? (
             <ErrorFallback 
               error={{ message: error }}
-              onRetry={() => fetchMeetings(1)}
+              onRetry={() => fetchMeetings(projectId)}
             />
           ) : (
             <>
@@ -195,7 +202,7 @@ function Meeting() {
               {!loading && pagination.totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-4">
                   <button
-                    onClick={() => changePage(pagination.page - 1)}
+                    onClick={() => changePage(pagination.page - 1,projectId)}
                     disabled={!pagination.hasPrevious}
                     className="px-3 py-1 rounded border disabled:opacity-50"
                   >
@@ -205,7 +212,7 @@ function Meeting() {
                     {pagination.page} / {pagination.totalPages}
                   </span>
                   <button
-                    onClick={() => changePage(pagination.page + 1)}
+                    onClick={() => changePage(pagination.page + 1, projectId)}
                     disabled={!pagination.hasNext}
                     className="px-3 py-1 rounded border disabled:opacity-50"
                   >
