@@ -21,6 +21,11 @@ import SettingsTab from "../components/setting/Settings";
 
 function ProjectDetail() {
   const { id } = useParams();
+
+  // 디버깅용 로그 추가
+  console.log('ProjectDetail에서 받은 id:', id);
+  console.log('id 타입:', typeof id);
+
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("kanban");
 
@@ -97,7 +102,7 @@ function ProjectDetail() {
       case "timeline":
         return <GanttChart />;
       case "meeting":
-        return <Meeting />;
+        return <Meeting projectId={id} />;
       case "team":
         return <TeamManagement project={project} />;
       case "settings":
