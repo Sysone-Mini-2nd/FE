@@ -52,10 +52,12 @@ function Kanban({ projectId, members = [] }) {
   };
 
   const handleAddNewCard = (columnId) => {
-    // 새 이슈에 대한 기본 날짜 정보를 추가합니다.
     const startDate = new Date();
+    startDate.setHours(0, 0, 0, 0); // 00시 00분 00초 000밀리초
+
     const endDate = new Date();
-    endDate.setDate(startDate.getDate() + 1); // 기본 마감일은 다음 날로 설정
+    endDate.setDate(startDate.getDate() + 1); // 다음 날로 설정
+    endDate.setHours(23, 59, 59, 999); // 23시 59분 59초 999밀리초
 
     const newIssueData = {
       title: "새로운 작업",

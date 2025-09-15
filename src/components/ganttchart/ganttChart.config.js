@@ -1,11 +1,11 @@
 export const scales = [
-    { unit: "month", step: 1, format: "Y년 M" },
+    { unit: "month", step: 1, format: "Y년 M월" },
     { unit: "day", step: 1, format: "d일" },
 ];
 
 export const columns = [
     { id: "text", header: "작업명", flexGrow: 1, align: "center"},
-    { id: "start", header: "마감일", flexGrow: 1, align: "center" },
+    { id: "start", header: "시작일", flexGrow: 1, align: "center" },
     // { id: "action", header: "", width: 50, align: "center" },
 ];
 
@@ -40,8 +40,7 @@ export const calculateDuration = (start, end) => {
     const startDate = new Date(start);
     const endDate = new Date(end);
     startDate.setHours(0, 0, 0, 0);
-    endDate.setHours(0, 0, 0, 0);
+    endDate.setHours(23, 59, 59, 59);
     const diffTime = Math.abs(endDate - startDate);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays + 1;
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };

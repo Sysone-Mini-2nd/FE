@@ -33,21 +33,26 @@ function KanbanCard({ item, index, onCardClick, onDelete }) {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString)
-    const today = new Date()
-    const diffTime = date - today
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    const date = new Date(dateString);
+    const today = new Date();
+
+    // 시간 정규화
+    date.setHours(23, 59, 59, 999); // 대상 날짜는 하루 끝으로
+    today.setHours(0, 0, 0, 0);     // 오늘은 하루 시작으로
+
+    const diffTime = date - today;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
     if (diffDays < 0) {
-      return `${Math.abs(diffDays)}일 지남`
+      return `${Math.abs(diffDays)}일 지남`;
     } else if (diffDays === 0) {
-      return '오늘'
+      return '오늘';
     } else if (diffDays === 1) {
-      return '내일'
+      return '내일';
     } else {
-      return `${diffDays}일 남음`
+      return `${diffDays}일 남음`;
     }
-  }
+  };
 
   return (
     <Draggable draggableId={item.id.toString()} index={index}>
