@@ -2,18 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   MoreVert,
-  Group,
-  Schedule,
-  PlayArrow,
-  CheckCircle,
-  Pause,
-  HourglassEmpty,
 } from "@mui/icons-material";
 
-function ProjectCard({ project, onAction }) {
+function ProjectCard({ project, onAction, isPm, user }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+
+  const canManage = isPm || user?.role === 'MASTER';
 
   // 외부 클릭 시 메뉴 닫기
   useEffect(() => {
@@ -31,65 +27,29 @@ function ProjectCard({ project, onAction }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isMenuOpen]);
+
   const getStatusInfo = (status) => {
-    switch (status) {
-      case "progress":
-        return {
-          label: "진행중",
-          color:
-            "bg-green-500/20 text-green-700 border-green-200/50 backdrop-blur-sm",
-        };
-      case "completed":
-        return {
-          label: "완료",
-          color:
-            "bg-blue-500/20 text-blue-700 border-blue-200/50 backdrop-blur-sm",
-        };
-      case "paused":
-        return {
-          label: "일시정지",
-          color:
-            "bg-yellow-500/20 text-yellow-700 border-yellow-200/50 backdrop-blur-sm",
-        };
-      case "planning":
-        return {
-          label: "계획중",
-          color:
-            "bg-gray-500/20 text-gray-700 border-gray-200/50 backdrop-blur-sm",
-        };
-      default:
-        return {
-          label: status,
-          color:
-            "bg-gray-500/20 text-gray-700 border-gray-200/50 backdrop-blur-sm",
-        };
-    }
+    const statusMap = {
+      IN_PROGRESS: { label: "진행중", color: "bg-green-500/20 text-green-700 border-green-200/50" },
+      DONE: { label: "완료", color: "bg-blue-500/20 text-blue-700 border-blue-200/50" },
+      PAUSED: { label: "일시정지", color: "bg-yellow-500/20 text-yellow-700 border-yellow-200/50" },
+      TODO: { label: "계획중", color: "bg-gray-500/20 text-gray-700 border-gray-200/50" },
+    };
+    return statusMap[status] || { label: status, color: "bg-gray-500/20 text-gray-700 border-gray-200/50" };
   };
 
   const getPriorityColor = (priority) => {
-    switch (priority) {
-      case "high":
-        return "bg-red-500/10 border-red-200/30";
-      case "medium":
-        return "bg-yellow-500/10 border-yellow-200/30";
-      case "low":
-        return "bg-green-500/10 border-green-200/30";
-      default:
-        return "bg-gray-500/10 border-gray-200/30";
-    }
+    const priorityMap = {
+      HIGH: "bg-red-500/10 border-red-200/30",
+      NORMAL: "bg-yellow-500/10 border-yellow-200/30",
+      LOW: "bg-green-500/10 border-green-200/30",
+    };
+    return priorityMap[priority] || "bg-gray-500/10 border-gray-200/30";
   };
 
   const statusInfo = getStatusInfo(project.status);
-  const progressColor =
-    project.progress >= 80
-      ? "bg-green-600"
-      : project.progress >= 50
-      ? "bg-blue-600"
-      : "bg-gray-400";
-
-  const isOverdue =
-    new Date(project.endDate) < new Date() && project.status === "progress";
-  // const daysRemaining = Math.ceil((new Date(project.endDate) - new Date()) / (1000 * 60 * 60 * 24))
+  const progressColor = project.progressRate >= 80 ? "bg-green-600" : project.progressRate >= 50 ? "bg-blue-600" : "bg-gray-400";
+  const isOverdue = new Date(project.endDate) < new Date() && project.status !== "DONE";
 
   return (
     <div
@@ -98,9 +58,7 @@ function ProjectCard({ project, onAction }) {
     >
       {/* 우선순위 배경 */}
       <div
-        className={`absolute inset-0 ${getPriorityColor(
-          project.priority
-        )} backdrop-blur-sm`}
+        className={`absolute inset-0 ${getPriorityColor(project.priority)} backdrop-blur-sm`}
       ></div>
 
       {/* 컨텐츠 */}
@@ -114,73 +72,64 @@ function ProjectCard({ project, onAction }) {
               </h3>
             </div>
             <p className="text-sm text-gray-600 line-clamp-2 mb-3 min-h-10">
-              {project.description}
+              {project.desc}
             </p>
           </div>
 
           {/* 액션 메뉴 */}
-          <div className="relative" ref={menuRef}>
-            <button
-              className="p-1 hover:bg-white/50 backdrop-blur-sm rounded transition-all"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMenuOpen(!isMenuOpen);
-              }}
-            >
-              <MoreVert className="w-4 h-4 text-gray-500" />
-            </button>
-            {isMenuOpen && (
-              <div className="absolute right-0 mt-1 w-40 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20">
-                {/* <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAction("view", project);
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
-                >
-                  보기
-                </button> */}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAction("edit", project);
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
-                >
-                  편집
-                </button>
-                <div className="border-t border-white/20 my-1"></div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onAction("delete", project);
-                    setIsMenuOpen(false);
-                  }}
-                  className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50"
-                >
-                  삭제
-                </button>
-              </div>
-            )}
-          </div>
+          {canManage && (
+            <div className="relative" ref={menuRef}>
+              <button
+                className="p-1 hover:bg-white/50 backdrop-blur-sm rounded transition-all"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMenuOpen(!isMenuOpen);
+                }}
+              >
+                <MoreVert className="w-4 h-4 text-gray-500" />
+              </button>
+              {isMenuOpen && (
+                <div className="absolute right-0 mt-1 w-40 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAction("edit", project);
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-white/50"
+                  >
+                    편집
+                  </button>
+                  <div className="border-t border-white/20 my-1"></div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onAction("delete", project);
+                      setIsMenuOpen(false);
+                    }}
+                    className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50"
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 상태 및 진행률 */}
         <div className="mb-3">
           <div className="flex items-center justify-between mb-2">
             <span
-              className={`px-2 py-1 text-xs font-medium border backdrop-blur-sm ${statusInfo.color}`}
-            >
+              className={`px-2 py-1 text-xs font-medium border backdrop-blur-sm ${statusInfo.color}`}>
               {statusInfo.label}
             </span>
-            <span className="text-sm text-gray-700">{project.progress}%</span>
+            <span className="text-sm text-gray-700">{Math.round(project.progressRate)}%</span>
           </div>
           <div className="w-full bg-gray-200/50 backdrop-blur-sm h-1.5 rounded-full">
             <div
               className={`h-1.5 transition-all duration-300 rounded-full ${progressColor}`}
-              style={{ width: `${project.progress}%` }}
+              style={{ width: `${project.progressRate}%` }}
             />
           </div>
         </div>
@@ -190,20 +139,20 @@ function ProjectCard({ project, onAction }) {
           <span>
             {project.completedTasks}/{project.totalTasks} 작업
           </span>
-          <span>{project.team.length}명</span>
+          <span>{project.totalMemberCount}명</span>
           <span>{new Date(project.endDate).toLocaleDateString()}</span>
           {isOverdue && <span className="text-red-600 font-medium">지연</span>}
         </div>
 
         {/* 담당자 */}
         <div className="mt-3 pt-3 text-xs flex justify-between ">
-          <span className="selected-none text-gray-500">PM: {project.manager}</span>
-          <span >
-            {Array.isArray(project.team)
-              ? project.team.length > 3
-                ? project.team.slice(0, 3).join(", ") + "..."
-                : project.team.join(", ")
-              : project.team}
+          <span className="selected-none text-gray-500">PM: {project.pmName}</span>
+          <span>
+            {Array.isArray(project.members)
+                ? project.members.length > 3
+                    ? project.members.slice(0, 3).map(member => member.name).join(", ") + "..."
+                    : project.members.map(member => member.name).join(", ")
+                : project.members?.name || ""}
           </span>
         </div>
       </div>

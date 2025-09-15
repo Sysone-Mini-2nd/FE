@@ -1,5 +1,6 @@
-import React from 'react'
-import { Add, Search, ViewModule, ViewList, TableChart } from '@mui/icons-material'
+import React, { useContext } from 'react'; // useContext 추가
+import { Add, Search, ViewModule, TableChart } from '@mui/icons-material';
+import AuthContext from '../../contexts/AuthContext'; // AuthContext import
 
 function ProjectHeader({ 
   onCreateProject, 
@@ -8,17 +9,23 @@ function ProjectHeader({
   viewType, 
   onViewTypeChange 
 }) {
+  // AuthContext에서 사용자 정보를 가져옵니다.
+  const { user } = useContext(AuthContext);
+
   return (
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-      {/* 페이지 제목 및 생성 버튼 */}
+      {/* 페이지 제목 및 생성 버튼 (모바일) */}
       <div className="flex items-center justify-between">
-        <button
-          onClick={onCreateProject}
-          className="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 border border-blue-600 flex items-center gap-2 transition-colors"
-        >
-          <Add />
-          새 프로젝트
-        </button>
+        {/* MASTER 역할일 때만 버튼을 보여줍니다. */}
+        {user?.role === 'MASTER' && (
+          <button
+            onClick={onCreateProject}
+            className="lg:hidden bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 border border-blue-600 flex items-center gap-2 transition-colors"
+          >
+            <Add />
+            새 프로젝트
+          </button>
+        )}
       </div>
 
       {/* 검색 및 뷰 컨트롤 */}
@@ -62,16 +69,19 @@ function ProjectHeader({
         </div>
 
         {/* 생성 버튼 (데스크톱) */}
-        <button
-          onClick={onCreateProject}
-          className="hidden lg:flex bg-sky-500 hover:bg-sky-700 text-white px-4 py-2 border border-blue-600 items-center gap-2 transition-colors"
-        >
-          <Add/>
-          새 프로젝트
-        </button>
+        {/* MASTER 역할일 때만 버튼을 보여줍니다. */}
+        {user?.role === 'MASTER' && (
+          <button
+            onClick={onCreateProject}
+            className="hidden lg:flex bg-sky-500 hover:bg-sky-700 text-white px-4 py-2 border border-blue-600 items-center gap-2 transition-colors"
+          >
+            <Add/>
+            새 프로젝트
+          </button>
+        )}
       </div>
     </div>
   )
 }
 
-export default ProjectHeader
+export default ProjectHeader;

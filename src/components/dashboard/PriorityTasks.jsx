@@ -20,35 +20,35 @@ function PriorityTasks({ selectedProjectId }) {
   const getPriorityConfig = (priority) => {
     switch (priority) {
       case 'LOW':
-        return { 
+        return {
           dotColor: 'bg-green-500',
           label: '낮음',
           bgColor: 'bg-green-50',
           borderColor: 'border-green-200'
         };
       case 'NORMAL':
-        return { 
+        return {
           dotColor: 'bg-yellow-500',
           label: '보통',
           bgColor: 'bg-yellow-50',
           borderColor: 'border-yellow-200'
         };
       case 'HIGH':
-        return { 
+        return {
           dotColor: 'bg-red-500',
           label: '높음',
           bgColor: 'bg-red-50',
           borderColor: 'border-red-200'
         };
       case 'WARNING':
-        return { 
+        return {
           dotColor: 'bg-red-600',
           label: '긴급',
           bgColor: 'bg-red-100',
           borderColor: 'border-red-300'
         };
       default:
-        return { 
+        return {
           dotColor: 'bg-gray-500',
           label: priority,
           bgColor: 'bg-gray-50',
@@ -133,7 +133,7 @@ function PriorityTasks({ selectedProjectId }) {
           const totalItems = priorityGroup.priorityDataList.length;
           const hasMoreItems = totalItems > currentVisibleItems;
           const hasLessItems = currentVisibleItems > 3;
-          
+
           return (
             <div key={priorityGroup.priority} className="space-y-2">
               {/* 우선순위 헤더 - 기존처럼 배경색 없이 */}
@@ -150,8 +150,8 @@ function PriorityTasks({ selectedProjectId }) {
               {/* 작업 목록 - 우선순위별 배경색 적용 */}
               <div className="space-y-2 ml-6">
                 {priorityGroup.priorityDataList.slice(0, currentVisibleItems).map((task) => (
-                  <div 
-                    key={task.id} 
+                  <div
+                    key={task.id}
                     className={`p-3 rounded-lg ${config.bgColor} border ${config.borderColor} hover:opacity-80 transition-opacity cursor-pointer`}
                     onClick={() => handleIssueClick(task.id)}
                   >
@@ -170,19 +170,19 @@ function PriorityTasks({ selectedProjectId }) {
                     </div>
                   </div>
                 ))}
-                
+
                 {/* 더 보기/더 적게 보기 버튼 */}
                 {hasMoreItems && (
-                  <div 
+                  <div
                     className="text-xs text-blue-500 text-center py-1 cursor-pointer hover:text-blue-600 transition-colors"
                     onClick={() => handleShowMore(priorityGroup.priority)}
                   >
                     +{totalItems - currentVisibleItems}개 더 보기
                   </div>
                 )}
-                
+
                 {hasLessItems && (
-                  <div 
+                  <div
                     className="text-xs text-gray-500 text-center py-1 cursor-pointer hover:text-gray-600 transition-colors"
                     onClick={() => handleShowLess(priorityGroup.priority)}
                   >
