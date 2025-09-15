@@ -7,7 +7,7 @@ const ChatHeader = ({
   isMinimized, 
   onBackToList, 
   onToggleMinimize, 
-  onToggleChat 
+  onToggleChat,
 }) => {
   const { user } = useAuth();
   

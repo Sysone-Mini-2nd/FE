@@ -150,7 +150,7 @@ function PriorityTasks({ selectedProjectId }) {
               {/* 작업 목록 - 우선순위별 배경색 적용 */}
               <div className="space-y-2 ml-6">
                 {priorityGroup.priorityDataList.slice(0, currentVisibleItems).map((task) => (
-                  <div
+                <div
                     key={task.id}
                     className={`p-3 rounded-lg ${config.bgColor} border ${config.borderColor} hover:opacity-80 transition-opacity cursor-pointer`}
                     onClick={() => handleIssueClick(task.id)}
@@ -171,9 +171,10 @@ function PriorityTasks({ selectedProjectId }) {
                   </div>
                 ))}
 
+                
                 {/* 더 보기/더 적게 보기 버튼 */}
                 {hasMoreItems && (
-                  <div
+                  <div 
                     className="text-xs text-blue-500 text-center py-1 cursor-pointer hover:text-blue-600 transition-colors"
                     onClick={() => handleShowMore(priorityGroup.priority)}
                   >
@@ -181,8 +182,9 @@ function PriorityTasks({ selectedProjectId }) {
                   </div>
                 )}
 
+                
                 {hasLessItems && (
-                  <div
+                  <div 
                     className="text-xs text-gray-500 text-center py-1 cursor-pointer hover:text-gray-600 transition-colors"
                     onClick={() => handleShowLess(priorityGroup.priority)}
                   >

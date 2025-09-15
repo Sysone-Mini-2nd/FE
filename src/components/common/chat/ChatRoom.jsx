@@ -1,33 +1,49 @@
-import { useEffect, useRef } from 'react'
-import { Send } from '@mui/icons-material'
-import useChatStore from '../../../store/chatStore'
-import { useAuth } from '../../../hooks/useAuth'
+import { useEffect, useRef } from 'react';
+import { Send } from '@mui/icons-material';
+import useChatStore from '../../../store/chatStore';
 
-const ChatRoom = ({ 
-  selectedChat, 
-  message, 
-  onMessageChange, 
-  onSendMessage 
+const ChatRoom = ({
+  selectedChat,
+  message,
+  onMessageChange,
+  onSendMessage
 }) => {
-  const messagesEndRef = useRef(null)
-  const { user } = useAuth()
-  
-  // Zustand store에서 메시지 가져오기
-  const { getMessages } = useChatStore()
-  const messages = getMessages(selectedChat?.id || 0)
+  const messagesEndRef = useRef(null);
 
-  // 새 메시지가 추가될 때마다 스크롤을 맨 아래로
+  const { getMessages, connectWebSocket, disconnectWebSocket, markAsRead, currentUser } = useChatStore();
+  const messages = [...getMessages(selectedChat?.id || 0)].sort((a, b) => {
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  });
+
+  // WebSocket 연결 및 구독 관리
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+    if (selectedChat?.id && currentUser?.id) {
+      connectWebSocket(currentUser.id, selectedChat.id);
 
-  // 시간 포맷팅
+      // 채팅방 진입 시 마지막 메시지를 읽음 처리
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage && lastMessage.senderId !== currentUser.id) { // 내가 보낸 메시지가 아닐 경우
+        markAsRead(selectedChat.id, lastMessage.id);
+      }
+    }
+
+    return () => {
+      disconnectWebSocket();
+    };
+  }, [selectedChat?.id, currentUser?.id, connectWebSocket, disconnectWebSocket, markAsRead, messages.length]);
+
+  // 메시지 스크롤
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
+
   const formatTime = (timestamp) => {
+    if (!timestamp) return '';
     return new Date(timestamp).toLocaleTimeString('ko-KR', {
       hour: '2-digit',
       minute: '2-digit'
-    })
-  }
+    });
+  };
 
   return (
     <div className="flex flex-col h-full bg-white/50 rounded-b-lg">
@@ -36,31 +52,42 @@ const ChatRoom = ({
         <div className="space-y-3">
           {messages.length === 0 ? (
             <div className="text-center text-gray-500 mt-8">
-              <p>{selectedChat?.name}님과의 채팅을 시작해보세요!</p>
+              <p>{selectedChat?.name} 와(과)의 채팅을 시작해보세요!</p>
             </div>
           ) : (
-            messages.map((msg) => (
-              <div 
-                key={msg.id} 
-                className={`flex ${msg.sender === user?.name ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`p-3 rounded-lg shadow-sm max-w-xs ${
-                  msg.sender === user?.name 
-                    ? 'bg-emerald-400/50 backdrop-blur-lg text-white' 
-                    : 'bg-white'
-                }`}>
-                  {msg.sender !== user?.name && (
-                    <p className="text-xs text-gray-600 mb-1 font-medium">{msg.sender}</p>
-                  )}
-                  <p className="text-sm">{msg.text}</p>
-                  <span className={`text-xs ${
-                    msg.sender === user?.name ? 'text-emerald-100' : 'text-gray-500'
-                  }`}>
-                    {formatTime(msg.timestamp)}
-                  </span>
+            messages.map((msg) => {
+              const isMine = msg.senderId === currentUser.id;
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex ${isMine ? 'justify-end' : 'justify-start'} ${msg.type === 'SYSTEM' ? 'justify-center' : ''}`}
+                >
+                  <div className={`p-3 rounded-lg shadow-sm max-w-xs ${msg.type === 'SYSTEM'
+                      ? 'bg-gray-200 text-gray-700 text-center'
+                      : isMine
+                        ? 'bg-emerald-400/50 backdrop-blur-lg text-white'
+                        : 'bg-white text-gray-800'
+                    }`}>
+                    {!isMine && msg.type !== 'DELETED' && msg.type !== 'SYSTEM' && (
+                      <p className="text-xs text-gray-600 mb-1 font-medium">{msg.senderName}</p>
+                    )}
+                    {msg.type === 'DELETED' ? (
+                      <p className="text-sm italic text-gray-500">삭제된 메시지입니다.</p>
+                    ) : (
+                      <p className="text-sm">{msg.content}</p>
+                    )}
+                    <div className="flex justify-end items-center gap-1 mt-1">
+                      <span className={`text-xs ${isMine ? 'text-emerald-100' : 'text-gray-500'}`}>
+                        {formatTime(msg.createdAt)}
+                      </span>
+                      {isMine && msg.readCount > 0 && msg.type !== 'DELETED' && (
+                        <span className="text-xs text-emerald-100 font-bold">{msg.readCount}</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              )
+            })
           )}
           <div ref={messagesEndRef} />
         </div>
@@ -88,7 +115,8 @@ const ChatRoom = ({
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ChatRoom
+
+export default ChatRoom;
