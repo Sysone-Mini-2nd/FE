@@ -10,11 +10,29 @@ const ChatRoom = ({
 }) => {
   const messagesEndRef = useRef(null);
   
-  const { getMessages } = useChatStore();
+  const { getMessages, connectWebSocket, disconnectWebSocket, markAsRead, currentUser } = useChatStore();
   const messages = [...getMessages(selectedChat?.id || 0)].sort((a, b) => {
     return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
   });
 
+  // WebSocket 연결 및 구독 관리
+  useEffect(() => {
+    if (selectedChat?.id && currentUser?.id) {
+      connectWebSocket(currentUser.id, selectedChat.id);
+
+      // 채팅방 진입 시 마지막 메시지를 읽음 처리
+      const lastMessage = messages[messages.length - 1];
+      if (lastMessage && !lastMessage.isMine) { // 내가 보낸 메시지가 아닐 경우에만 읽음 처리
+        markAsRead(selectedChat.id, lastMessage.id);
+      }
+    }
+
+    return () => {
+      disconnectWebSocket();
+    };
+  }, [selectedChat?.id, currentUser?.id, connectWebSocket, disconnectWebSocket, markAsRead, messages.length]); // messages.length를 추가하여 메시지 목록이 변경될 때마다 읽음 처리 로직 재실행
+
+  // 메시지 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
