@@ -2,12 +2,10 @@ import { useQuery, useMutation, useQueryClient, useSuspenseQuery } from '@tansta
 import { getMeetings, deleteMeeting as deleteMeetingAPI, getMeetingDetail, createMeeting, updateMeeting } from '../api/meetingAPI';
 
 // 회의록 목록 조회
-export function useMeetings(projectId = 1, page = 1, size = 10) {
+export function useMeetings(projectId, page = 1, size = 10) {
   return useQuery({
     queryKey: ['meetings', projectId, page, size],
     queryFn: () => getMeetings(projectId, page, size),
-    staleTime: 2 * 60 * 1000, // 2분간 신선한 데이터
-    cacheTime: 1 * 60 * 1000, // 10분간 캐시 유지
     refetchOnWindowFocus: true,
     select: (response) => {
       if (response.statusCode === 200) {
@@ -22,7 +20,8 @@ export function useMeetings(projectId = 1, page = 1, size = 10) {
             participants: [],
             participantCount: meeting.attendeeCount,
             description: meeting.content,
-            createdAt: meeting.progressTime
+            createdAt: meeting.progressTime,
+            summary : meeting.aiSummary
           })),
           pagination: {
             page: response.data.page,
@@ -40,7 +39,7 @@ export function useMeetings(projectId = 1, page = 1, size = 10) {
 }
 
 // Suspense와 함께 사용할 회의록 목록
-export function useSuspenseMeetings(projectId = 1, page = 1, size = 10) {
+export function useSuspenseMeetings(projectId , page = 1, size = 10) {
   return useSuspenseQuery({
     queryKey: ['meetings', projectId, page, size],
     queryFn: () => getMeetings(projectId, page, size),
@@ -95,7 +94,6 @@ export function useMeetingDetail(projectId, meetingId, enabled = true) {
     queryKey: ['meeting-detail', projectId, meetingId],
     queryFn: () => getMeetingDetail(projectId, meetingId),
     enabled: enabled && !!meetingId,
-    staleTime: 5 * 60 * 1000,
     select: (response) => {
       if (response.statusCode === 200) {
         return {
@@ -111,6 +109,7 @@ export function useMeetingDetail(projectId, meetingId, enabled = true) {
           description: response.data.content,
           memo: response.data.content,
           createdAt: response.data.progressDate,
+          summary : response.data.aiSummary,
         };
       }
       throw new Error('Failed to fetch meeting detail');
@@ -167,7 +166,6 @@ export function usePrefetchNextPage(projectId, currentPage, totalPages, size = 1
       queryClient.prefetchQuery({
         queryKey: ['meetings', projectId, currentPage + 1, size],
         queryFn: () => getMeetings(projectId, currentPage + 1, size),
-        staleTime: 2 * 60 * 1000
       });
     }
   };
@@ -180,7 +178,7 @@ export function useCreateMeeting() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ projectId, meetingData }) => createMeeting(projectId, meetingData),
+    mutationFn: ({ projectId, meetingData, audioFile }) => createMeeting(projectId, meetingData, audioFile),
     onSuccess: (data, variables) => {
       // 성공 시 관련 쿼리들 무효화
       queryClient.invalidateQueries({ queryKey: ['meetings', variables.projectId] });
