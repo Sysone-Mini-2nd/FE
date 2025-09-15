@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ArrowBack, Mic, Stop, PlayArrow, Pause } from "@mui/icons-material";
 import { employeesData } from "../../data/employees";
 import Dropdown from '../common/Dropdown';
@@ -58,7 +58,7 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false, proj
   ];
 
   // 팀 인원 조회 함수 추가
-  const fetchTeamMembers = async () => {
+  const fetchTeamMembers = useCallback(async () => {
     setIsLoadingMembers(true);
     try {
       const response = await getProjectParticipants(projectId);
@@ -82,12 +82,13 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false, proj
     } finally {
       setIsLoadingMembers(false);
     }
-  };
+  }, [projectId, showError]);
 
   // 컴포넌트 마운트 시 팀 인원 조회
   useEffect(() => {
     fetchTeamMembers();
-  }, []);
+  }, [fetchTeamMembers]);
+
 
   // 입력값 변경 핸들러
   const handleInputChange = (field, value) => {
