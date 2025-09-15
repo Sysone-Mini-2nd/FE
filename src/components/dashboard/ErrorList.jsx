@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { fetchProjectDashboard } from '../../api/dashboardAPI';
 import { Warning, Person, AccessTime } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 function ErrorList({ selectedProjectId }) {
   const { data: dashboardData, isLoading, error } = useQuery({
@@ -9,10 +10,17 @@ function ErrorList({ selectedProjectId }) {
     enabled: !!selectedProjectId,
   });
 
+  const navigate = useNavigate();
   const priorities = dashboardData?.data?.priorities?.priority || [];
-  
+  const errorPriorities = dashboardData?.data?.errorPriorities || {};
+    
   // WARNING 우선순위만 필터링 (에러로 간주)
   const errorTasks = priorities.find(p => p.priority === 'WARNING')?.priorityDataList || [];
+
+  // 이슈 클릭 핸들러
+  const handleIssueClick = (issueId) => {
+    navigate(`/api/issues/${issueId}`);
+  };
 
   if (isLoading) {
     return (
@@ -74,7 +82,7 @@ function ErrorList({ selectedProjectId }) {
                     </div>
                     <div className="flex items-center gap-1">
                       <AccessTime className="w-3 h-3" />
-                      <span>즉시 처리 필요</span>
+                      <span>{errorPriorities.endDate || '즉시 처리 필요'}</span>
                     </div>
                   </div>
                 </div>
@@ -82,7 +90,10 @@ function ErrorList({ selectedProjectId }) {
               
               {/* 액션 버튼 */}
               <div className="mt-3 flex gap-2">
-                <button className="text-xs bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors">
+                <button 
+                  className="text-xs bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-colors cursor-pointer"
+                  onClick={() => handleIssueClick(task.id)}
+                >
                   상세보기
                 </button>
                 <button className="text-xs border border-red-300 text-red-700 px-3 py-1 rounded hover:bg-red-50 transition-colors">
