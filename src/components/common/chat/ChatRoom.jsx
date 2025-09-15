@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef} from 'react';
 import { Send } from '@mui/icons-material';
 import useChatStore from '../../../store/chatStore';
 
@@ -30,6 +30,7 @@ const ChatRoom = ({
     return () => {
       disconnectWebSocket();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedChat?.id, currentUser?.id, connectWebSocket, disconnectWebSocket, markAsRead, messages.length]);
 
   // 메시지 스크롤

@@ -42,8 +42,8 @@
 import axios from 'axios';
 
 const BASE_URL = window.location.hostname === "localhost"
-  ? "http://localhost:8081/api"  // 로컬 백엔드 URL
-  : "https://api.sysonetaskmanager.store/api";  // 프로덕션 백엔드 URL
+  ? "http://localhost:8081/api" 
+  : "https://api.sysonetaskmanager.store/api";  
 
 // axios 인스턴스 생성
 const api = axios.create({

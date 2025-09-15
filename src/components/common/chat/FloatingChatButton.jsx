@@ -4,9 +4,9 @@ const FloatingChatButton = ({ onClick, unreadCount }) => {
   return (
     <button
       onClick={onClick}
-      className="chatbutton relative" // 버튼 자체를 위치 기준으로 설정
+      className="chatbutton relative"
     >
-      <Telegram className="w-6 h-6" />
+      <Telegram />
 
       {/* 배지를 버튼 안으로 이동 */}
       {unreadCount > 0 && (

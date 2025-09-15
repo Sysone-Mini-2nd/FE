@@ -55,13 +55,13 @@ const ChatHeader = ({
           onClick={onToggleMinimize}
           className="p-1 hover:bg-emerald-500 rounded transition-colors"
         >
-          <Minimize className="w-4 h-4" />
+          <Minimize />
         </button>
         <button
           onClick={onToggleChat}
           className="p-1 hover:bg-emerald-500 rounded transition-colors"
         >
-          <Close className="w-4 h-4" />
+          <Close />
         </button>
       </div>
     </div>

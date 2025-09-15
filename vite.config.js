@@ -17,6 +17,12 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/ws': {
+        target: 'http://localhost:8081',
+        changeOrigin: true,
+        secure: false,
+        ws: true, // WebSocket 프록시 활성화
+      },
     },
   },
 })
