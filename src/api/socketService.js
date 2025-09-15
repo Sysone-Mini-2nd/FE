@@ -45,7 +45,7 @@ export const disconnectWebSocket = () => {
     }
 };
 
-const subscribe = (destination, callback) => {
+export const subscribe = (destination, callback) => {
     if (!stompClient || !stompClient.active) {
         console.error('STOMP client is not connected. Cannot subscribe to ', destination);
         return null;

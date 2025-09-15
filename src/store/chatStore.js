@@ -17,7 +17,20 @@ const useChatStore = create((set, get) => ({
 
     // Removed duplicate subscription logic to avoid redundancy
   },
-  setChatRooms: (rooms) => set({ chatRooms: rooms }),
+  setChatRooms: (rooms) =>
+    set((state) => {
+      const updatedRooms = rooms.map((newRoom) => {
+        const existingRoom = state.chatRooms.find((room) => room.id === newRoom.id);
+        return existingRoom ? { ...existingRoom, ...newRoom } : newRoom;
+      });
+
+      // Add any rooms that are in the current state but not in the new rooms
+      const mergedRooms = state.chatRooms.filter(
+        (room) => !rooms.some((newRoom) => newRoom.id === room.id)
+      );
+
+      return { chatRooms: [...updatedRooms, ...mergedRooms] };
+    }),
   setMessages: (roomId, messages) =>
     set((state) => ({
       messages: { ...state.messages, [roomId]: messages },
@@ -56,12 +69,29 @@ const useChatStore = create((set, get) => ({
     stompClient.connect({}, () => {
       set({ isConnected: true });
 
-      // Subscribe to total unread messages immediately after connection
-      if (!subscriptions.totalUnread) {
-        subscriptions.totalUnread = stompClient.subscribe('/user/queue/total-unread/' + userId, (message) => {
-          const totalUnreadCountDto = JSON.parse(message.body);
-          get().setTotalUnreadCount(totalUnreadCountDto.totalUnreadCount);
-        });
+      // Subscribe to updates globally
+      if (!subscriptions.update) {
+        subscriptions.update = stompClient.subscribe(
+          `/topic/update`,
+          (message) => {
+            const updateData = JSON.parse(message.body);
+            const currentUser = get().currentUser;
+
+            if (currentUser && currentUser.id === updateData.memberId) {
+              set((state) => ({
+                chatRooms: state.chatRooms.map((room) =>
+                  room.id === updateData.chatRoomId
+                    ? {
+                        ...room,
+                        recentMessage: updateData.recentMessage,
+                        unreadMessageCount: updateData.totalUnreadCount,
+                      }
+                    : room
+                ),
+              }));
+            }
+          }
+        );
       }
     }, () => {
       set({ isConnected: false });
@@ -80,27 +110,39 @@ const useChatStore = create((set, get) => ({
   subscribeToChatRoom: (chatRoomId) => {
     get().unsubscribeAll();
     if (chatRoomId) {
-      subscriptions.message = stompClient.subscribe('/topic/chatroom/' + chatRoomId, (message) => {
-        const receivedMessage = JSON.parse(message.body);
-        get().addMessage(receivedMessage.chatRoomId, receivedMessage);
-
-        // 수신한 메시지가 내가 보낸 것이 아니라면 즉시 읽음 처리
-        const currentUser = get().currentUser;
-        if (currentUser && receivedMessage.senderId !== currentUser.id) {
-          get().markAsRead(receivedMessage.chatRoomId, receivedMessage.id);
+      subscriptions.message = stompClient.subscribe(
+        `/topic/chatroom/${chatRoomId}`,
+        (message) => {
+          const chatMessage = JSON.parse(message.body);
+          get().addMessage(chatRoomId, chatMessage);
         }
-      });
+      );
+    }
+  },
 
-      subscriptions.readEvent = stompClient.subscribe('/topic/chat/' + chatRoomId + '/read', (message) => {
-        const readEvent = JSON.parse(message.body);
+  subscribeToUpdates: () => {
+    if (!subscriptions.update) {
+      subscriptions.update = stompClient.subscribe(
+        `/topic/update`,
+        (message) => {
+          const updateData = JSON.parse(message.body);
+          const currentUser = get().currentUser;
 
-        // 특정 메시지의 readCount 감소 처리
-        const roomId = chatRoomId;
-        get().updateMessage(roomId, {
-          id: readEvent.messageId,
-          readCountUpdater: (prev) => Math.max(0, prev - 1),
-        });
-      });
+          if (currentUser && currentUser.id === updateData.memberId) {
+            set((state) => ({
+              chatRooms: state.chatRooms.map((room) =>
+                room.id === updateData.chatRoomId
+                  ? {
+                      ...room,
+                      recentMessage: updateData.recentMessage,
+                      unreadMessageCount: updateData.totalUnreadCount,
+                    }
+                  : room
+              ),
+            }));
+          }
+        }
+      );
     }
   },
 
