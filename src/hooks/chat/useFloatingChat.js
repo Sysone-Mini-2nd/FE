@@ -14,7 +14,6 @@ export const useFloatingChat = () => {
 
   // --- UI State ---
   const [isOpen, setIsOpen] = useState(false);
-  const [isMinimized, setIsMinimized] = useState(false);
   const [currentView, setCurrentView] = useState('list');
   const [selectedChat, setSelectedChat] = useState(null);
   const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, roomId: null });
@@ -131,7 +130,9 @@ export const useFloatingChat = () => {
 
   // --- Event Handlers (이하 동일) ---
   const toggleChat = () => setIsOpen(!isOpen);
-  const toggleMinimize = () => setIsMinimized(!isMinimized);
+  const toggleMinimize = () => {
+    setIsOpen(false); // Close the chat window completely
+  };
   const backToList = useCallback(() => {
     setSelectedChat(null);
     setCurrentView('list');
@@ -240,7 +241,7 @@ export const useFloatingChat = () => {
   }, [filteredChatRooms]);
 
   return {
-    isOpen, isMinimized, message, setMessage, currentView, selectedChat, searchTerm, setSearchTerm,
+    isOpen, message, setMessage, currentView, selectedChat, searchTerm, setSearchTerm,
     employeeSearchTerm, setEmployeeSearchTerm, selectedEmployees, filteredEmployees: allEmployees,
     groupName, setGroupName, filteredChatRooms, contextMenu, totalUnreadCount,
     toggleChat, selectChatRoom, backToList, toggleMinimize, handleGoToCreateChat,
