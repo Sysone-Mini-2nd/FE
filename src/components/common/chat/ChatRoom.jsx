@@ -2,14 +2,14 @@ import { useEffect, useRef } from 'react';
 import { Send } from '@mui/icons-material';
 import useChatStore from '../../../store/chatStore';
 
-const ChatRoom = ({ 
-  selectedChat, 
-  message, 
-  onMessageChange, 
-  onSendMessage 
+const ChatRoom = ({
+  selectedChat,
+  message,
+  onMessageChange,
+  onSendMessage
 }) => {
   const messagesEndRef = useRef(null);
-  
+
   const { getMessages, connectWebSocket, disconnectWebSocket, markAsRead, currentUser } = useChatStore();
   const messages = [...getMessages(selectedChat?.id || 0)].sort((a, b) => {
     return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
@@ -22,7 +22,7 @@ const ChatRoom = ({
 
       // 채팅방 진입 시 마지막 메시지를 읽음 처리
       const lastMessage = messages[messages.length - 1];
-      if (lastMessage && !lastMessage.isMine) { // 내가 보낸 메시지가 아닐 경우에만 읽음 처리
+      if (lastMessage && lastMessage.senderId !== currentUser.id) { // 내가 보낸 메시지가 아닐 경우
         markAsRead(selectedChat.id, lastMessage.id);
       }
     }
@@ -30,7 +30,7 @@ const ChatRoom = ({
     return () => {
       disconnectWebSocket();
     };
-  }, [selectedChat?.id, currentUser?.id, connectWebSocket, disconnectWebSocket, markAsRead, messages.length]); // messages.length를 추가하여 메시지 목록이 변경될 때마다 읽음 처리 로직 재실행
+  }, [selectedChat?.id, currentUser?.id, connectWebSocket, disconnectWebSocket, markAsRead, messages.length]);
 
   // 메시지 스크롤
   useEffect(() => {
@@ -56,39 +56,38 @@ const ChatRoom = ({
             </div>
           ) : (
             messages.map((msg) => {
-              console.log(`Message ID: ${msg.id}, isMine: ${msg.isMine}, readCount: ${msg.readCount}, type: ${msg.type}`);
+              const isMine = msg.senderId === currentUser.id;
               return (
-              <div 
-                key={msg.id} 
-                className={`flex ${msg.isMine ? 'justify-end' : 'justify-start'} ${msg.type === 'SYSTEM' ? 'justify-center' : ''}`}>
-                <div className={`p-3 rounded-lg shadow-sm max-w-xs ${ 
-                  msg.type === 'SYSTEM' 
-                    ? 'bg-gray-200 text-gray-700 text-center' // 시스템 메시지 스타일
-                    : msg.isMine 
-                      ? 'bg-purple-400/50 backdrop-blur-lg text-white' // 내 메시지 스타일 (보라색)
-                      : 'bg-white text-gray-800' // 다른 사람 메시지 스타일 (하얀색)
-                }`}>
-                  {!msg.isMine && msg.type !== 'DELETED' && msg.type !== 'SYSTEM' && (
-                    <p className="text-xs text-gray-600 mb-1 font-medium">{msg.senderName}</p>
-                  )}
-                  {msg.type === 'DELETED' ? (
-                    <p className="text-sm italic text-gray-500">삭제된 메시지입니다.</p>
-                  ) : (
-                    <p className="text-sm">{msg.content}</p>
-                  )}
-                  <div className="flex justify-end items-center gap-1 mt-1">
-                    <span className={`text-xs ${
-                      msg.isMine ? 'text-purple-100' : 'text-gray-500'
+                <div
+                  key={msg.id}
+                  className={`flex ${isMine ? 'justify-end' : 'justify-start'} ${msg.type === 'SYSTEM' ? 'justify-center' : ''}`}
+                >
+                  <div className={`p-3 rounded-lg shadow-sm max-w-xs ${msg.type === 'SYSTEM'
+                      ? 'bg-gray-200 text-gray-700 text-center'
+                      : isMine
+                        ? 'bg-purple-400/50 backdrop-blur-lg text-white'
+                        : 'bg-white text-gray-800'
                     }`}>
-                      {formatTime(msg.createdAt)}
-                    </span>
-                    {msg.isMine && msg.readCount > 0 && msg.type !== 'DELETED' && (
-                      <span className="text-xs text-purple-100 font-bold">{msg.readCount}</span>
+                    {!isMine && msg.type !== 'DELETED' && msg.type !== 'SYSTEM' && (
+                      <p className="text-xs text-gray-600 mb-1 font-medium">{msg.senderName}</p>
                     )}
+                    {msg.type === 'DELETED' ? (
+                      <p className="text-sm italic text-gray-500">삭제된 메시지입니다.</p>
+                    ) : (
+                      <p className="text-sm">{msg.content}</p>
+                    )}
+                    <div className="flex justify-end items-center gap-1 mt-1">
+                      <span className={`text-xs ${isMine ? 'text-purple-100' : 'text-gray-500'}`}>
+                        {formatTime(msg.createdAt)}
+                      </span>
+                      {isMine && msg.readCount > 0 && msg.type !== 'DELETED' && (
+                        <span className="text-xs text-purple-100 font-bold">{msg.readCount}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )})
+              )
+            })
           )}
           <div ref={messagesEndRef} />
         </div>
@@ -118,5 +117,6 @@ const ChatRoom = ({
     </div>
   );
 };
+
 
 export default ChatRoom;

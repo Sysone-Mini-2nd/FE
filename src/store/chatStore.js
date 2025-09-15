@@ -73,7 +73,14 @@ const useChatStore = create((set, get) => ({
       subscriptions.message = stompClient.subscribe('/topic/chatroom/' + chatRoomId, (message) => {
         const receivedMessage = JSON.parse(message.body);
         get().addMessage(receivedMessage.chatRoomId, receivedMessage);
+
+        // 수신한 메시지가 내가 보낸 것이 아니라면 즉시 읽음 처리
+        const currentUser = get().currentUser;
+        if (currentUser && receivedMessage.senderId !== currentUser.id) {
+          get().markAsRead(receivedMessage.chatRoomId, receivedMessage.id);
+        }
       });
+
       subscriptions.readEvent = stompClient.subscribe('/topic/chat/' + chatRoomId + '/read', (message) => {
         const readEvent = JSON.parse(message.body);
 
@@ -81,7 +88,6 @@ const useChatStore = create((set, get) => ({
         const roomId = chatRoomId;
         get().updateMessage(roomId, {
           id: readEvent.messageId,
-          // 기존 readCount - 1 로 업데이트
           readCountUpdater: (prev) => Math.max(0, prev - 1),
         });
       });
@@ -110,7 +116,7 @@ const useChatStore = create((set, get) => ({
         senderId: currentUser.id,
         senderName: currentUser.name,
         content: content,
-        type: 'TALK',
+        type: 'TEXT',
       };
       stompClient.send('/app/send', {}, JSON.stringify(chatMessage));
     }
