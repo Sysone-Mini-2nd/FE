@@ -133,7 +133,11 @@ function PriorityTasks({ selectedProjectId }) {
           const totalItems = priorityGroup.priorityDataList.length;
           const hasMoreItems = totalItems > currentVisibleItems;
           const hasLessItems = currentVisibleItems > 3;
+<<<<<<< HEAD
 
+=======
+          
+>>>>>>> efbe6da49783d33ae143019660290cf73e722f3a
           return (
             <div key={priorityGroup.priority} className="space-y-2">
               {/* 우선순위 헤더 - 기존처럼 배경색 없이 */}
@@ -150,8 +154,13 @@ function PriorityTasks({ selectedProjectId }) {
               {/* 작업 목록 - 우선순위별 배경색 적용 */}
               <div className="space-y-2 ml-6">
                 {priorityGroup.priorityDataList.slice(0, currentVisibleItems).map((task) => (
+<<<<<<< HEAD
                   <div
                     key={task.id}
+=======
+                  <div 
+                    key={task.id} 
+>>>>>>> efbe6da49783d33ae143019660290cf73e722f3a
                     className={`p-3 rounded-lg ${config.bgColor} border ${config.borderColor} hover:opacity-80 transition-opacity cursor-pointer`}
                     onClick={() => handleIssueClick(task.id)}
                   >
@@ -170,19 +179,32 @@ function PriorityTasks({ selectedProjectId }) {
                     </div>
                   </div>
                 ))}
+<<<<<<< HEAD
 
                 {/* 더 보기/더 적게 보기 버튼 */}
                 {hasMoreItems && (
                   <div
+=======
+                
+                {/* 더 보기/더 적게 보기 버튼 */}
+                {hasMoreItems && (
+                  <div 
+>>>>>>> efbe6da49783d33ae143019660290cf73e722f3a
                     className="text-xs text-blue-500 text-center py-1 cursor-pointer hover:text-blue-600 transition-colors"
                     onClick={() => handleShowMore(priorityGroup.priority)}
                   >
                     +{totalItems - currentVisibleItems}개 더 보기
                   </div>
                 )}
+<<<<<<< HEAD
 
                 {hasLessItems && (
                   <div
+=======
+                
+                {hasLessItems && (
+                  <div 
+>>>>>>> efbe6da49783d33ae143019660290cf73e722f3a
                     className="text-xs text-gray-500 text-center py-1 cursor-pointer hover:text-gray-600 transition-colors"
                     onClick={() => handleShowLess(priorityGroup.priority)}
                   >
