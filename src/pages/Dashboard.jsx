@@ -16,7 +16,7 @@ function Dashboard() {
   const navigate = useNavigate();
   const { selectedProjectId } = useProjectStore();
 
-  // fetchDashboardProjects API에서 데이터 가져오기
+  // fetchDashboardProjects API에서 전체 데이터 가져오기
   const { data: dashboardData } = useQuery({
     queryKey: ['dashboardProjects'],
     queryFn: fetchDashboardProjects,
@@ -33,10 +33,12 @@ function Dashboard() {
   const projectCount = dashboardData?.data?.projectCount || 0;
   const issueCount = dashboardData?.data?.issueCount || 0;
 
-  // 사용자 역할 확인
+  // 사용자 역할 확인 - 대소문자 구분 없이 체크
   const userRole = projectDashboardData?.data?.role || 'User';
-  const isPM = userRole === 'PM';
-  const isUser = userRole === 'User';
+  const isPM = userRole?.toUpperCase() === 'PM';
+  const isMaster = userRole?.toUpperCase() === 'MASTER';
+  const isUser = userRole?.toUpperCase() === 'USER';
+  const isAdmin = isPM || isMaster; // PM 또는 MASTER 권한
 
   // 디버깅용 로그
   useEffect(() => {
@@ -44,26 +46,29 @@ function Dashboard() {
       console.log('프로젝트 대시보드 데이터:', projectDashboardData);
       console.log('사용자 역할:', userRole);
       console.log('PM 여부:', isPM);
+      console.log('MASTER 여부:', isMaster);
+      console.log('Admin 권한 여부:', isAdmin);
       console.log('User 여부:', isUser);
     }
-  }, [projectDashboardData, userRole, isPM, isUser]);
+  }, [projectDashboardData, userRole, isPM, isMaster, isAdmin, isUser]);
 
   const kpiData = [
     {
       title: "진행 중인 프로젝트",
       value: projectCount.toString(),
-      icon: <Source />,
+      icon: <Source className="w-6 h-6 text-blue-500" />,
       trend: "up",
-      path: "/projects",
-      trendValue: "+2 from last month",
+      trendValue: "+12%",
+      path: "/projects"
     },
     {
-      title: "이번 주 마감 작업",
+      title: "진행 중인 이슈",
       value: issueCount.toString(),
-      icon: <Warning />,
+      icon: <Warning className="w-6 h-6 text-orange-500" />,
       trend: "down",
-      trendValue: "-3 from last week",
-    },
+      trendValue: "-5%",
+      path: "/issues"
+    }
   ];
 
   return (
@@ -74,8 +79,8 @@ function Dashboard() {
             <div className="grid grid-cols-1 gap-6">
               <ProjectProgressChart selectedProjectId={selectedProjectId} />
               
-              {/* 에러 발생 창 - PM일 경우에만 표시 */}
-              {isPM && (
+              {/* 에러 발생 창 - PM 또는 MASTER일 경우에만 표시 */}
+              {isAdmin && (
                 <ErrorList selectedProjectId={selectedProjectId} />
               )}
               
