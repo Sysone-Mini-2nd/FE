@@ -12,7 +12,11 @@ const useChatStore = create((set, get) => ({
   currentUser: null,
   isConnected: false,
 
-  setCurrentUser: (user) => set({ currentUser: user }),
+  setCurrentUser: (user) => {
+    set({ currentUser: user });
+
+    // Removed duplicate subscription logic to avoid redundancy
+  },
   setChatRooms: (rooms) => set({ chatRooms: rooms }),
   setMessages: (roomId, messages) =>
     set((state) => ({
@@ -37,7 +41,7 @@ const useChatStore = create((set, get) => ({
     }),
   getMessages: (chatRoomId) => get().messages[chatRoomId] || [],
 
-  connectWebSocket: (userId, chatRoomId) => {
+  connectWebSocket: (userId) => {
     if (!userId) {
       console.error('Cannot connect WebSocket: userId is missing.');
       return;
@@ -45,15 +49,21 @@ const useChatStore = create((set, get) => ({
     if (stompClient && stompClient.connected) {
       set({ isConnected: true });
       get().unsubscribeAll();
-      get().subscribeToChatRoom(chatRoomId, userId);
       return;
     }
     const socket = new SockJS('http://localhost:8081/ws/chat');
     stompClient = Stomp.over(socket);
-    stompClient.connect({}, (frame) => {
+    stompClient.connect({}, () => {
       set({ isConnected: true });
-      get().subscribeToChatRoom(chatRoomId, userId);
-    }, (error) => {
+
+      // Subscribe to total unread messages immediately after connection
+      if (!subscriptions.totalUnread) {
+        subscriptions.totalUnread = stompClient.subscribe('/user/queue/total-unread/' + userId, (message) => {
+          const totalUnreadCountDto = JSON.parse(message.body);
+          get().setTotalUnreadCount(totalUnreadCountDto.totalUnreadCount);
+        });
+      }
+    }, () => {
       set({ isConnected: false });
     });
   },
@@ -67,7 +77,7 @@ const useChatStore = create((set, get) => ({
     }
   },
 
-  subscribeToChatRoom: (chatRoomId, userId) => {
+  subscribeToChatRoom: (chatRoomId) => {
     get().unsubscribeAll();
     if (chatRoomId) {
       subscriptions.message = stompClient.subscribe('/topic/chatroom/' + chatRoomId, (message) => {
@@ -92,10 +102,6 @@ const useChatStore = create((set, get) => ({
         });
       });
     }
-    subscriptions.totalUnread = stompClient.subscribe('/user/queue/total-unread/' + userId, (message) => {
-      const totalUnreadCountDto = JSON.parse(message.body);
-      get().setTotalUnreadCount(totalUnreadCountDto.totalUnreadCount);
-    });
   },
 
   unsubscribeAll: () => {

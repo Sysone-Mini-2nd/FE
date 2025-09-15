@@ -55,6 +55,7 @@ export const useFloatingChat = () => {
     if (isSocketConnected) {
       // 연결 성공 후, 필요한 모든 구독을 여기서 시작
       socketService.subscribeToUserQueue('total-unread', (data) => {
+        console.log('WebSocket message received:', data);
         setTotalUnreadCount(data.totalUnreadCount);
       });
       // 다른 전역 구독이 있다면 여기에 추가
@@ -158,6 +159,13 @@ export const useFloatingChat = () => {
       roomName = groupName;
     }
     try {
+      console.log('--- Debugging Chat Room Creation ---');
+      console.log('Current User (creator):', user);
+      console.log('Selected Employees (from UI):', selectedEmployees);
+      console.log('memberIdList (sent to backend):', memberIdList);
+      console.log('Calculated roomName (for 1:1):', roomName);
+      console.log('Type:', type);
+      console.log('------------------------------------');
       await chatApi.createChatRoom(memberIdList, roomName, type);
       const response = await chatApi.fetchChatRooms();
       setChatRooms(response.data.data);

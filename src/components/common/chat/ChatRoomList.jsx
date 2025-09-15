@@ -6,7 +6,8 @@ const ChatRoomList = ({
   filteredChatRooms, 
   onSelectChatRoom, 
   onGoToCreateChat,
-  onContextMenu
+  onContextMenu,
+  currentUserName // 현재 사용자 이름을 props로 전달받음
 }) => {
 
   const formatDisplayTime = (timestamp) => {
@@ -16,6 +17,15 @@ const ChatRoomList = ({
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  const getChatRoomName = (room) => {
+    if (room.memberNameList && room.memberNameList.length === 2) {
+      // 1:1 채팅방인 경우, 현재 사용자를 제외한 이름 반환
+      return room.memberNameList.find((name) => name !== currentUserName) || '알 수 없음';
+    }
+    // 그룹 채팅방인 경우 기본 이름 사용
+    return room.name || '알 수 없음';
   };
 
   return (
@@ -60,7 +70,7 @@ const ChatRoomList = ({
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex justify-between items-center">
-                <h4 className="font-medium text-gray-800 truncate">{room.name}</h4>
+                <h4 className="font-medium text-gray-800 truncate">{getChatRoomName(room)}</h4> {/* 채팅방 이름 표시 */}
                 <span className="text-xs text-gray-500">{formatDisplayTime(room.messageCreatedAt)}</span>
               </div>
               <p className="text-sm text-gray-600 truncate">{room.recentMessage || ' '}</p>

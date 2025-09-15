@@ -41,9 +41,11 @@ function FloatingChat() {
   return (
     <>
       {/* 아이콘은 항상 렌더링되도록 바깥으로 이동 */}
-      <div className="fixed bottom-6 right-6 z-40">
-        <FloatingChatButton onClick={toggleChat} unreadCount={totalUnreadCount} />
-      </div>
+      {!isOpen && (
+        <div className="fixed bottom-6 right-6 z-40">
+          <FloatingChatButton onClick={toggleChat} unreadCount={totalUnreadCount} />
+        </div>
+      )}
 
       {/* 채팅 창의 표시 여부만 isOpen으로 제어 */}
       <div className={`fixed bottom-24 right-6 z-50 rounded-lg shadow-xl h-2/3 backdrop-blur-sm transition-all duration-300 ease-in-out flex flex-col ${
@@ -74,6 +76,7 @@ function FloatingChat() {
                     onSelectChatRoom={selectChatRoom}
                     onGoToCreateChat={handleGoToCreateChat}
                     onContextMenu={handleContextMenu}
+                    currentUserName={user.name}
                   />
                 ) : currentView === 'createChat' ? (
                   <EmployeeSearch

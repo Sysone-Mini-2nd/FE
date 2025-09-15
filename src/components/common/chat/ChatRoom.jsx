@@ -65,7 +65,7 @@ const ChatRoom = ({
                   <div className={`p-3 rounded-lg shadow-sm max-w-xs ${msg.type === 'SYSTEM'
                       ? 'bg-gray-200 text-gray-700 text-center'
                       : isMine
-                        ? 'bg-purple-400/50 backdrop-blur-lg text-white'
+                        ? 'bg-emerald-400/50 backdrop-blur-lg text-white'
                         : 'bg-white text-gray-800'
                     }`}>
                     {!isMine && msg.type !== 'DELETED' && msg.type !== 'SYSTEM' && (
@@ -77,11 +77,11 @@ const ChatRoom = ({
                       <p className="text-sm">{msg.content}</p>
                     )}
                     <div className="flex justify-end items-center gap-1 mt-1">
-                      <span className={`text-xs ${isMine ? 'text-purple-100' : 'text-gray-500'}`}>
+                      <span className={`text-xs ${isMine ? 'text-emerald-100' : 'text-gray-500'}`}>
                         {formatTime(msg.createdAt)}
                       </span>
                       {isMine && msg.readCount > 0 && msg.type !== 'DELETED' && (
-                        <span className="text-xs text-purple-100 font-bold">{msg.readCount}</span>
+                        <span className="text-xs text-emerald-100 font-bold">{msg.readCount}</span>
                       )}
                     </div>
                   </div>
