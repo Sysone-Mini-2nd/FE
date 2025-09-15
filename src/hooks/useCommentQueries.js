@@ -28,7 +28,7 @@ export function useUpdateComment() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateComment,
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
       // 수정된 댓글이 속한 이슈의 ID를 알 수 있다면, 해당 쿼리만 무효화하는 것이 더 효율적입니다.
       // 여기서는 모든 댓글 쿼리를 무효화하거나, 특정 쿼리 키를 찾아 무효화해야 합니다.
       // 우선 간단하게 모든 댓글 쿼리를 무효화합니다.

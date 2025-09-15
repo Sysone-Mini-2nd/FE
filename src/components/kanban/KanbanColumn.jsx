@@ -3,7 +3,7 @@ import { Droppable } from '@hello-pangea/dnd';
 import KanbanCard from './KanbanCard';
 import { Add } from '@mui/icons-material';
 
-function KanbanColumn({ column, onAddCard, onDeleteCard, onCardClick, isPm }) {
+function KanbanColumn({ column, onAddCard, onDeleteCard, onCardClick }) {
   const getColumnColor = (id) => {
     switch (id) {
       case 'TODO': return 'bg-gray-500';
@@ -51,7 +51,6 @@ function KanbanColumn({ column, onAddCard, onDeleteCard, onCardClick, isPm }) {
                 index={index}
                 onDelete={onDeleteCard}
                 onCardClick={onCardClick}
-                isPm={isPm}
               />
             ))}
             {provided.placeholder}

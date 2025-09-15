@@ -8,7 +8,7 @@ import {
   MoreVert
 } from '@mui/icons-material';
 
-function KanbanCard({ item, index, onCardClick, onDelete, isPm }) {
+function KanbanCard({ item, index, onCardClick, onDelete }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const getPriorityColor = (priority) => {

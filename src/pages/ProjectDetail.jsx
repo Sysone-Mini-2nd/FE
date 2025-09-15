@@ -44,15 +44,6 @@ const getPriorityColor = (priority) => {
   }
 };
 
-const getPriorityText = (priority) => {
-    switch (priority) {
-      case 'HIGH': return '높음';
-      case 'NORMAL': return '보통';
-      case 'LOW': return '낮음';
-      default: return '알 수 없음';
-    }
-  };
-
 function ProjectDetail() {
   const { id: projectId } = useParams();
   const navigate = useNavigate();
@@ -74,7 +65,7 @@ function ProjectDetail() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "kanban":
-        return <Kanban projectId={projectId} members={project.members} isPm={isCurrentUserPM}/>;
+        return <Kanban projectId={projectId} members={project.members}/>;
       case "timeline":
         return <GanttChart projectId={projectId} />;
       case "meeting":
@@ -96,39 +87,6 @@ function ProjectDetail() {
   }
 
   return (
-    // <div className="space-y-4">
-    //   <div className="border-b border-gray-200 pb-4">
-    //     <div className="flex items-center justify-between">
-    //       <div className="flex items-center gap-4">
-    //         <button
-    //           onClick={() => navigate("/projects")}
-    //           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-    //         >
-    //           <ArrowBack className="w-5 h-5" />
-    //         </button>
-    //         <div>
-    //           <div className="flex items-center gap-3">
-    //             <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
-    //             <span className={`px-2 py-1 text-xs font-medium rounded-md ${getStatusColor(project.status)}`}>
-    //               {getStatusText(project.status)}
-    //             </span>
-    //             <span className={`text-sm font-medium ${getPriorityColor(project.priority)}`}>
-    //               {getPriorityText(project.priority)}
-    //             </span>
-    //           </div>
-    //           <p className="text-gray-600 mt-1">{project.desc}</p>
-    //         </div>
-    //         <div className="ml-16 mt-4 flex gap-6 text-sm text-gray-600">
-    //           <div>매니저: <span className="font-medium">{project.pmName}</span></div>
-    //           <div>시작일: <span className="font-medium">{project.startDate.substring(0, 10)}</span></div>
-    //           <div>완료 예정일: <span className="font-medium">{project.endDate.substring(0, 10)}</span></div>
-    //           <div>팀원: <span className="font-medium">{project.totalMemberCount}명</span></div>
-    //         </div>
-    //       </div>
-    //     </div>
-    //
-    //   </div>
-
       <div>
         {/* 프로젝트 헤더 */}
         <div className="border-b border-gray-200">

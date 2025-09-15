@@ -5,15 +5,9 @@ import KanbanColumn from './KanbanColumn';
 import TaskDetail from '../common/task/TaskDetail';
 import { useProjectIssues, useCreateIssue, useUpdateIssue, useDeleteIssue } from '../../hooks/useIssueQueries';
 
-const columnMap = {
-  TODO: '할 일',
-  IN_PROGRESS: '진행 중',
-  DONE: '완료',
-};
-
 const columnOrder = ['TODO', 'IN_PROGRESS', 'DONE'];
 
-function Kanban({ projectId, members = [] }, isPm) {
+function Kanban({ projectId, members = [] }) {
   const { data: issues, isLoading, isError } = useProjectIssues(projectId);
   const createIssueMutation = useCreateIssue();
   const updateIssueMutation = useUpdateIssue();
@@ -121,7 +115,6 @@ function Kanban({ projectId, members = [] }, isPm) {
                       onAddCard={() => handleAddNewCard(column.id)}
                       onDeleteCard={handleDeleteCard}
                       onCardClick={handleCardClick}
-                      isPm={isPm}
                     />
                   </div>
                 );
