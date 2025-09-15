@@ -53,42 +53,39 @@ export const useFloatingChat = () => {
   // --- WebSocket Subscriptions (연결 상태에 따라 구독) ---
   useEffect(() => {
     if (isSocketConnected) {
-      // 연결 성공 후, 필요한 모든 구독을 여기서 시작
       socketService.subscribe('/topic/update', (data) => {
         console.log('WebSocket message received:', data);
-        setTotalUnreadCount(data.totalUnreadCount);
 
-        // 특정 채팅방 업데이트
-        setChatRooms((prevChatRooms) => {
-          const updatedChatRooms = prevChatRooms.map((room) => {
-            if (room.id === data.chatRoomId) {
-              return {
-                ...room,
-                unreadMessageCount: data.totalUnreadCount,
-                recentMessage: data.recentMessage,
-              };
+        if (!data || typeof data !== 'object') {
+          console.error('Invalid WebSocket message format:', data);
+          return;
+        }
+
+        if (data.memberId === user.id) {
+          setTotalUnreadCount(data.totalUnreadCount);
+
+          setChatRooms((prevChatRooms) => {
+            if (!Array.isArray(prevChatRooms)) {
+              console.error('prevChatRooms is not an array:', prevChatRooms);
+              return prevChatRooms;
             }
-            return room;
-          });
 
-          // 기존 목록에 없는 채팅방인 경우 추가
-          const isExistingRoom = prevChatRooms.some(room => room.id === data.chatRoomId);
-          if (!isExistingRoom) {
-            updatedChatRooms.push({
-              id: data.chatRoomId,
-              unreadMessageCount: data.totalUnreadCount,
-              recentMessage: data.recentMessage,
-              name: '알 수 없는 채팅방', // 기본 이름 설정
+            return prevChatRooms.map((room) => {
+              if (room.id === data.chatRoomId) {
+                return {
+                  ...room,
+                  recentMessage: data.recentMessage,
+                  unreadMessageCount: data.totalUnreadCount,
+                };
+              }
+              return room;
             });
-          }
-
-          return updatedChatRooms;
-        });
+          });
+        }
       });
-      // 다른 전역 구독이 있다면 여기에 추가
     }
     // TODO: 구독 해지 로직 추가 (cleanup)
-  }, [isSocketConnected, setTotalUnreadCount, setChatRooms]);
+  }, [isSocketConnected, user, setTotalUnreadCount, setChatRooms]);
 
   // --- Chat Window Open Logic ---
   useEffect(() => {
@@ -248,6 +245,10 @@ export const useFloatingChat = () => {
       room.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [chatRooms, searchTerm]);
+
+  useEffect(() => {
+    console.log('Filtered Chat Rooms Updated:', filteredChatRooms);
+  }, [filteredChatRooms]);
 
   return {
     isOpen, isMinimized, message, setMessage, currentView, selectedChat, searchTerm, setSearchTerm,

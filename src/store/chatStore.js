@@ -19,13 +19,19 @@ const useChatStore = create((set, get) => ({
   },
   setChatRooms: (rooms) =>
     set((state) => {
+      const prevChatRooms = Array.isArray(state.chatRooms) ? state.chatRooms : [];
+      if (!Array.isArray(rooms)) {
+        console.error('setChatRooms: rooms is not an array', rooms);
+        return state; // 상태를 변경하지 않음
+      }
+
       const updatedRooms = rooms.map((newRoom) => {
-        const existingRoom = state.chatRooms.find((room) => room.id === newRoom.id);
+        const existingRoom = prevChatRooms.find((room) => room.id === newRoom.id);
         return existingRoom ? { ...existingRoom, ...newRoom } : newRoom;
       });
 
       // Add any rooms that are in the current state but not in the new rooms
-      const mergedRooms = state.chatRooms.filter(
+      const mergedRooms = prevChatRooms.filter(
         (room) => !rooms.some((newRoom) => newRoom.id === room.id)
       );
 
