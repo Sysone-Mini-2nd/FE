@@ -1,64 +1,220 @@
-import { useChat } from './useChat'
-import { useChatRooms } from './useChatRooms'
-import { useEmployees } from './useEmployees'
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useAuth } from '../../hooks/useAuth';
+import useChatStore from '../../store/chatStore';
+import * as chatApi from '../../api/chatApi';
+import * as socketService from '../../api/socketService';
+import { useDebounce } from '../useDebounce';
 
 export const useFloatingChat = () => {
-  const chatHook = useChat()
-  const chatRoomsHook = useChatRooms()
-  const employeesHook = useEmployees()
+  const { user } = useAuth();
+  const {
+    chatRooms, setChatRooms, setMessages, addMessage, updateMessage,
+    setTotalUnreadCount, resetUnreadCount, setCurrentUser, removeChatRoom, totalUnreadCount
+  } = useChatStore();
 
-  // 채팅방 생성 로직
-  const handleSelectEmployee = (employee) => {
-    const existingChat = chatRoomsHook.findExistingPrivateChat(employee.name)
-    
-    if (existingChat) {
-      chatHook.selectChatRoom(existingChat)
-    } else {
-      const newChat = {
-        id: Date.now(),
-        name: employee.name,
-        type: 'private',
-        lastMessage: '새로운 채팅이 시작되었습니다.',
-        lastTime: '방금',
-        unreadCount: 0,
-        participants: [employee.name]
-      }
-      chatRoomsHook.addChatRoom(newChat)
-      chatHook.selectChatRoom(newChat)
-    }
-  }
+  // --- UI State ---
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [currentView, setCurrentView] = useState('list');
+  const [selectedChat, setSelectedChat] = useState(null);
+  const [contextMenu, setContextMenu] = useState({ visible: false, x: 0, y: 0, roomId: null });
+  const [isSocketConnected, setIsSocketConnected] = useState(false); // 소켓 연결 상태
 
-  const handleCreateGroupChat = () => {
-    if (employeesHook.selectedEmployees.length === 1) {
-      handleSelectEmployee(employeesHook.selectedEmployees[0])
-    } else if (employeesHook.selectedEmployees.length > 1) {
-      const groupName = employeesHook.selectedEmployees.map(emp => emp.name).join(', ')
-      const newChat = {
-        id: Date.now(),
-        name: groupName,
-        type: 'group',
-        lastMessage: '그룹 채팅이 시작되었습니다.',
-        lastTime: '방금',
-        unreadCount: 0,
-        participants: employeesHook.selectedEmployees.map(emp => emp.name)
-      }
-      chatRoomsHook.addChatRoom(newChat)
-      chatHook.selectChatRoom(newChat)
+  // --- Form State ---
+  const [message, setMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [employeeSearchTerm, setEmployeeSearchTerm] = useState('');
+  const [groupName, setGroupName] = useState('');
+  
+  // --- Data State ---
+  const [allEmployees, setAllEmployees] = useState([]);
+  const [selectedEmployees, setSelectedEmployees] = useState([]);
+
+  const debouncedSearchTerm = useDebounce(employeeSearchTerm, 500);
+
+  // --- WebSocket Connection & Initial Data Fetching ---
+  useEffect(() => {
+    if (user) {
+      setCurrentUser(user);
+      // 로그인하면 바로 전체 안읽은 개수 가져오기 (REST API)
+      chatApi.fetchTotalUnreadCount().then(response => setTotalUnreadCount(response.data.data.totalUnreadCount));
+      
+      // WebSocket 연결 시작
+      socketService.connectWebSocket(() => {
+        setIsSocketConnected(true); // 연결 성공 시 상태만 변경
+      });
     }
-    employeesHook.clearSelectedEmployees()
-  }
+    return () => {
+      socketService.disconnectWebSocket();
+      setIsSocketConnected(false);
+    };
+  }, [user, setCurrentUser, setTotalUnreadCount]);
+
+  // --- WebSocket Subscriptions (연결 상태에 따라 구독) ---
+  useEffect(() => {
+    if (isSocketConnected) {
+      // 연결 성공 후, 필요한 모든 구독을 여기서 시작
+      socketService.subscribeToUserQueue('total-unread', (data) => {
+        setTotalUnreadCount(data.totalUnreadCount);
+      });
+      // 다른 전역 구독이 있다면 여기에 추가
+    }
+    // TODO: 구독 해지 로직 추가 (cleanup)
+  }, [isSocketConnected, setTotalUnreadCount]);
+
+  // --- Chat Window Open Logic ---
+  useEffect(() => {
+    if (isOpen && user) {
+      chatApi.fetchChatRooms().then(response => setChatRooms(response.data.data));
+    }
+  }, [isOpen, user, setChatRooms]);
+
+  // --- 이전 메시지 로딩 및 읽음 처리 ---
+  useEffect(() => {
+    if (selectedChat) {
+      chatApi.fetchMessages(selectedChat.id).then(response => {
+        const messages = response.data.data;
+        setMessages(selectedChat.id, messages);
+        if (messages && messages.length > 0 && selectedChat.unreadMessageCount > 0) {
+          const lastMessageId = messages[messages.length - 1].id;
+          chatApi.markAllAsRead(selectedChat.id, lastMessageId).then(() => {
+            chatApi.fetchTotalUnreadCount().then(res => setTotalUnreadCount(res.data.data.totalUnreadCount));
+          });
+        }
+      });
+    }
+  }, [selectedChat, setMessages, setTotalUnreadCount]);
+
+  // --- 실시간 메시지 구독 ---
+  useEffect(() => {
+    let subscription;
+    if (selectedChat && isSocketConnected) {
+      subscription = socketService.subscribeToChatRoom(selectedChat.id, (newMessage) => {
+        if (newMessage.type === 'DELETED') {
+          updateMessage(selectedChat.id, newMessage);
+        } else {
+          addMessage(selectedChat.id, newMessage);
+        }
+      });
+    }
+    return () => {
+      if (subscription && selectedChat) {
+        socketService.unsubscribe(`/topic/chatroom/${selectedChat.id}`);
+      }
+    };
+  }, [selectedChat, isSocketConnected, addMessage, updateMessage]);
+
+  // --- Employee Search Logic ---
+  useEffect(() => {
+    if (currentView === 'createChat') {
+      const promise = debouncedSearchTerm ? chatApi.searchMembers(debouncedSearchTerm) : chatApi.fetchAllMembers();
+      promise.then(response => setAllEmployees(response.data.data));
+    }
+  }, [debouncedSearchTerm, currentView]);
+
+  // --- Event Handlers (이하 동일) ---
+  const toggleChat = () => setIsOpen(!isOpen);
+  const toggleMinimize = () => setIsMinimized(!isMinimized);
+  const backToList = () => {
+    setSelectedChat(null);
+    setCurrentView('list');
+    setIsInviteMode(false); // 초대 모드 초기화
+  };
+
+  const selectChatRoom = (room) => {
+    setSelectedChat(room);
+    setCurrentView('chat');
+    resetUnreadCount(room.id);
+  };
 
   const handleGoToCreateChat = () => {
-    chatHook.goToCreateChat()
-    employeesHook.clearSelectedEmployees()
-  }
+    setSelectedEmployees([]);
+    setEmployeeSearchTerm('');
+    setGroupName('');
+    setCurrentView('createChat');
+  };
+
+  const handleToggleEmployee = (employee) => {
+    setSelectedEmployees(prev => 
+      prev.some(e => e.id === employee.id)
+        ? prev.filter(e => e.id !== employee.id)
+        : [...prev, employee]
+    );
+  };
+
+  const handleCreateGroupChat = async () => {
+    if (selectedEmployees.length === 0) return;
+    const memberIdList = selectedEmployees.map(e => e.id);
+    if (user && !memberIdList.includes(user.id)) {
+        memberIdList.push(user.id);
+    }
+    let roomName, type;
+    if (memberIdList.length <= 2 && selectedEmployees.length === 1) {
+      type = 'One_On_One';
+      roomName = selectedEmployees[0].name;
+    } else {
+      if (!groupName.trim()) { alert('그룹 채팅방 이름을 입력해주세요.'); return; }
+      type = 'Group';
+      roomName = groupName;
+    }
+    try {
+      await chatApi.createChatRoom(memberIdList, roomName, type);
+      const response = await chatApi.fetchChatRooms();
+      setChatRooms(response.data.data);
+      backToList();
+    } catch (error) {
+      console.error('Failed to create chat room:', error);
+    }
+  };
+
+  const handleContextMenu = useCallback((event, room) => {
+    event.preventDefault();
+    setContextMenu({ visible: true, x: event.clientX, y: event.clientY, roomId: room.id });
+  }, []);
+
+  const closeContextMenu = useCallback(() => {
+    setContextMenu(prev => ({ ...prev, visible: false }));
+  }, []);
+
+  const handleLeaveChatRoom = useCallback(async () => {
+    if (!contextMenu.roomId) return;
+    try {
+      await chatApi.leaveChatRoom(contextMenu.roomId);
+      removeChatRoom(contextMenu.roomId);
+      if (selectedChat?.id === contextMenu.roomId) {
+        backToList();
+      }
+    } catch (error) {
+      console.error("Failed to leave chat room:", error);
+    } finally {
+      closeContextMenu();
+    }
+  }, [contextMenu.roomId, selectedChat, removeChatRoom, backToList, closeContextMenu]);
+
+  const handleSendMessage = useCallback((e) => {
+    e.preventDefault();
+    if (!message.trim() || !selectedChat || !user) return;
+    const messageDto = {
+      chatRoomId: selectedChat.id,
+      senderId: user.id,
+      content: message,
+      type: 'TEXT'
+    };
+    socketService.sendMessage(messageDto);
+    setMessage('');
+  }, [message, selectedChat, user, setMessage]);
+
+  const filteredChatRooms = useMemo(() => 
+    (chatRooms || []).filter(room => 
+      room.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [chatRooms, searchTerm]);
 
   return {
-    ...chatHook,
-    ...chatRoomsHook,
-    ...employeesHook,
-    handleSelectEmployee,
-    handleCreateGroupChat,
-    handleGoToCreateChat
-  }
-}
+    isOpen, isMinimized, message, setMessage, currentView, selectedChat, searchTerm, setSearchTerm,
+    employeeSearchTerm, setEmployeeSearchTerm, selectedEmployees, filteredEmployees: allEmployees,
+    groupName, setGroupName, filteredChatRooms, contextMenu, totalUnreadCount,
+    toggleChat, selectChatRoom, backToList, toggleMinimize, handleGoToCreateChat,
+    handleToggleEmployee, handleCreateGroupChat, handleContextMenu, closeContextMenu, handleLeaveChatRoom,
+    handleSendMessage
+  };
+};

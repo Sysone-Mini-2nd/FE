@@ -6,7 +6,9 @@ const EmployeeSearch = ({
   filteredEmployees, 
   selectedEmployees, 
   onToggleEmployee, 
-  onCreateGroupChat 
+  onCreateGroupChat, 
+  groupName, 
+  onGroupNameChange 
 }) => {
   return (
     <div className="flex flex-col h-full bg-white/50 rounded-b-lg">
@@ -72,6 +74,17 @@ const EmployeeSearch = ({
               ))}
             </div>
           </div>
+          {selectedEmployees.length > 1 && (
+            <div className="mb-3">
+              <input
+                type="text"
+                placeholder="그룹 채팅방 이름을 입력하세요..."
+                value={groupName}
+                onChange={(e) => onGroupNameChange(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+              />
+            </div>
+          )}
           <button
             onClick={onCreateGroupChat}
             className="w-full bg-emerald-400 hover:bg-emerald-500 text-white py-2 px-4 rounded-lg transition-colors"

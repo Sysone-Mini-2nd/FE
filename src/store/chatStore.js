@@ -1,131 +1,71 @@
-import { create } from 'zustand'
-import { chatRoomsData } from '../data/chatRooms'
+import { create } from 'zustand';
 
 const useChatStore = create((set, get) => ({
-  // 채팅방 목록
-  chatRooms: chatRoomsData,
-  
-  // 각 채팅방의 메시지들 (chatRoomId를 key로 하는 객체)
-  messages: {
-    // 예시: { 1: [message1, message2], 2: [message3, message4] }
-  },
-
-  // 현재 사용자 설정 (AuthContext에서 사용자 정보를 받아서 설정)
+  // --- STATE ---
+  chatRooms: [],
+  messages: {}, // { [chatRoomId]: ChatMessageResponseDto[] }
+  totalUnreadCount: 0,
   currentUser: null,
-  
-  // 현재 사용자 설정
+
+  // --- ACTIONS ---
+
+  // 현재 사용자 정보 설정 (최초 1회)
   setCurrentUser: (user) => set({ currentUser: user }),
 
-  // 채팅방 추가
-  addChatRoom: (newChatRoom) => set((state) => ({
-    chatRooms: [newChatRoom, ...state.chatRooms],
-    messages: { ...state.messages, [newChatRoom.id]: [] }
-  })),
+  // 채팅방 목록 전체 설정
+  setChatRooms: (rooms) => set({ chatRooms: rooms }),
 
-  // 메시지 전송
-  sendMessage: (chatRoomId, messageText) => {
-    const { currentUser } = get()
-    if (!currentUser) return null;
-    
-    const newMessage = {
-      id: Date.now(),
-      text: messageText,
-      sender: currentUser.name,
-      senderId: currentUser.id || currentUser.account_id,
-      timestamp: new Date().toISOString(),
-      type: 'text'
-    }
+  // 특정 채팅방 메시지 목록 설정
+  setMessages: (roomId, messages) =>
+    set((state) => ({
+      messages: { ...state.messages, [roomId]: messages },
+    })),
 
+  // 채팅방 퇴장 시 목록에서 제거
+  removeChatRoom: (roomId) =>
+    set((state) => ({
+      chatRooms: state.chatRooms.filter((room) => room.id !== roomId),
+    })),
+
+  // 전체 안 읽은 메시지 개수 설정
+  setTotalUnreadCount: (count) => set({ totalUnreadCount: count }),
+
+  // 특정 방 안 읽은 개수 리셋
+  resetUnreadCount: (roomId) =>
     set((state) => {
-      const updatedMessages = {
-        ...state.messages,
-        [chatRoomId]: [...(state.messages[chatRoomId] || []), newMessage]
-      }
+      const roomToReset = state.chatRooms.find((room) => room.id === roomId);
+      if (!roomToReset || !roomToReset.unreadMessageCount) return {};
 
-      // 채팅방의 lastMessage도 업데이트
-      const updatedChatRooms = state.chatRooms.map(room => 
-        room.id === chatRoomId 
-          ? { 
-              ...room, 
-              lastMessage: messageText,
-              lastTime: new Date().toLocaleTimeString('ko-KR', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })
-            }
-          : room
-      )
-
+      const countToSubtract = roomToReset.unreadMessageCount;
       return {
-        messages: updatedMessages,
-        chatRooms: updatedChatRooms
-      }
-    })
+        chatRooms: state.chatRooms.map((room) =>
+          room.id === roomId ? { ...room, unreadMessageCount: 0 } : room
+        ),
+        totalUnreadCount: Math.max(0, state.totalUnreadCount - countToSubtract),
+      };
+    }),
 
-    return newMessage
-  },
+  // --- GETTERS ---
+  getMessages: (chatRoomId) => get().messages[chatRoomId] || [],
 
-  // 특정 채팅방의 메시지 가져오기
-  getMessages: (chatRoomId) => {
-    const { messages } = get()
-    return messages[chatRoomId] || []
-  },
-
-  // 채팅방 찾기
-  findChatRoom: (participantName) => {
-    const { chatRooms } = get()
-    return chatRooms.find(room => 
-      room.type === 'private' && 
-      room.participants.includes(participantName)
-    )
-  },
-
-  // 받은 메시지 추가 (다른 사용자로부터)
-  receiveMessage: (chatRoomId, messageText, senderName) => {
-    const newMessage = {
-      id: Date.now(),
-      text: messageText,
-      sender: senderName,
-      senderId: senderName,
-      timestamp: new Date().toISOString(),
-      type: 'text'
-    }
-
-    set((state) => {
-      const updatedMessages = {
+  // --- 실시간 메시지 처리 ---
+  addMessage: (roomId, message) =>
+    set((state) => ({
+      messages: {
         ...state.messages,
-        [chatRoomId]: [...(state.messages[chatRoomId] || []), newMessage]
-      }
+        [roomId]: [...(state.messages[roomId] || []), message],
+      },
+    })),
 
-      const updatedChatRooms = state.chatRooms.map(room => 
-        room.id === chatRoomId 
-          ? { 
-              ...room, 
-              lastMessage: messageText,
-              lastTime: new Date().toLocaleTimeString('ko-KR', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              }),
-              unreadCount: room.unreadCount + 1
-            }
-          : room
-      )
+  updateMessage: (roomId, updatedMessage) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [roomId]: state.messages[roomId].map((msg) =>
+          msg.id === updatedMessage.id ? { ...msg, ...updatedMessage } : msg
+        ),
+      },
+    })),
+}));
 
-      return {
-        messages: updatedMessages,
-        chatRooms: updatedChatRooms
-      }
-    })
-  },
-
-  // 읽음 처리
-  markAsRead: (chatRoomId) => set((state) => ({
-    chatRooms: state.chatRooms.map(room => 
-      room.id === chatRoomId 
-        ? { ...room, unreadCount: 0 }
-        : room
-    )
-  }))
-}))
-
-export default useChatStore
+export default useChatStore;
