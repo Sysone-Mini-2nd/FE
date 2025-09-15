@@ -40,6 +40,10 @@ const performSubscribe = (destination, callback) => {
     return subscription;
 };
 
+const BASE_URL = window.location.hostname === "localhost"
+  ? "https://localhost:8081/ws/chat"
+  : "https://api.sysonetaskmanager.store/ws/chat";
+
 // WebSocket 연결
 export const connectWebSocket = (onConnected) => {
     if (stompClient && stompClient.active) {
@@ -50,7 +54,7 @@ export const connectWebSocket = (onConnected) => {
     }
 
     stompClient = new Client({
-        webSocketFactory: () => new SockJS('http://localhost:8081/ws/chat'), // 백엔드 포트 8081로 수정
+        webSocketFactory: () => new SockJS(BASE_URL),
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
