@@ -24,7 +24,7 @@ function ProjectManager() {
   const [viewType, setViewType] = useState('card');
   const [searchTerm, setSearchTerm] = useState('');
   const [filters, setFilters] = useState({ status: 'all', priority: 'all' });
-  const [sortBy, setSortBy] = useState('created');
+  const [sortBy, setSortBy] = useState('CREATED_AT');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -32,7 +32,7 @@ function ProjectManager() {
     search: searchTerm,
     status: filters.status === 'all' ? null : statusMap[filters.status],
     priority: filters.priority === 'all' ? null : priorityMap[filters.priority],
-    sort: sortBy,
+    sortBy: sortBy,
   }), [searchTerm, filters, sortBy]);
 
   const { data: projectData, isLoading: projectsLoading, isError: projectsError } = useProjects(apiFilters);

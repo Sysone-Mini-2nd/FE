@@ -27,11 +27,10 @@ function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
   ];
 
   const sortOptions = [
-    { value: "created", label: "생성일순" },
-    { value: "name", label: "이름순" },
-    { value: "progress", label: "진행률순" },
-    { value: "endDate", label: "마감일순" },
-    { value: "priority", label: "우선순위순" }
+    { value: "CREATED_AT", label: "생성일순" },
+    { value: "NAME", label: "이름순" },
+    { value: "END_DATE", label: "마감일순" },
+    { value: "PRIORITY", label: "우선순위순" }
   ];
 
   return (
@@ -77,7 +76,7 @@ function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
         </div>
 
         {/* 필터 초기화 */}
-        {(filters.status !== 'all' || filters.priority !== 'all' || filters.assignee !== 'all' || filters.period !== 'all') && (
+        {(filters.status !== 'all' || filters.priority !== 'all') && (
           <button
             onClick={() => onFiltersChange({
               status: 'all',
