@@ -1,161 +1,77 @@
-import React from 'react'
-import ProjectCard from './ProjectCard'
-import ProjectTable from './ProjectTable'
+import React, {useContext} from 'react';
+import ProjectCard from './ProjectCard';
+import ProjectTable from './ProjectTable';
+// 1. 삭제 기능을 위해 useDeleteProject 훅을 import 합니다.
+import { useDeleteProject } from '../../hooks/useProjectQueries';
+import AuthContext from "../../contexts/AuthContext.jsx";
 
 function ProjectList({ 
-  projects, 
-  viewType, 
-  searchTerm, 
-  filters, 
-  sortBy, 
-  onProjectSelect, 
-  onProjectUpdate 
+  projects,
+  viewType,
+  onProjectSelect,
 }) {
-  // 필터링 로직
-  const filteredProjects = projects.filter(project => {
-    // 검색어 필터
-    if (searchTerm && !project.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        !project.description.toLowerCase().includes(searchTerm.toLowerCase())) {
-      return false
-    }
-
-    // 상태 필터
-    if (filters.status !== 'all' && project.status !== filters.status) {
-      return false
-    }
-
-    // 우선순위 필터
-    if (filters.priority !== 'all' && project.priority !== filters.priority) {
-      return false
-    }
-
-    // 담당자 필터
-    if (filters.assignee !== 'all' && project.manager !== filters.assignee) {
-      return false
-    }
-
-    // 기간 필터
-    if (filters.period !== 'all') {
-      const endDate = new Date(project.endDate)
-      const today = new Date()
-      const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()))
-      const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1)
-      const startOfQuarter = new Date(today.getFullYear(), Math.floor(today.getMonth() / 3) * 3, 1)
-
-      switch (filters.period) {
-        case 'thisWeek':
-          if (endDate < startOfWeek) return false
-          break
-        case 'thisMonth':
-          if (endDate < startOfMonth) return false
-          break
-        case 'thisQuarter':
-          if (endDate < startOfQuarter) return false
-          break
-        case 'overdue':
-          if (project.status !== 'progress' || endDate >= new Date()) return false
-          break
-        default:
-          break
-      }
-    }
-
-    return true
-  })
-
-  // 정렬 로직
-  const sortedProjects = [...filteredProjects].sort((a, b) => {
-    switch (sortBy) {
-      case 'name':
-        return a.name.localeCompare(b.name)
-      case 'progress':
-        return b.progress - a.progress
-      case 'endDate':
-        return new Date(a.endDate) - new Date(b.endDate)
-      case 'priority': {
-        const priorityOrder = { high: 3, medium: 2, low: 1 }
-        return priorityOrder[b.priority] - priorityOrder[a.priority]
-      }
-      case 'created':
-      default:
-        return b.id - a.id
-    }
-  })
+  // 2. 삭제 뮤테이션 훅을 호출합니다.
+  const deleteProjectMutation = useDeleteProject();
+  const { user } = useContext(AuthContext); // 현재 사용자 정보 가져오기
 
   const handleProjectAction = (action, project) => {
     switch (action) {
       case 'view':
       case 'edit':
-        onProjectSelect(project)
-        break
+        onProjectSelect(project);
+        break;
+      // 3. 'delete' 액션이 들어왔을 때, 뮤테이션을 실행합니다.
       case 'delete':
-        if (window.confirm('정말로 이 프로젝트를 삭제하시겠습니까?')) {
-          onProjectUpdate(prev => prev.filter(p => p.id !== project.id))
+        if (window.confirm(`정말로 '${project.name}' 프로젝트를 삭제하시겠습니까?`)) {
+          deleteProjectMutation.mutate(project.id);
         }
-        break
-      case 'clone': {
-        const clonedProject = {
-          ...project,
-          id: Date.now(),
-          name: `${project.name} (복사본)`,
-          status: 'planning',
-          progress: 0,
-          completedTasks: 0
-        }
-        onProjectUpdate(prev => [...prev, clonedProject])
-        break
-      }
-      case 'star':
-        onProjectUpdate(prev => prev.map(p => 
-          p.id === project.id ? { ...p, isStarred: !p.isStarred } : p
-        ))
-        break
+        break;
       default:
-        break
+        console.log('Unhandled action:', action);
+        break;
     }
-  }
+  };
 
-  if (sortedProjects.length === 0) {
+  if (!projects || projects.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-gray-400 text-6xl mb-4">📁</div>
         <h3 className="text-lg font-medium text-gray-900 mb-2">프로젝트가 없습니다</h3>
         <p className="text-gray-500">
-          {searchTerm || Object.values(filters).some(f => f !== 'all') 
-            ? '검색 조건에 맞는 프로젝트를 찾을 수 없습니다.' 
-            : '새 프로젝트를 생성하여 시작해보세요.'
-          }
+          표시할 프로젝트가 없거나, 새 프로젝트를 생성하여 시작해보세요.
         </p>
       </div>
-    )
+    );
   }
 
-  // 뷰 타입에 따른 렌더링
   switch (viewType) {
     case 'card':
       return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {sortedProjects.map(project => (
+          {projects.map(project => (
             <ProjectCard
               key={project.id}
               project={project}
               onAction={handleProjectAction}
+              isPm={project?.pmId === user?.id}
+              user={user}
             />
           ))}
         </div>
-      )
+      );
     
     case 'table':
       return (
         <ProjectTable
-          projects={sortedProjects}
+          projects={projects}
           onAction={handleProjectAction}
+          user={user}
         />
-      )
+      );
     
     default:
-      return null
+      return null;
   }
 }
 
-export default ProjectList
+export default ProjectList;

@@ -11,7 +11,7 @@ import { ToastProvider } from './contexts/ToastContext.jsx'
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5분
+      // staleTime: 3 * 60 * 1000,
       retry: 1,
     },
   },

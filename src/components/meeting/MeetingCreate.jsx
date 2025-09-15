@@ -1,26 +1,39 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ArrowBack, Mic, Stop, PlayArrow, Pause } from "@mui/icons-material";
 import { employeesData } from "../../data/employees";
 import Dropdown from '../common/Dropdown';
 import { LoadingSpinner } from '../common/loading/LoadingComponents';
 import { useCreateMeeting, useUpdateMeeting } from '../../hooks/useMeetingQueries';
 import { useToast } from '../../hooks/useToast';
+import { getProjectParticipants } from '../../api/meetingAPI';
 
-function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
+function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false, projectId }) {
   const [meetingData, setMeetingData] = useState({
     title: meeting?.title || "",
     place: meeting?.location || meeting?.place || "",
     participants: meeting?.participants || [],
     content: meeting?.description || meeting?.memo || meeting?.content || "",
     type: meeting?.type || "MEETING",
-    progressDate: meeting?.progressDate || new Date().toISOString().slice(0, -1) + '+09:00',
+    progressDate: meeting?.progressDate || (() => {
+      // 현재 시간에 18시간 추가
+      const now = new Date();
+      now.setHours(now.getHours() + 18);
+      return now.toISOString().slice(0, -1) + '+09:00'; // 한국 시간대
+    })(),
   });
+
+  console.log('MeetingCreate에서 받은 projectId:', projectId);
+  console.log('projectId 타입:', typeof projectId);
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [audioBlob, setAudioBlob] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [showParticipantDropdown, setShowParticipantDropdown] = useState(false);
+
+  // 팀 인원 데이터 상태 추가
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(false);
 
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
@@ -44,6 +57,39 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
     { value: 'RETROSPECTIVE', label: 'Sprint Retrospective' }
   ];
 
+  // 팀 인원 조회 함수 추가
+  const fetchTeamMembers = useCallback(async () => {
+    setIsLoadingMembers(true);
+    try {
+      const response = await getProjectParticipants(projectId);
+      
+      if (response.statusCode === 200) {
+        // 서버 응답 데이터를 컴포넌트에서 사용할 수 있는 형태로 변환
+        const members = response.data.map(member => ({
+          id: member.memberId || member.id,
+          name: member.memberName || member.name,
+          email: member.email,
+          department: member.department,
+          position: member.position
+        }));
+        setTeamMembers(members);
+      }
+    } catch (error) {
+      console.error('팀 인원 조회 실패:', error);
+      showError('팀 인원 정보를 불러오는데 실패했습니다.');
+      // 실패 시 기본 데이터 사용
+      setTeamMembers(employeesData);
+    } finally {
+      setIsLoadingMembers(false);
+    }
+  }, [projectId, showError]);
+
+  // 컴포넌트 마운트 시 팀 인원 조회
+  useEffect(() => {
+    fetchTeamMembers();
+  }, [fetchTeamMembers]);
+
+
   // 입력값 변경 핸들러
   const handleInputChange = (field, value) => {
     setMeetingData((prev) => ({
@@ -52,13 +98,13 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
     }));
   };
 
-  // 참석자 선택/해제 - ID 기반으로 수정
-  const toggleParticipant = (employee) => {
+  // 참석자 선택/해제 - 팀 인원 데이터 사용
+  const toggleParticipant = (member) => {
     setMeetingData((prev) => ({
       ...prev,
-      participants: prev.participants.includes(employee.id)
-        ? prev.participants.filter((id) => id !== employee.id)
-        : [...prev.participants, employee.id],
+      participants: prev.participants.includes(member.id)
+        ? prev.participants.filter((id) => id !== member.id)
+        : [...prev.participants, member.id],
     }));
   };
 
@@ -152,27 +198,29 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
       participantIds: meetingData.participants
     };
 
-    const projectId = 1; // 현재는 1번 프로젝트만 있다고 가정
-
     try {
       let result;
       if (isEditing && meeting?.id) {
-        // 수정 모드
+        // 수정 모드 - 오디오 파일 전송
         result = await updateMutation.mutateAsync({
           projectId,
           meetingId: meeting.id,
-          meetingData: requestData
+          meetingData: requestData,
+          audioFile: audioBlob // 오디오 파일 추가
         });
         showSuccess("회의록이 성공적으로 수정되었습니다.");
       } else {
-        // 생성 모드
+        // 생성 모드 - 오디오 파일 전송
         result = await createMutation.mutateAsync({
           projectId,
-          meetingData: requestData
+          meetingData: requestData,
+          audioFile: audioBlob // 오디오 파일 추가
         });
         showSuccess("회의록이 성공적으로 저장되었습니다.");
       }
 
+      console.log('API 응답:', result); // 응답 확인용 로그
+      console.log('전송된 오디오 파일:', audioBlob); // 오디오 파일 확인용 로그
       console.log('API 응답:', result); // 응답 확인용 로그
 
       // 성공 시 콜백 호출
@@ -309,48 +357,68 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false }) {
 
                   {showParticipantDropdown && (
                     <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                      {employeesData.map((employee) => (
-                        <div
-                          key={employee.id}
-                          className="flex items-center px-3 py-2 hover:bg-gray-50 cursor-pointer"
-                          onClick={() => toggleParticipant(employee)}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={meetingData.participants.includes(
-                              employee.id
-                            )}
-                            onChange={() => {}}
-                            className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
-                          />
-                          <div className="ml-3">
-                            <div className="text-sm font-medium text-gray-900">
-                              {employee.name}
-                            </div>
-                            <div className="text-xs text-gray-500">
-                              {employee.department} · {employee.position}
-                            </div>
-                          </div>
+                      {isLoadingMembers ? (
+                        <div className="p-4 text-center text-gray-500">
+                          <LoadingSpinner message="팀 인원을 불러오는 중..." />
                         </div>
-                      ))}
+                      ) : (
+                        <div className="py-1">
+                          {teamMembers.map((member) => (
+                            <button
+                              key={member.id}
+                              type="button"
+                              onClick={() => toggleParticipant(member)}
+                              className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center justify-between ${
+                                meetingData.participants.includes(member.id)
+                                  ? 'bg-blue-50 text-blue-700'
+                                  : 'text-gray-700'
+                              }`}
+                            >
+                              <div className="flex flex-col">
+                                <span className="font-medium">{member.name}</span>
+                                {member.department && (
+                                  <span className="text-sm text-gray-500">{member.department}</span>
+                                )}
+                                {member.position && (
+                                  <span className="text-sm text-gray-500">{member.position}</span>
+                                )}
+                              </div>
+                              {meetingData.participants.includes(member.id) && (
+                                <svg
+                                  className="w-5 h-5 text-blue-600"
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              )}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
 
-                {/* 선택된 참석자 표시 - 이름으로 표시하되 ID 기반으로 관리 */}
+                {/* 선택된 참석자 표시 - 팀 인원 데이터 사용 */}
                 {meetingData.participants.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {meetingData.participants.map((participantId) => {
-                      const participant = employeesData.find(emp => emp.id === participantId);
+                      const participant = teamMembers.find(member => member.id === participantId);
                       return participant ? (
                         <span
                           key={participantId}
-                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800"
+                          className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
                         >
                           {participant.name}
                           <button
+                            type="button"
                             onClick={() => toggleParticipant(participant)}
-                            className="ml-1 hover:text-blue-600"
+                            className="ml-2 text-blue-600 hover:text-blue-800"
                           >
                             ×
                           </button>

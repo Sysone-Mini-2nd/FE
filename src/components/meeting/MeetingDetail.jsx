@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   ArrowBack,
   CalendarToday,
@@ -7,16 +8,25 @@ import {
   Email,
   Article,
 } from "@mui/icons-material";
+import { downloadMeetingReport } from "../../api/meetingAPI";
+
 import BadgeComponent from "../common/BadgeComponent";
 import ParticipantList from "../common/ParticipantList";
 import MeetingMetadata from "../common/MeetingMetadata";
 import AudioPlayer from "../common/AudioPlayer";
 import AISummaryPanel from "../common/AISummaryPanel";
 import { useToast } from "../../hooks/useToast";
+import EmailSendModal from "./EmailSendModal"; 
 
 function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
   // Toast hook
   const { showError } = useToast();
+
+    // 다운로드 상태 추가
+  const [isDownloading, setIsDownloading] = useState(false);
+
+    // 이메일 전송 모달 상태 추가
+  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   if (!meeting) {
     return (
@@ -34,6 +44,42 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
     );
   }
 
+  // 이메일 전송 핸들러 함수 추가
+  const handleEmailSend = () => {
+    if (!meeting?.projectId || !meeting?.id) {
+      showError("프로젝트 ID 또는 회의 ID가 없습니다.");
+      return;
+    }
+    setIsEmailModalOpen(true);
+  };
+
+  //  다운로드 핸들러 함수 추가 (handleDelete 함수 아래에 추가)
+  const handleDownloadReport = async () => {
+    if (!meeting?.projectId || !meeting?.id) {
+      showError("프로젝트 ID 또는 회의 ID가 없습니다.");
+      return;
+    }
+    
+    setIsDownloading(true);
+    try {
+      const result = await downloadMeetingReport(meeting.projectId, meeting.id);
+      // 성공 메시지는 부모 컴포넌트에서 처리하거나 여기서 처리
+      console.log(`${result.fileName} 다운로드가 완료되었습니다.`);
+    } catch (error) {
+      console.error('다운로드 중 오류가 발생했습니다:', error);
+      if (error.response?.status === 404) {
+        showError("회의록을 찾을 수 없습니다.");
+      } else if (error.response?.status === 500) {
+        showError("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      } else {
+        showError("다운로드 중 오류가 발생했습니다.");
+      }
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  
   // 날짜 포맷팅
   const formatDateTime = (dateTimeStr) => {
     const date = new Date(dateTimeStr);
@@ -137,12 +183,15 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
             </div>
 
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => {}}
-                className="px-4 py-2 text-black hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2"
+            <button
+                onClick={handleDownloadReport}
+                disabled={isDownloading}
+                className={`px-4 py-2 text-black hover:bg-blue-50 rounded-lg transition-colors flex items-center gap-2 ${
+                  isDownloading ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 <Article />
-                AI 리포트 생성
+                {isDownloading ? '다운로드 중...' : 'AI 리포트 생성'}
               </button>
               <button
                 onClick={() => {
@@ -150,9 +199,14 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
                 }}
                 className="px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-2"
               >
-                <Email />
-                이메일 전송
               </button>
+              <button
+              onClick={handleEmailSend}
+              className="px-4 py-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors flex items-center gap-2"
+            >   
+              <Email />
+              이메일 전송
+            </button>
             </div>
           </div>
         </div>
@@ -192,10 +246,19 @@ function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
         {/* 우측 영역 - AI 정리 창 */}
         <div className="col-span-2">
           <div className="rounded-lg mt-16">
-            <AISummaryPanel summary={meeting.aiSummary} />
+            <AISummaryPanel summary={meeting.summary} />
           </div>
         </div>
       </div>
+      
+      {/* 이메일 전송 모달 */}
+      <EmailSendModal
+        isOpen={isEmailModalOpen}
+        onClose={() => setIsEmailModalOpen(false)}
+        projectId={meeting?.projectId}
+        meetingId={meeting?.id}
+        meetingTitle={meeting?.title}
+      />
     </div>
   );
 }
