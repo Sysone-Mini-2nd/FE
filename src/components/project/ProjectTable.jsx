@@ -5,7 +5,8 @@ import DataTable from '../common/DataTable';
 
 const columnHelper = createColumnHelper();
 
-function ProjectTable({ projects, onAction }) {
+function ProjectTable({ projects, onAction, user }) {
+
   const getStatusBadge = (status) => {
     const statusConfig = {
       'IN_PROGRESS': { label: '진행중', className: 'bg-green-100 text-green-800 border-green-200' },
@@ -130,34 +131,52 @@ function ProjectTable({ projects, onAction }) {
     columnHelper.display({
       id: 'actions',
       header: '',
-      cell: info => (
-        <div className="relative group">
-          <button className="p-1 hover:bg-gray-100 rounded">
-            <MoreVert className="w-4 h-4 text-gray-500" />
-          </button>
-          <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-sm py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all z-10">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onAction('edit', info.row.original);
-              }}
-              className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
-            >
-              편집
+      cell: info => {
+        const project = info.row.original;
+        const isPm = project?.pmId === user?.id;
+        console.log(project.pmId);
+
+        // 디버깅을 위한 로그 추가
+        console.log(
+            `Project: ${project.name}
+            , isPm: ${isPm}, user.role: ${user?.role}
+            , pmId: ${project?.pmId}
+            , userId: ${user?.id}`)
+
+        // PM이거나 MASTER가 아니면 메뉴를 숨김
+        if (!isPm && user?.role !== 'MASTER') {
+          return null;
+        }
+
+        return (
+          <div className="relative group">
+            <button className="p-1 hover:bg-gray-100 rounded">
+              <MoreVert className="w-4 h-4 text-gray-500" />
             </button>
-            <div className="border-t border-gray-100 my-1"></div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onAction('delete', info.row.original);
-              }}
-              className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
-            >
-              삭제
-            </button>
+            <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 shadow-sm py-1 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all z-10">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction('edit', project);
+                }}
+                className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                편집
+              </button>
+              <div className="border-t border-gray-100 my-1"></div>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onAction('delete', project);
+                }}
+                className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50"
+              >
+                삭제
+              </button>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     }),
   ]
 

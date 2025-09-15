@@ -74,7 +74,7 @@ function ProjectDetail() {
   const renderTabContent = () => {
     switch (activeTab) {
       case "kanban":
-        return <Kanban projectId={projectId} />;
+        return <Kanban projectId={projectId} members={project.members} isPm={isCurrentUserPM}/>;
       case "timeline":
         return <GanttChart projectId={projectId} />;
       case "meeting":

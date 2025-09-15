@@ -8,7 +8,7 @@ import {
   MoreVert
 } from '@mui/icons-material';
 
-function KanbanCard({ item, index, onCardClick, onDelete }) {
+function KanbanCard({ item, index, onCardClick, onDelete, isPm }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const getPriorityColor = (priority) => {
@@ -47,9 +47,9 @@ function KanbanCard({ item, index, onCardClick, onDelete }) {
           <div className="relative z-10">
             <div className="flex items-start justify-between mb-3">
               <h4 className="font-medium text-gray-900 line-clamp-2 pr-4">{item.title}</h4>
-              
+
               <div className="relative">
-                <button 
+                <button
                   className="p-1 hover:bg-white/50 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={handleMenuToggle}>
                   <MoreVert className="w-4 h-4 text-gray-500" />

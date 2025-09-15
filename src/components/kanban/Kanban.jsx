@@ -13,7 +13,7 @@ const columnMap = {
 
 const columnOrder = ['TODO', 'IN_PROGRESS', 'DONE'];
 
-function Kanban({ projectId, members = [] }) {
+function Kanban({ projectId, members = [] }, isPm) {
   const { data: issues, isLoading, isError } = useProjectIssues(projectId);
   const createIssueMutation = useCreateIssue();
   const updateIssueMutation = useUpdateIssue();
@@ -121,6 +121,7 @@ function Kanban({ projectId, members = [] }) {
                       onAddCard={() => handleAddNewCard(column.id)}
                       onDeleteCard={handleDeleteCard}
                       onCardClick={handleCardClick}
+                      isPm={isPm}
                     />
                   </div>
                 );

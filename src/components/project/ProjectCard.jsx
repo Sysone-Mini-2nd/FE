@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, {useState, useEffect, useRef, useContext} from "react";
 import { useNavigate } from "react-router-dom";
 import { MoreVert } from "@mui/icons-material";
+import AuthContext from "../../contexts/AuthContext.jsx";
 
-function ProjectCard({ project, onAction }) {
+function ProjectCard({ project, onAction, isPm }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef(null);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -76,21 +78,23 @@ function ProjectCard({ project, onAction }) {
               </p>
             </div>
 
-            <div className="relative" ref={menuRef}>
-              <button
-                className="p-1 hover:bg-white/50 backdrop-blur-sm rounded-full transition-all"
-                onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
-              >
-                <MoreVert className="w-4 h-4 text-gray-500" />
-              </button>
-              {isMenuOpen && (
-                <div className="absolute right-0 mt-1 w-32 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20 rounded-md">
-                  <button onClick={(e) => { e.stopPropagation(); onAction("edit", project); setIsMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100/50">편집</button>
-                  <div className="border-t border-gray-200/50 my-1"></div>
-                  <button onClick={(e) => { e.stopPropagation(); onAction("delete", project); setIsMenuOpen(false);}} className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50">삭제</button>
+            {(isPm || user.role === 'MASTER') && (
+                <div className="relative" ref={menuRef}>
+                  <button
+                      className="p-1 hover:bg-white/50 backdrop-blur-sm rounded-full transition-all"
+                      onClick={(e) => { e.stopPropagation(); setIsMenuOpen(!isMenuOpen); }}
+                  >
+                    <MoreVert className="w-4 h-4 text-gray-500" />
+                  </button>
+                  {isMenuOpen && (
+                      <div className="absolute right-0 mt-1 w-32 bg-white/90 backdrop-blur-md border border-white/20 shadow-lg py-1 z-20 rounded-md">
+                        <button onClick={(e) => { e.stopPropagation(); onAction("edit", project); setIsMenuOpen(false); }} className="w-full text-left px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100/50">편집</button>
+                        <div className="border-t border-gray-200/50 my-1"></div>
+                        <button onClick={(e) => { e.stopPropagation(); onAction("delete", project); setIsMenuOpen(false);}} className="w-full text-left px-3 py-1.5 text-sm text-red-600 hover:bg-red-50/50">삭제</button>
+                      </div>
+                  )}
                 </div>
-              )}
-            </div>
+            )}
           </div>
 
           <div className="mb-3">

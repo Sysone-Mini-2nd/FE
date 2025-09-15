@@ -1,13 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, {useState, useMemo, useContext} from 'react';
 import { Add, Close, Send, Delete } from '@mui/icons-material';
 import { useFloatingChat } from '../../hooks/chat/useFloatingChat';
 import useChatStore from '../../store/chatStore';
 import { useMemberQueries } from '../../hooks/useMemberQueries';
 // 1. 팀원 추가/삭제를 위한 뮤테이션 훅을 import 합니다.
 import { useAddProjectMember, useDeleteProjectMember } from '../../hooks/useProjectQueries';
+import AuthContext from "../../contexts/AuthContext.jsx";
 
 // onAddMember prop은 더 이상 필요 없으므로 제거합니다.
 function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
+  const { user } = useContext(AuthContext);
   const [selectedMember, setSelectedMember] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState('');
@@ -86,7 +88,7 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
     <div className="p-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">팀 관리</h3>
-        {isPM && (
+        {(isPM || user.role === 'MASTER') && (
           <button onClick={() => setShowAddModal(true)} className="createBtn">
             <Add className="w-4 h-4" />
             팀원 추가
@@ -112,7 +114,7 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
                 <div className="text-sm text-gray-600">{member.role === 'PM' ? '프로젝트 매니저' : '팀 멤버'}</div>
               </div>
             </div>
-            {isPM && (
+            {(isPM || user.role === 'MASTER') && (
               <td className="px-6 py-4 text-right">
                 {/* PM 자신은 삭제할 수 없도록 처리 */}
                 {member.role !== 'PM' && (
