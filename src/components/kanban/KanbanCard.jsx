@@ -32,6 +32,23 @@ function KanbanCard({ item, index, onCardClick, onDelete, isPm }) {
     setIsMenuOpen(false);
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString)
+    const today = new Date()
+    const diffTime = date - today
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    if (diffDays < 0) {
+      return `${Math.abs(diffDays)}일 지남`
+    } else if (diffDays === 0) {
+      return '오늘'
+    } else if (diffDays === 1) {
+      return '내일'
+    } else {
+      return `${diffDays}일 남음`
+    }
+  }
+
   return (
     <Draggable draggableId={item.id.toString()} index={index}>
       {(provided, snapshot) => (
@@ -74,15 +91,19 @@ function KanbanCard({ item, index, onCardClick, onDelete, isPm }) {
                 <Person className="w-3 h-3 text-gray-500" />
                 <span className="text-gray-600">{item.memberName || '미지정'}</span>
               </div>
-              {item.dDay !== null && (
-                <div className="flex items-center gap-1">
-                  <Schedule className="w-3 h-3 text-gray-500" />
-                  <span className={`${item.dDay < 0 ? 'text-red-600 font-bold' : 'text-gray-600'}`}>
-                    {item.dDay < 0 ? `D+${Math.abs(item.dDay)}` : `D-${item.dDay}`}
-                  </span>
-                </div>
-              )}
             </div>
+            {item.endDate && (
+                <div className="flex items-center gap-1 mt-2 text-xs">
+                  <Schedule className="w-3 h-3 text-gray-500" />
+                  <span className={`
+                  ${new Date(item.endDate) < new Date() ? 'text-red-600' :
+                      new Date(item.endDate).toDateString() === new Date().toDateString() ? 'text-orange-600' :
+                          'text-gray-600'}
+                `}>
+                  {formatDate(item.endDate)}
+                </span>
+                </div>
+            )}
           </div>
         </div>
       )}

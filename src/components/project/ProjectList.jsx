@@ -54,6 +54,7 @@ function ProjectList({
               project={project}
               onAction={handleProjectAction}
               isPm={project?.pmId === user?.id}
+              user={user}
             />
           ))}
         </div>

@@ -1,11 +1,13 @@
 import React from 'react';
 import { createColumnHelper } from '@tanstack/react-table';
+import { useNavigate } from 'react-router-dom';
 import { MoreVert } from '@mui/icons-material';
 import DataTable from '../common/DataTable';
 
 const columnHelper = createColumnHelper();
 
 function ProjectTable({ projects, onAction, user }) {
+  const navigate = useNavigate();
 
   const getStatusBadge = (status) => {
     const statusConfig = {
@@ -40,19 +42,19 @@ function ProjectTable({ projects, onAction, user }) {
     columnHelper.accessor('name', {
       header: '프로젝트',
       cell: info => (
-        <div className="flex items-center gap-3">
-          <div>
-            <div 
-              className="font-medium text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
-              onClick={() => onAction('view', info.row.original)}
-            >
-              {info.getValue()}
-            </div>
-            <div className="text-sm text-gray-500 max-w-xs truncate">
-              {info.row.original.desc}
+          <div className="flex items-center gap-3">
+            <div>
+              <div
+                  className="font-medium text-gray-900 cursor-pointer hover:text-blue-600 transition-colors"
+                  onClick={() => navigate(`/projects/${info.row.original.id}`)} // 수정
+              >
+                {info.getValue()}
+              </div>
+              <div className="text-sm text-gray-500 max-w-xs truncate">
+                {info.row.original.desc}
+              </div>
             </div>
           </div>
-        </div>
       ),
     }),
     columnHelper.accessor('status', {
@@ -90,10 +92,8 @@ function ProjectTable({ projects, onAction, user }) {
       cell: info => <span className="text-sm">{info.getValue()}</span>,
     }),
 
-    // 1. "시작일" 컬럼을 추가합니다.
     columnHelper.accessor('startDate', {
       header: '시작일',
-      // 2. toLocaleDateString()을 사용하여 날짜 형식만 표시합니다.
       cell: info => <span className="text-sm">{new Date(info.getValue()).toLocaleDateString()}</span>,
     }),
 
@@ -101,12 +101,11 @@ function ProjectTable({ projects, onAction, user }) {
       header: '마감일',
       cell: info => {
         const endDate = new Date(info.getValue())
-        const isOverdue = endDate < new Date() && info.row.original.status === 'IN_PROGRESS'
+        const isOverdue = endDate < new Date() && info.row.original.status !== 'DONE'
         const daysRemaining = Math.ceil((endDate - new Date()) / (1000 * 60 * 60 * 24))
         
         return (
           <div>
-            {/* 2. toLocaleDateString()을 사용하여 날짜 형식만 표시합니다. */}
             <div className="text-sm">
               {endDate.toLocaleDateString()}
             </div>
@@ -118,6 +117,30 @@ function ProjectTable({ projects, onAction, user }) {
           </div>
         )
       },
+    }),
+    columnHelper.accessor('members', {
+      header: '팀원',
+      cell: info => (
+          <div className="flex items-center gap-1">
+            <span className="text-sm">{info.getValue().length}명</span>
+            <div className="flex -space-x-1">
+              {info.getValue().slice(0, 3).map((member, index) => (
+                  <div
+                      key={member.id || index}
+                      className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center text-xs font-medium text-gray-700 border border-white"
+                      title={member.name}
+                  >
+                    {member.name?.slice(0, 1) || '?'}
+                  </div>
+              ))}
+              {info.getValue().length > 3 && (
+                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs text-gray-600 border border-white">
+                    +{info.getValue().length - 3}
+                  </div>
+              )}
+            </div>
+          </div>
+      ),
     }),
     columnHelper.display({
       id: 'tasks',
@@ -134,17 +157,9 @@ function ProjectTable({ projects, onAction, user }) {
       cell: info => {
         const project = info.row.original;
         const isPm = project?.pmId === user?.id;
-        console.log(project.pmId);
+        const canManage = isPm || user?.role === 'MASTER';
 
-        // 디버깅을 위한 로그 추가
-        console.log(
-            `Project: ${project.name}
-            , isPm: ${isPm}, user.role: ${user?.role}
-            , pmId: ${project?.pmId}
-            , userId: ${user?.id}`)
-
-        // PM이거나 MASTER가 아니면 메뉴를 숨김
-        if (!isPm && user?.role !== 'MASTER') {
+        if (!canManage) {
           return null;
         }
 
@@ -184,7 +199,7 @@ function ProjectTable({ projects, onAction, user }) {
     <DataTable 
       data={projects}
       columns={columns}
-      onRowClick={(project) => onAction('view', project)}
+      // onRowClick={(project) => onAction('view', project)}
       emptyMessage="프로젝트가 없습니다."
     />
   )

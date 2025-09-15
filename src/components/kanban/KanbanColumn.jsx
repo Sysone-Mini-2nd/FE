@@ -14,7 +14,7 @@ function KanbanColumn({ column, onAddCard, onDeleteCard, onCardClick, isPm }) {
   };
 
   return (
-    <div className="bg-gray-50 border border-gray-200 rounded-lg h-full flex flex-col">
+    <div className="bg-gray-50 border border-gray-200 h-full flex flex-col">
       {/* 컬럼 헤더 */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between mb-2">
@@ -29,8 +29,8 @@ function KanbanColumn({ column, onAddCard, onDeleteCard, onCardClick, isPm }) {
         
         {/* "작업 추가" 버튼의 onClick 이벤트를 활성화합니다. */}
         <button
-          onClick={onAddCard}
-          className="w-full flex items-center gap-2 px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors border border-dashed border-gray-300 rounded-md"
+            onClick={onAddCard}
+            className="w-full flex items-center gap-2 px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors border border-dashed border-gray-300"
         >
           <Add className="w-4 h-4" />
           <span className="text-sm">작업 추가</span>

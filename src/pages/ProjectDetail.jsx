@@ -96,60 +96,128 @@ function ProjectDetail() {
   }
 
   return (
-    <div className="space-y-4">
-      <div className="border-b border-gray-200 pb-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate("/projects")}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-            >
-              <ArrowBack className="w-5 h-5" />
-            </button>
+    // <div className="space-y-4">
+    //   <div className="border-b border-gray-200 pb-4">
+    //     <div className="flex items-center justify-between">
+    //       <div className="flex items-center gap-4">
+    //         <button
+    //           onClick={() => navigate("/projects")}
+    //           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+    //         >
+    //           <ArrowBack className="w-5 h-5" />
+    //         </button>
+    //         <div>
+    //           <div className="flex items-center gap-3">
+    //             <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
+    //             <span className={`px-2 py-1 text-xs font-medium rounded-md ${getStatusColor(project.status)}`}>
+    //               {getStatusText(project.status)}
+    //             </span>
+    //             <span className={`text-sm font-medium ${getPriorityColor(project.priority)}`}>
+    //               {getPriorityText(project.priority)}
+    //             </span>
+    //           </div>
+    //           <p className="text-gray-600 mt-1">{project.desc}</p>
+    //         </div>
+    //         <div className="ml-16 mt-4 flex gap-6 text-sm text-gray-600">
+    //           <div>매니저: <span className="font-medium">{project.pmName}</span></div>
+    //           <div>시작일: <span className="font-medium">{project.startDate.substring(0, 10)}</span></div>
+    //           <div>완료 예정일: <span className="font-medium">{project.endDate.substring(0, 10)}</span></div>
+    //           <div>팀원: <span className="font-medium">{project.totalMemberCount}명</span></div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //
+    //   </div>
+
+      <div>
+        {/* 프로젝트 헤더 */}
+        <div className="border-b border-gray-200">
+          <div className="flex items-center justify-between">
             <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold text-gray-900">{project.name}</h1>
-                <span className={`px-2 py-1 text-xs font-medium rounded-md ${getStatusColor(project.status)}`}>
-                  {getStatusText(project.status)}
-                </span>
-                <span className={`text-sm font-medium ${getPriorityColor(project.priority)}`}>
-                  {getPriorityText(project.priority)}
-                </span>
+              <div className="flex items-center gap-4">
+                <button
+                    onClick={() => navigate("/projects")}
+                    className="p-2 hover:bg-white/50 transition-colors"
+                >
+                  <ArrowBack/>
+                </button>
+
+                <div>
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-2xl font-bold text-gray-900">
+                      {project.name}
+                    </h1>
+                    <span
+                        className={`px-2 py-1 text-xs font-medium ${getStatusColor(
+                            project.status
+                        )}`}
+                    >
+                    {getStatusText(project.status)}
+                  </span>
+                    <span
+                        className={`text-sm font-medium ${getPriorityColor(
+                            project.priority
+                        )}`}
+                    >
+                    {project.priority === "HIGH"
+                        ? "높음"
+                        : project.priority === "NORMAL"
+                            ? "보통"
+                            : "낮음"}
+                  </span>
+                    {/* 프로젝트 정보 */}
+                    <div className="ml-4 flex gap-6 mt-4 text-sm text-gray-600">
+                      <div>
+                        매니저:{" "}
+                        <span className="font-medium">{project.pmName}</span>
+                      </div>
+                      <div>
+                        시작일:{" "}
+                        <span className="font-medium">{project.startDate.split('T')[0]}</span>
+                      </div>
+                      <div>
+                        완료 예정일:{" "}
+                        <span className="font-medium">{project.endDate.split('T')[0]}</span>
+                      </div>
+                      <div>
+                        팀원:{" "}
+                        <span className="font-medium">
+                        {project.totalMemberCount}명
+                      </span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 mt-1">{project.desc}</p>
+                </div>
               </div>
-              <p className="text-gray-600 mt-1">{project.desc}</p>
             </div>
           </div>
         </div>
-        <div className="ml-16 mt-4 flex gap-6 text-sm text-gray-600">
-          <div>매니저: <span className="font-medium">{project.pmName}</span></div>
-          <div>시작일: <span className="font-medium">{project.startDate.substring(0, 10)}</span></div>
-          <div>완료 예정일: <span className="font-medium">{project.endDate.substring(0, 10)}</span></div>
-          <div>팀원: <span className="font-medium">{project.totalMemberCount}명</span></div>
-        </div>
-      </div>
 
-      <div className="border-b border-gray-200">
+      {/* 탭 네비게이션 */}
+      <div className=" border-gray-200">
         <div className="flex">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 py-3 transition-all ${
-                activeTab === tab.id
-                  ? "border-b-2 border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const IconComponent = tab.icon;
+            return (
+                <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center gap-2 px-4 py-3 my-1 transition-all ${
+                        activeTab === tab.id
+                            ? "rounded-lg bg-green-300 text-gray-50"
+                            : "border-transparent text-gray-600 rounded-lg hover:text-gray-900"
+                    }`}
+                >
+                  <IconComponent className="w-4 h-4" />
+                  {tab.label}
+                </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="flex-1 overflow-auto pt-4">
-        {renderTabContent()}
-      </div>
+      <div className="flex-1 overflow-auto">{renderTabContent()}</div>
     </div>
   );
 }
