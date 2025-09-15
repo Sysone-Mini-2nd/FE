@@ -14,7 +14,12 @@ function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false, proj
     participants: meeting?.participants || [],
     content: meeting?.description || meeting?.memo || meeting?.content || "",
     type: meeting?.type || "MEETING",
-    progressDate: meeting?.progressDate || new Date().toISOString().slice(0, -1) + '+09:00',
+    progressDate: meeting?.progressDate || (() => {
+      // 현재 시간에 18시간 추가
+      const now = new Date();
+      now.setHours(now.getHours() + 18);
+      return now.toISOString().slice(0, -1) + '+09:00'; // 한국 시간대
+    })(),
   });
 
   console.log('MeetingCreate에서 받은 projectId:', projectId);

@@ -3,7 +3,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 import { useQuery } from '@tanstack/react-query';
 import { fetchProjectDashboard } from '../../api/dashboardAPI';
 
-function TeamProductivityTrend({ selectedProjectId }) {
+function TeamProductivityTrend({ selectedProjectId, title = "인원별 이슈 진행률" }) {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['projectDashboard', selectedProjectId],
     queryFn: () => fetchProjectDashboard(selectedProjectId),
@@ -25,8 +25,8 @@ function TeamProductivityTrend({ selectedProjectId }) {
 
   if (isLoading) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">인원별 이슈 진행률</h3>
+    <div className="bg-white p-6 rounded-xl shadow-sm">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         <div className="flex items-center justify-center h-64">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
         </div>
@@ -36,8 +36,8 @@ function TeamProductivityTrend({ selectedProjectId }) {
 
   if (error || !selectedProjectId) {
     return (
-      <div className="bg-white p-6 rounded-xl shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">인원별 이슈 진행률</h3>
+    <div className="bg-white p-6 rounded-xl shadow-sm">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
         <div className="flex items-center justify-center h-64 text-gray-500">
           {!selectedProjectId ? '프로젝트를 선택해주세요' : '데이터를 불러올 수 없습니다'}
         </div>
@@ -47,7 +47,7 @@ function TeamProductivityTrend({ selectedProjectId }) {
 
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">인원별 이슈 진행률</h3>
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">{title}</h3>
       
       <div className="h-64">
         {barData.length > 0 ? (
