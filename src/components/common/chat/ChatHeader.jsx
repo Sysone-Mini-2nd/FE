@@ -1,4 +1,4 @@
-import { Close, Minimize, ArrowBack, PersonAdd } from '@mui/icons-material'
+import { Close, Minimize, ArrowBack } from '@mui/icons-material'
 import { useAuth } from '../../../hooks/useAuth'
 
 const ChatHeader = ({ 
@@ -8,7 +8,6 @@ const ChatHeader = ({
   onBackToList, 
   onToggleMinimize, 
   onToggleChat,
-  onOpenInviteMode // 새로 추가된 prop
 }) => {
   const { user } = useAuth();
   

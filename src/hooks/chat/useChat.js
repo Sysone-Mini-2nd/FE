@@ -9,7 +9,7 @@ export const useChat = () => {
   const [selectedChat, setSelectedChat] = useState(null)
 
   // Zustand store 사용
-  const { sendMessage, markAsRead, connectWebSocket, disconnectWebSocket, currentUser } = useChatStore()
+  const { sendMessage, markAsRead } = useChatStore()
 
   const toggleChat = () => {
     setIsOpen(!isOpen)

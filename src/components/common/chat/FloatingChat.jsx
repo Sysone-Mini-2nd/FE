@@ -25,8 +25,7 @@ function FloatingChat() {
     selectChatRoom, backToList, toggleMinimize, handleSendMessage, searchTerm, setSearchTerm,
     filteredChatRooms, employeeSearchTerm, setEmployeeSearchTerm, selectedEmployees, 
     handleToggleEmployee, filteredEmployees, handleCreateGroupChat, handleGoToCreateChat,
-    groupName, setGroupName, contextMenu, handleContextMenu, closeContextMenu, handleLeaveChatRoom, totalUnreadCount,
-    isInviteMode, handleOpenInviteMode
+    groupName, setGroupName, contextMenu, handleContextMenu, closeContextMenu, handleLeaveChatRoom, totalUnreadCount
   } = useFloatingChat();
 
   const menuItems = [
@@ -63,7 +62,6 @@ function FloatingChat() {
                   onBackToList={backToList}
                   onToggleMinimize={toggleMinimize}
                   onToggleChat={toggleChat}
-                  onOpenInviteMode={handleOpenInviteMode} // onOpenInviteMode 핸들러 전달
                 />
               </div>
 
