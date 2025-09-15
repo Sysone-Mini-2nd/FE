@@ -53,39 +53,28 @@ export const useFloatingChat = () => {
   // --- WebSocket Subscriptions (연결 상태에 따라 구독) ---
   useEffect(() => {
     if (isSocketConnected) {
-      socketService.subscribe('/topic/update', (data) => {
-        console.log('WebSocket message received:', data);
-
-        if (!data || typeof data !== 'object') {
-          console.error('Invalid WebSocket message format:', data);
-          return;
-        }
-
-        if (data.memberId === user.id) {
-          setTotalUnreadCount(data.totalUnreadCount);
-
-          setChatRooms((prevChatRooms) => {
-            if (!Array.isArray(prevChatRooms)) {
-              console.error('prevChatRooms is not an array:', prevChatRooms);
-              return prevChatRooms;
-            }
-
-            return prevChatRooms.map((room) => {
-              if (room.id === data.chatRoomId) {
-                return {
-                  ...room,
-                  recentMessage: data.recentMessage,
-                  unreadMessageCount: data.totalUnreadCount,
-                };
-              }
-              return room;
-            });
-          });
+      const subscription = socketService.subscribe('/topic/update', async (message) => {
+        try {
+          console.log('Received update message:', message);
+          const { totalUnreadCount, memberId } = message;
+          if (memberId === user?.id && totalUnreadCount !== undefined) {
+            setTotalUnreadCount(totalUnreadCount);
+          }
+          const response = await chatApi.fetchChatRooms();
+          const chatRoomsData = Array.isArray(response.data.data) ? response.data.data : [];
+          setChatRooms(chatRoomsData);
+        } catch (error) {
+          console.error('Failed to process update message or fetch chat rooms:', error);
         }
       });
+
+      return () => {
+        if (subscription) {
+          socketService.unsubscribe('/topic/update');
+        }
+      };
     }
-    // TODO: 구독 해지 로직 추가 (cleanup)
-  }, [isSocketConnected, user, setTotalUnreadCount, setChatRooms]);
+  }, [isSocketConnected, setChatRooms, setTotalUnreadCount, user]);
 
   // --- Chat Window Open Logic ---
   useEffect(() => {
