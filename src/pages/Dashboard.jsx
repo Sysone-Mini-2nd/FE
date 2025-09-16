@@ -1,16 +1,25 @@
-import React, { useEffect } from "react";
-import KPICard from "../components/dashboard/KPICard";
-import ProjectProgressChart from "../components/dashboard/ProjectProgressChart";
-import WeeklySchedule from "../components/dashboard/WeeklySchedule";
-import PriorityTasks from "../components/dashboard/PriorityTasks";
-import TeamProductivityTrend from "../components/dashboard/TeamProductivityTrend";
-import ErrorList from "../components/dashboard/ErrorList";
-import ProjectList from "../components/dashboard/ProjectList";
-import useProjectStore from "../store/projectStore";
+import React, { useEffect, Suspense } from "react";
 import { Source, Warning } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { fetchDashboardProjects, fetchProjectDashboard } from "../api/dashboardAPI";
+import useProjectStore from "../store/projectStore";
+import { 
+  KPICardSkeleton, 
+  ChartSkeleton, 
+  WeeklyScheduleSkeleton, 
+  TableSkeleton, 
+  ProjectListSkeleton 
+} from "../components/common/loading/LoadingComponents";
+
+// Lazy load dashboard components
+const KPICard = React.lazy(() => import("../components/dashboard/KPICard"));
+const ProjectProgressChart = React.lazy(() => import("../components/dashboard/ProjectProgressChart"));
+const WeeklySchedule = React.lazy(() => import("../components/dashboard/WeeklySchedule"));
+const PriorityTasks = React.lazy(() => import("../components/dashboard/PriorityTasks"));
+const TeamProductivityTrend = React.lazy(() => import("../components/dashboard/TeamProductivityTrend"));
+const ErrorList = React.lazy(() => import("../components/dashboard/ErrorList"));
+const ProjectList = React.lazy(() => import("../components/dashboard/ProjectList"));
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -77,47 +86,61 @@ function Dashboard() {
         <div className="col-span-3">
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
-              <ProjectProgressChart selectedProjectId={selectedProjectId} />
+              <Suspense fallback={<ChartSkeleton height="h-64" title />}>
+                <ProjectProgressChart selectedProjectId={selectedProjectId} />
+              </Suspense>
               
               {/* 에러 발생 창 - PM 또는 MASTER일 경우에만 표시 */}
               {isAdmin && (
-                <ErrorList selectedProjectId={selectedProjectId} />
+                <Suspense fallback={<TableSkeleton rows={3} title />}>
+                  <ErrorList selectedProjectId={selectedProjectId} />
+                </Suspense>
               )}
               
-              <WeeklySchedule selectedProjectId={selectedProjectId} />
+              <Suspense fallback={<WeeklyScheduleSkeleton />}>
+                <WeeklySchedule selectedProjectId={selectedProjectId} />
+              </Suspense>
             </div>
           </div>
         </div>
         <div className="col-span-3">
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-6">
-              {kpiData.map((kpi, index) => (
-                <KPICard
-                  key={index}
-                  title={kpi.title}
-                  value={kpi.value}
-                  icon={kpi.icon}
-                  trend={kpi.trend}
-                  trendValue={kpi.trendValue}
-                  onClick={() => kpi.path && navigate(kpi.path)}
-                />
-              ))}
+              <Suspense fallback={<KPICardSkeleton count={2} />}>
+                {kpiData.map((kpi, index) => (
+                  <KPICard
+                    key={index}
+                    title={kpi.title}
+                    value={kpi.value}
+                    icon={kpi.icon}
+                    trend={kpi.trend}
+                    trendValue={kpi.trendValue}
+                    onClick={() => kpi.path && navigate(kpi.path)}
+                  />
+                ))}
+              </Suspense>
             </div>
             
             {/* 인원별 이슈 진행률 - 역할에 따라 제목 변경 */}
-            <TeamProductivityTrend 
-              selectedProjectId={selectedProjectId}
-              title={isUser ? "이슈 진행률" : "인원별 이슈 진행률"}
-            />
+            <Suspense fallback={<ChartSkeleton height="h-64" title />}>
+              <TeamProductivityTrend 
+                selectedProjectId={selectedProjectId}
+                title={isUser ? "이슈 진행률" : "인원별 이슈 진행률"}
+              />
+            </Suspense>
             
-            <PriorityTasks selectedProjectId={selectedProjectId} />
+            <Suspense fallback={<TableSkeleton rows={5} title />}>
+              <PriorityTasks selectedProjectId={selectedProjectId} />
+            </Suspense>
             
           </div>
         </div>
 
         {/* 오른쪽 1/4 영역 - 내 참여 프로젝트 */}
         <div className="col-span-2">
-          <ProjectList />
+          <Suspense fallback={<ProjectListSkeleton />}>
+            <ProjectList />
+          </Suspense>
         </div>
       </div>
     </div>
