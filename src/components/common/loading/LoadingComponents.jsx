@@ -4,7 +4,7 @@ import { Skeleton } from "@mui/material";
 // 대시보드 KPI 카드용 스켈레톤
 export function KPICardSkeleton({ count = 2 }) {
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <>
       {Array.from({ length: count }).map((_, index) => (
         <div key={index} className="bg-white p-6 rounded-lg border border-gray-200">
           <div className="flex items-center justify-between">
@@ -20,7 +20,7 @@ export function KPICardSkeleton({ count = 2 }) {
           </div>
         </div>
       ))}
-    </div>
+      </>
   );
 }
 
