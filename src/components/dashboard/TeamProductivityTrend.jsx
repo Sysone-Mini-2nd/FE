@@ -11,6 +11,18 @@ function TeamProductivityTrend({ selectedProjectId, title = "인원별 이슈 �
   });
 
   // Bar 차트용 데이터 변환
+
+  //   const barData = React.useMemo(() => {
+  //   const issuesGraph = dashboardData?.data?.issuesGraph || [];
+  //   if (!issuesGraph || issuesGraph.length === 0) return [];
+    
+  //   return issuesGraph.map(item => ({
+  //     name: item.name || 'Unknown',
+  //     '할당 기간': item.allottedPeriod || 0,
+  //     '완료 기간': item.completedPeriod || 0,
+  //     nameColor: (item.completedPeriod || 0) > (item.allottedPeriod || 0) ? '#EF4444' : '#10B981' // 지연시 빨강, 정상시 초록
+  //   }));
+  // }, [dashboardData]);
   const barData = React.useMemo(() => {
     const issuesGraph = dashboardData?.data?.issuesGraph || [];
     if (!issuesGraph || issuesGraph.length === 0) return [];
