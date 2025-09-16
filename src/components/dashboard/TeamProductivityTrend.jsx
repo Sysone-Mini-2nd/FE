@@ -51,15 +51,15 @@ function TeamProductivityTrend({ selectedProjectId, title = "인원별 이슈 �
       
       <div className="h-64">
         {barData.length > 0 ? (
-          <ResponsiveContainer width="100%" height="100%">
+          <ResponsiveContainer width="100%" height="120%">
             <BarChart
               data={barData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
+              margin={{ top: 10, right: 20, left: 20, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis 
                 dataKey="name" 
-                angle={-45}
+                angle={0}
                 textAnchor="end"
                 height={60}
                 interval={0}
