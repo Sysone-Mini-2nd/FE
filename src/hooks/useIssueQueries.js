@@ -14,7 +14,7 @@ export function useProjectIssues(projectId, filters = {}) {
         queryKey: ['issues', projectId, filters],
         queryFn: () => getProjectIssues(projectId, filters),
         staleTime: 0, 
-        cacheTime: 5 * 60 * 1000, 
+        // cacheTime: 5 * 60 * 1000, 
         refetchOnWindowFocus: false, 
         select: (response) => {
             if (response && response.data && Array.isArray(response.data.issues)) {
