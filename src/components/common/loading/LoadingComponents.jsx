@@ -1,6 +1,100 @@
 import { Replay, Warning} from "@mui/icons-material";
 import { Skeleton } from "@mui/material";
 
+// 대시보드 KPI 카드용 스켈레톤
+export function KPICardSkeleton({ count = 2 }) {
+  return (
+    <div className="grid grid-cols-2 gap-6">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="bg-white p-6 rounded-lg border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="flex-1">
+              <Skeleton variant="text" width="70%" height={20} className="mb-2" />
+              <Skeleton variant="text" width="40%" height={32} />
+            </div>
+            <Skeleton variant="circular" width={40} height={40} />
+          </div>
+          <div className="flex items-center gap-2 mt-4">
+            <Skeleton variant="text" width={30} height={16} />
+            <Skeleton variant="text" width={40} height={16} />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// 차트용 스켈레톤
+export function ChartSkeleton({ height = "h-64", title }) {
+  return (
+    <div className="bg-white p-6 rounded-lg border border-gray-200">
+      {title && (
+        <div className="mb-4">
+          <Skeleton variant="text" width="40%" height={24} />
+        </div>
+      )}
+      <div className={`${height} flex items-center justify-center`}>
+        <div className="w-full space-y-3">
+          <Skeleton variant="rounded" width="100%" height={40} />
+          <Skeleton variant="rounded" width="80%" height={40} />
+          <Skeleton variant="rounded" width="60%" height={40} />
+          <Skeleton variant="rounded" width="90%" height={40} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// 테이블/리스트용 스켈레톤
+export function TableSkeleton({ rows = 5, title }) {
+  return (
+    <div className="bg-white p-6 rounded-lg border border-gray-200">
+      {title && (
+        <div className="mb-4">
+          <Skeleton variant="text" width="40%" height={24} />
+        </div>
+      )}
+      <div className="space-y-3">
+        {Array.from({ length: rows }).map((_, index) => (
+          <div key={index} className="flex items-center space-x-4">
+            <Skeleton variant="circular" width={32} height={32} />
+            <div className="flex-1 space-y-2">
+              <Skeleton variant="text" width="60%" height={16} />
+              <Skeleton variant="text" width="40%" height={14} />
+            </div>
+            <Skeleton variant="text" width="20%" height={16} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// 위클리 스케줄용 스켈레톤
+export function WeeklyScheduleSkeleton() {
+  return (
+    <div className="bg-white p-6 rounded-lg border border-gray-200">
+      <div className="mb-4">
+        <Skeleton variant="text" width="40%" height={24} />
+      </div>
+      <div className="space-y-4">
+        {Array.from({ length: 7 }).map((_, index) => (
+          <div key={index} className="flex items-center space-x-4">
+            <Skeleton variant="text" width={40} height={16} />
+            <div className="flex-1">
+              <div className="flex space-x-2">
+                <Skeleton variant="rounded" width={80} height={24} />
+                <Skeleton variant="rounded" width={100} height={24} />
+                <Skeleton variant="rounded" width={60} height={24} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ProjectList용 Skeleton UI
 export function ProjectListSkeleton({ count = 4 }) {
   return (

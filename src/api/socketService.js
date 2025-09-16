@@ -50,7 +50,7 @@ export const connectWebSocket = (onConnected) => {
     }
 
     stompClient = new Client({
-        webSocketFactory: () => new SockJS('http://localhost:8081/ws/chat'), // 백엔드 포트 8081로 수정
+        webSocketFactory: () => new SockJS('http://localhost:8081/ws/chat'), 
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,

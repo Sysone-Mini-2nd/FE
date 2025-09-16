@@ -20,7 +20,7 @@ export function useProjects(filters = {}) {
       }
       return { projects: [], total: 0, statusCounts: {}, delayed: 0 };
     },
-    staleTime: 5 * 60 * 1000, // 5분
+    // staleTime: 5 * 60 * 1000,
   });
 }
 
