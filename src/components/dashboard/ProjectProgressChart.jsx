@@ -203,7 +203,7 @@ function ProjectProgressChart({ selectedProjectId }) {
       {/* 총 이슈 개수 표시 */}
       <div className="mt-4 text-center">
         <span className="text-sm text-gray-500">
-          총 {projectGraph?.total || 0}개 이슈
+          총 {projectGraph?.total || 0}%
         </span>
       </div>
     </div>
