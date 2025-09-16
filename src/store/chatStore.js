@@ -5,6 +5,20 @@ import { Stomp } from '@stomp/stompjs';
 let stompClient = null;
 let subscriptions = {};
 
+// 공통 상태 업데이트 유틸 함수
+const updateStateArray = (stateArray, newArray, key = 'id') => {
+  const updatedArray = newArray.map((newItem) => {
+    const existingItem = stateArray.find((item) => item[key] === newItem[key]);
+    return existingItem ? { ...existingItem, ...newItem } : newItem;
+  });
+
+  const mergedArray = stateArray.filter(
+    (item) => !newArray.some((newItem) => newItem[key] === item[key])
+  );
+
+  return [...updatedArray, ...mergedArray];
+};
+
 const useChatStore = create((set, get) => ({
   chatRooms: [],
   messages: {},
@@ -19,23 +33,11 @@ const useChatStore = create((set, get) => ({
   },
   setChatRooms: (rooms) =>
     set((state) => {
-      const prevChatRooms = Array.isArray(state.chatRooms) ? state.chatRooms : [];
       if (!Array.isArray(rooms)) {
         console.error('setChatRooms: rooms is not an array', rooms);
-        return state; // 상태를 변경하지 않음
+        return state;
       }
-
-      const updatedRooms = rooms.map((newRoom) => {
-        const existingRoom = prevChatRooms.find((room) => room.id === newRoom.id);
-        return existingRoom ? { ...existingRoom, ...newRoom } : newRoom;
-      });
-
-      // Add any rooms that are in the current state but not in the new rooms
-      const mergedRooms = prevChatRooms.filter(
-        (room) => !rooms.some((newRoom) => newRoom.id === room.id)
-      );
-
-      return { chatRooms: [...updatedRooms, ...mergedRooms] };
+      return { chatRooms: updateStateArray(state.chatRooms, rooms) };
     }),
   setMessages: (roomId, messages) =>
     set((state) => ({

@@ -40,6 +40,10 @@ const performSubscribe = (destination, callback) => {
     return subscription;
 };
 
+const BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:8081/ws/chat"
+  : "https://api.sysonetaskmanager.store/ws/chat";
+
 // WebSocket 연결
 export const connectWebSocket = (onConnected) => {
     if (stompClient && stompClient.active) {
@@ -50,7 +54,7 @@ export const connectWebSocket = (onConnected) => {
     }
 
     stompClient = new Client({
-        webSocketFactory: () => new SockJS('http://localhost:8081/ws/chat'), 
+        webSocketFactory: () => new SockJS(BASE_URL),
         reconnectDelay: 5000,
         heartbeatIncoming: 4000,
         heartbeatOutgoing: 4000,
@@ -85,22 +89,40 @@ export const disconnectWebSocket = () => {
     }
 };
 
-export const subscribe = (destination, callback) => {
-    return new Promise((resolve, reject) => {
-        if (isConnected && stompClient && stompClient.active) {
-            // 이미 연결되어 있으면 바로 구독
-            try {
-                const subscription = performSubscribe(destination, callback);
-                resolve(subscription);
-            } catch (error) {
-                reject(error);
-            }
-        } else {
-            // 연결이 안 되어 있으면 큐에 저장
-            console.warn('STOMP client is not connected. Queueing subscription for ', destination);
-            subscriptionQueue.push({ destination, callback, resolve, reject });
-        }
+// 공통 구독/해제 유틸 함수
+const manageSubscription = (action, destination, callback) => {
+  if (action === 'subscribe') {
+    if (subscriptions.has(destination)) {
+      subscriptions.get(destination).unsubscribe();
+      subscriptions.delete(destination);
+    }
+    const subscription = stompClient.subscribe(destination, (message) => {
+      callback(JSON.parse(message.body));
     });
+    subscriptions.set(destination, subscription);
+    return subscription;
+  } else if (action === 'unsubscribe') {
+    if (subscriptions.has(destination)) {
+      subscriptions.get(destination).unsubscribe();
+      subscriptions.delete(destination);
+    }
+  }
+};
+
+export const subscribe = (destination, callback) => {
+  return new Promise((resolve, reject) => {
+    if (isConnected && stompClient && stompClient.active) {
+      try {
+        const subscription = manageSubscription('subscribe', destination, callback);
+        resolve(subscription);
+      } catch (error) {
+        reject(error);
+      }
+    } else {
+      console.warn('STOMP client is not connected. Queueing subscription for ', destination);
+      subscriptionQueue.push({ destination, callback, resolve, reject });
+    }
+  });
 }
 
 // 특정 채팅방 토픽 구독
@@ -115,10 +137,7 @@ export const subscribeToUserQueue = (queueName, onNotificationReceived) => {
 
 // 구독 해지
 export const unsubscribe = (destination) => {
-    if (subscriptions.has(destination)) {
-        subscriptions.get(destination).unsubscribe();
-        subscriptions.delete(destination);
-    }
+  manageSubscription('unsubscribe', destination);
 }
 
 // 메시지 전송 (발행)
@@ -130,5 +149,21 @@ export const sendMessage = (chatMessage) => {
         });
     } else {
         console.error('Cannot send message, STOMP client is not connected.');
+    }
+};
+
+// 초대 메시지 전송
+export const sendInviteMessage = (chatRoomId, memberId, memberIdList) => {
+    if (stompClient && stompClient.active) {
+        stompClient.publish({
+            destination: '/app/invite',
+            body: JSON.stringify({
+                chatRoomId,
+                memberId,
+                memberIdList,
+            }),
+        });
+    } else {
+        console.error('Cannot send invite message, STOMP client is not connected.');
     }
 };
