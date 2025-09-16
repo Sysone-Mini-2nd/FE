@@ -95,7 +95,56 @@ export function WeeklyScheduleSkeleton() {
   );
 }
 
-// ProjectList용 Skeleton UI
+// ProjectCard용 Skeleton UI
+export function ProjectCardSkeleton({ count = 4 }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {Array.from({ length: count }).map((_, index) => (
+        <div key={index} className="bg-white/80 backdrop-blur-md border border-white/20 p-4 shadow-lg shadow-black/5 relative overflow-hidden">
+          {/* 우선순위 배경 스켈레톤 */}
+          <div className="absolute inset-0 bg-gray-200/30 backdrop-blur-sm animate-pulse"></div>
+          
+          {/* 컨텐츠 스켈레톤 */}
+          <div className="relative z-10">
+            {/* 헤더 */}
+            <div className="flex items-start justify-between mb-3">
+              <div className="flex-1">
+                <Skeleton variant="text" width="70%" height={20} className="mb-2" />
+                <Skeleton variant="text" width="90%" height={16} className="mb-1" />
+                <Skeleton variant="text" width="60%" height={16} className="mb-3" />
+              </div>
+              <Skeleton variant="circular" width={24} height={24} />
+            </div>
+
+            {/* 상태 및 진행률 */}
+            <div className="mb-3">
+              <div className="flex items-center justify-between mb-2">
+                <Skeleton variant="rounded" width={60} height={24} />
+                <Skeleton variant="text" width={30} height={16} />
+              </div>
+              <Skeleton variant="rounded" width="100%" height={6} />
+            </div>
+
+            {/* 하단 정보 */}
+            <div className="flex items-center justify-between text-xs mb-3">
+              <Skeleton variant="text" width={50} height={14} />
+              <Skeleton variant="text" width={30} height={14} />
+              <Skeleton variant="text" width={60} height={14} />
+            </div>
+
+            {/* 담당자 */}
+            <div className="flex justify-between">
+              <Skeleton variant="text" width={80} height={14} />
+              <Skeleton variant="text" width={100} height={14} />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
 export function ProjectListSkeleton({ count = 4 }) {
   return (
     <div className="bg-white border border-gray-200 rounded-lg">

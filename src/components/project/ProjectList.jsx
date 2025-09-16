@@ -1,9 +1,12 @@
-import React, {useContext} from 'react';
-import ProjectCard from './ProjectCard';
+import React, {useContext, Suspense} from 'react';
 import ProjectTable from './ProjectTable';
 // 1. 삭제 기능을 위해 useDeleteProject 훅을 import 합니다.
 import { useDeleteProject } from '../../hooks/useProjectQueries';
 import AuthContext from "../../contexts/AuthContext.jsx";
+import { ProjectCardSkeleton } from '../common/loading/LoadingComponents';
+
+// Lazy load ProjectCard component
+const ProjectCard = React.lazy(() => import('./ProjectCard'));
 
 function ProjectList({ 
   projects,
@@ -47,17 +50,19 @@ function ProjectList({
   switch (viewType) {
     case 'card':
       return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {projects.map(project => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onAction={handleProjectAction}
-              isPm={project?.pmId === user?.id}
-              user={user}
-            />
-          ))}
-        </div>
+        <Suspense fallback={<ProjectCardSkeleton count={projects.length} />}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {projects.map(project => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onAction={handleProjectAction}
+                isPm={project?.pmId === user?.id}
+                user={user}
+              />
+            ))}
+          </div>
+        </Suspense>
       );
     
     case 'table':
