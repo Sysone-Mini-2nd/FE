@@ -97,7 +97,7 @@ function KanbanCard({ item, index, onCardClick, onDelete }) {
                 <span className="text-gray-600">{item.memberName || '미지정'}</span>
               </div>
             </div>
-            {item.endDate && (
+            {item.endDate && item.status !== 'DONE' && (
                 <div className="flex items-center gap-1 mt-2 text-xs">
                   <Schedule className="w-3 h-3 text-gray-500" />
                   <span className={`
