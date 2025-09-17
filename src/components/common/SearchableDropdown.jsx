@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ExpandMore, Search, Close } from '@mui/icons-material';
-
+/** 작성자: 김대호 */
 /**
  * 검색 기능이 있는 Dropdown 컴포넌트
  * @param {Object} props

@@ -1,10 +1,9 @@
 import React, {useContext, Suspense} from 'react';
 import ProjectTable from './ProjectTable';
-// 1. 삭제 기능을 위해 useDeleteProject 훅을 import 합니다.
 import { useDeleteProject } from '../../hooks/useProjectQueries';
 import AuthContext from "../../contexts/AuthContext.jsx";
 import { ProjectCardSkeleton } from '../common/loading/LoadingComponents';
-
+/** 작성자: 김대호, 백승준 */
 // Lazy load ProjectCard component
 const ProjectCard = React.lazy(() => import('./ProjectCard'));
 
@@ -13,7 +12,6 @@ function ProjectList({
   viewType,
   onProjectSelect,
 }) {
-  // 2. 삭제 뮤테이션 훅을 호출합니다.
   const deleteProjectMutation = useDeleteProject();
   const { user } = useContext(AuthContext); // 현재 사용자 정보 가져오기
 
@@ -23,7 +21,6 @@ function ProjectList({
       case 'edit':
         onProjectSelect(project);
         break;
-      // 3. 'delete' 액션이 들어왔을 때, 뮤테이션을 실행합니다.
       case 'delete':
         if (window.confirm(`정말로 '${project.name}' 프로젝트를 삭제하시겠습니까?`)) {
           deleteProjectMutation.mutate(project.id);

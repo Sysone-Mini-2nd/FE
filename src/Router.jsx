@@ -8,7 +8,7 @@ import ShareCalendar from "./pages/ShareCalendar";
 import HumanResources from "./pages/HumanResources";
 import PrivateRoute from "./components/common/loading/PrivateRoute";
 import RoleProtectedRoute from "./components/common/loading/RoleProtectedRoute";
-
+/** 작성자: 김대호 */
 const router = createBrowserRouter([
   {
     path: "/login",

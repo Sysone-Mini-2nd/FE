@@ -1,7 +1,7 @@
 import React from 'react'
 import { FilterList, Sort } from '@mui/icons-material'
 import Dropdown from '../common/Dropdown'
-
+/** 작성자: 김대호, 백승준 */
 function ProjectFilters({ filters, onFiltersChange, sortBy, onSortChange }) {
   const handleFilterChange = (filterType, value) => {
     onFiltersChange({

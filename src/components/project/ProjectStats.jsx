@@ -1,11 +1,7 @@
 import React from 'react';
-
-// 1. props로 projects 배열 대신, 이미 계산된 total, stats, delayed 값을 받습니다.
+/** 작성자: 김대호, 백승준 */
 function ProjectStats({ total = 0, stats = {}, delayed = 0 }) {
 
-  // 2. 프론트엔드에서 직접 계산하던 복잡한 로직을 모두 제거합니다.
-
-  // 3. props로 받은 데이터를 사용하여 statCards 배열을 직접 생성합니다.
   const statCards = [
     {
       title: '전체',
@@ -34,7 +30,6 @@ function ProjectStats({ total = 0, stats = {}, delayed = 0 }) {
     }
   ];
 
-  // 4. 렌더링 부분은 그대로 유지합니다.
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       {statCards.map((stat, index) => (

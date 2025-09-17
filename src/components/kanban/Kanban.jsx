@@ -4,7 +4,7 @@ import KanbanHeader from './KanbanHeader';
 import KanbanColumn from './KanbanColumn';
 import TaskDetail from '../common/task/TaskDetail';
 import { useProjectIssues, useCreateIssue, useUpdateIssue, useDeleteIssue } from '../../hooks/useIssueQueries';
-
+/** 작성자: 김대호, 백승준 */
 const columnOrder = ['TODO', 'IN_PROGRESS', 'DONE'];
 
 function Kanban({ projectId, members = [] }) {
@@ -64,7 +64,6 @@ function Kanban({ projectId, members = [] }) {
       desc: "",
       priority: "NORMAL",
       status: columnId,
-      // 서버에서 필수일 수 있는 날짜 정보를 추가합니다.
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
     };

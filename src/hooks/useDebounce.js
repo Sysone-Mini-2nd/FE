@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+/** 작성자: 조윤상 */
 export function useDebounce(value, delay) {
   const [debouncedValue, setDebouncedValue] = useState(value);
 

@@ -1,5 +1,5 @@
 import React from 'react';
-
+/** 작성자: 김대호 */
 function MeetingMetadata({ data, className = "grid grid-cols-1 md:grid-cols-2 gap-4 text-sm" }) {
   return (
     <div className={className}>

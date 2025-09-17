@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import SockJS from 'sockjs-client';
 import { Stomp } from '@stomp/stompjs';
+/** 작성자: 조윤상 */
 
 let stompClient = null;
 let subscriptions = {};
-
 // 공통 상태 업데이트 유틸 함수
 const updateStateArray = (stateArray, newArray, key = 'id') => {
   const updatedArray = newArray.map((newItem) => {

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Close, AttachFile, Send } from '@mui/icons-material';
 import { sendMeetingEmail } from '../../api/meetingAPI';
 import { useToast } from '../../hooks/useToast';
-
+/** 작성자: 배지원 */
 function EmailSendModal({ isOpen, onClose, projectId, meetingId, meetingTitle }) {
   const { showSuccess, showError } = useToast();
   

@@ -4,7 +4,7 @@ import useChatStore from '../../store/chatStore';
 import * as chatApi from '../../api/chatApi';
 import * as socketService from '../../api/socketService';
 import { useDebounce } from '../useDebounce';
-
+/** 작성자: 김대호, 조윤상 */
 export const useFloatingChat = () => {
   const { user } = useAuth();
   const {

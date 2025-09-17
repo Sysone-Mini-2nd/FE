@@ -1,6 +1,6 @@
 import React from 'react';
 import { Search, FilterList } from '@mui/icons-material';
-
+/** 작성자: 김대호, 백승준 */
 function KanbanHeader() {
   return (
     <div className="border-b border-gray-200 p-4">

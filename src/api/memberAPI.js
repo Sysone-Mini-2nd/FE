@@ -1,5 +1,5 @@
 import api from './client';
-
+/** 작성자: 김대호 */
 // 회원 목록 조회
 export const getMembers = async () => {
   try {

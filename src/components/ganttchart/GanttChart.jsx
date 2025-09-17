@@ -4,7 +4,7 @@ import { useRef, useMemo, useCallback } from "react";
 import { useProjectIssues, useCreateIssue, useUpdateIssue, useDeleteIssue } from "../../hooks/useIssueQueries";
 import { scales, columns, staticEditorShape, calculateDuration } from "./ganttChart.config";
 import { debounce } from 'lodash';
-
+/** 작성자: 김대호, 백승준 */
 function GanttChart({ projectId }) {
     const apiRef = useRef(null);
     const isDragUpdateRef = useRef(false);
@@ -84,7 +84,6 @@ function GanttChart({ projectId }) {
         }
     }, [projectId, deleteIssueMutation]);
 
-    // 가장 깔끔하고 올바른 방식으로 수정된 handleAddTask
     const handleAddTask = useCallback(() => {
         const startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
@@ -101,13 +100,11 @@ function GanttChart({ projectId }) {
             status: "TODO",
         };
 
-        // 서버에 생성 요청만 보냅니다. 성공 시 useCreateIssue 훅이 자동으로 목록을 갱신합니다.
         createIssueMutation.mutate({
             projectId,
             issueData: newIssueData,
         });
 
-        // 라이브러리가 임시 태스크를 만들지 못하도록 false를 반환합니다.
         return false;
     }, [projectId, createIssueMutation]);
 

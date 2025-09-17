@@ -1,6 +1,6 @@
 import { Edit, Delete, AccountCircle } from '@mui/icons-material';
 import DataTable from '../common/DataTable';
-
+/** 작성자: 김대호 */
 function MemberTable({ members, onEdit, onDelete }) {
   // 테이블 컬럼 정의
   const columns = [

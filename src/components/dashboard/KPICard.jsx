@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
 function KPICard({ title, value, icon, trend, trendValue, onClick }) {
   return (
     <div 

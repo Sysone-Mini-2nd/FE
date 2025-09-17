@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, RefreshCw } from '@mui/icons-material';
-
+/** 작성자: 김대호 */
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);

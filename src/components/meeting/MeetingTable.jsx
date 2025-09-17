@@ -5,7 +5,7 @@ import {
   Folder
 } from '@mui/icons-material'
 import DataTable from '../common/DataTable'
-
+/** 작성자: 김대호 */
 const columnHelper = createColumnHelper()
 
 function MeetingTable({ meetings = [], onAction, loading = false }) {

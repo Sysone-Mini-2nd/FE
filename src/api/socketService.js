@@ -1,6 +1,6 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-
+/** 작성자: 김대호, 조윤상 */
 let stompClient = null;
 let subscriptions = new Map();
 

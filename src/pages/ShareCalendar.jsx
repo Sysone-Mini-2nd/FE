@@ -3,7 +3,7 @@ import Calendar from '../components/calendar/Calendar'
 import CalendarFilters from '../components/calendar/CalendarFilters'
 import EventDetails from '../components/calendar/EventDetails'
 import dayjs from 'dayjs'
-
+/** 작성자: 김대호 */
 function ShareCalendar() {
   const [events, setEvents] = useState([])
   const [filteredEvents, setFilteredEvents] = useState([])

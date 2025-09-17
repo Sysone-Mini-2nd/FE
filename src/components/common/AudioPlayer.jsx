@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PlayArrow, Pause } from '@mui/icons-material';
-
+/** 작성자: 김대호 */
 function AudioPlayer({ audioFile, title = "회의 녹음", createdAt }) {
   const [isPlaying, setIsPlaying] = useState(false);
 

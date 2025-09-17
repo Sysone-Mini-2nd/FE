@@ -1,5 +1,5 @@
 import { Search } from '@mui/icons-material'
-
+/** 작성자: 김대호 */
 const EmployeeSearch = ({ 
   employeeSearchTerm, 
   onSearchChange, 

@@ -1,5 +1,5 @@
 import api from './client';
-
+/** 작성자: 조윤상 */
 // 공통 API 호출 함수
 const apiCall = (method, url, data = null, params = null) => {
   return api({

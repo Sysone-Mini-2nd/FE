@@ -1,5 +1,5 @@
 import api from './client';
-
+/** 작성자: 김대호, 배지원 */
 // 회의록 생성
 export const createMeeting = async (projectId, meetingData, audioFile = null) => {
   try {

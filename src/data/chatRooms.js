@@ -1,4 +1,5 @@
 // 샘플 채팅방 데이터
+/** 작성자: 김대호 */
 export const chatRoomsData = [
   {
     id: 1,

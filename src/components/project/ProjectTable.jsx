@@ -3,7 +3,7 @@ import { createColumnHelper } from '@tanstack/react-table';
 import { useNavigate } from 'react-router-dom';
 import { MoreVert } from '@mui/icons-material';
 import DataTable from '../common/DataTable';
-
+/** 작성자: 김대호, 백승준 */
 const columnHelper = createColumnHelper();
 
 function ProjectTable({ projects, onAction, user }) {

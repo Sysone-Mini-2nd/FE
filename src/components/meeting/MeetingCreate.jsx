@@ -6,7 +6,7 @@ import { LoadingSpinner } from '../common/loading/LoadingComponents';
 import { useCreateMeeting, useUpdateMeeting } from '../../hooks/useMeetingQueries';
 import { useToast } from '../../hooks/useToast';
 import { getProjectParticipants } from '../../api/meetingAPI';
-
+/** 작성자: 김대호, 배지원 */
 function MeetingCreate({ onBack, onSave, meeting = null, isEditing = false, projectId }) {
   const [meetingData, setMeetingData] = useState({
     title: meeting?.title || "",

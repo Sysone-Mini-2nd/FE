@@ -1,4 +1,5 @@
-function TaskDescription({ 
+/** 작성자: 김대호 */
+function TaskDescription({
   task, 
   isEditing, 
   editData, 

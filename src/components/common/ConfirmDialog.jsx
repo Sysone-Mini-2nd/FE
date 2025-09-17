@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
 const ConfirmDialog = ({
   isOpen,
   title,

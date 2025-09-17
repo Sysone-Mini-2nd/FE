@@ -1,5 +1,5 @@
 import React from 'react';
-
+/** 작성자: 김대호, 배지원 */
 function AISummaryPanel({ 
   summary, 
   title = "AI 정리", 

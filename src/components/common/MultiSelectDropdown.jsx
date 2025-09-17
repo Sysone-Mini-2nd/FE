@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { ExpandMore, Close, Check } from '@mui/icons-material';
-
+/** 작성자: 김대호 */
 /**
  * 다중 선택이 가능한 Dropdown 컴포넌트
  * @param {Object} props

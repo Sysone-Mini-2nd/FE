@@ -7,7 +7,7 @@ import TaskDescription from './TaskDescription';
 import TaskMetadata from './TaskMetadata';
 import TaskSchedule from './TaskSchedule';
 import TaskComments from './TaskComments';
-
+/** 작성자: 김대호, 백승준 */
 // 상수 분리
 const PRIORITY_MAPPING = {
   low: 'LOW',

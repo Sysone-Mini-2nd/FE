@@ -2,7 +2,7 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import MainContent from './MainContent';
 import FloatingChat from '../common/chat/FloatingChat';
-
+/** 작성자: 김대호 */
 function Layout({ children }) {
   return (
       <div className="h-screen w-full flex overflow-hidden">

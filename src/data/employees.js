@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
 // 회원 목록 데이터 (member 테이블 구조에 맞춤)
 export const membersData = [
   { 

@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProjectDashboard } from '../../api/dashboardAPI';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+/** 작성자: 김대호, 배지원 */
 function WeeklySchedule({ selectedProjectId }) {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['projectDashboard', selectedProjectId],

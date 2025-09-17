@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
 // 회의 데이터
 export const meetingsData = [
   {

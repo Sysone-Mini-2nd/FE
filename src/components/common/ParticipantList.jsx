@@ -1,6 +1,6 @@
 import React from 'react';
 import { People } from '@mui/icons-material';
-
+/** 작성자: 김대호 */
 function ParticipantList({ participants = [], title = "참석자", gridCols = "grid-cols-2 md:grid-cols-3 lg:grid-cols-6" }) {
   return (
     <div className="flex items-center gap-2">

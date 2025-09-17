@@ -10,7 +10,7 @@ import {
 import { fetchDashboardProjects } from '../../api/dashboardAPI';
 import { ProjectListSkeleton, ErrorFallback } from '../common/loading/LoadingComponents';
 import useProjectStore from '../../store/projectStore';
-
+/** 작성자: 김대호 */
 // 데이터 로딩 컴포넌트 (TanStack Query 사용)
 function ProjectListContent() {
   const navigate = useNavigate();

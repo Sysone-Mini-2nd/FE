@@ -1,5 +1,5 @@
 import React from 'react';
-
+/** 작성자: 김대호 */
 function BadgeComponent({ type, customConfig = {} }) {
   const defaultTypeConfig = {
     "Daily Scrum": {

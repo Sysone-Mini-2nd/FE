@@ -16,8 +16,8 @@ import MeetingMetadata from "../common/MeetingMetadata";
 import AudioPlayer from "../common/AudioPlayer";
 import AISummaryPanel from "../common/AISummaryPanel";
 import { useToast } from "../../hooks/useToast";
-import EmailSendModal from "./EmailSendModal"; 
-
+import EmailSendModal from "./EmailSendModal";
+/** 작성자: 김대호, 배지원 */
 function MeetingDetail({ meeting, onBack, onEdit, onDelete }) {
   // Toast hook
   const { showError } = useToast();

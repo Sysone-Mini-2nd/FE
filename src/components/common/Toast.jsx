@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CheckCircle, Error, Warning, Info, Close } from "@mui/icons-material";
-
+/** 작성자: 김대호 */
 const Toast = ({
   message,
   type = "success",

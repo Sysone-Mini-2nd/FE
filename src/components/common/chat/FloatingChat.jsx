@@ -9,7 +9,7 @@ import EmployeeSearch from './EmployeeSearch';
 import ChatRoom from './ChatRoom';
 import ContextMenu from './ContextMenu';
 import { ExitToApp } from '@mui/icons-material';
-
+/** 작성자: 조윤상 */
 function FloatingChat() {
   const { user } = useAuth();
   const { setCurrentUser } = useChatStore();

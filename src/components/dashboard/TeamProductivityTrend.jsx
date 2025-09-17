@@ -2,7 +2,7 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProjectDashboard } from '../../api/dashboardAPI';
-
+/** 작성자: 김대호 */
 function TeamProductivityTrend({ selectedProjectId, title = "인원별 이슈 진행률" }) {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['projectDashboard', selectedProjectId],

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { employeesData } from '../../data/employees'
-
+/** 작성자: 김대호 */
 export const useEmployees = () => {
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState('')
   const [selectedEmployees, setSelectedEmployees] = useState([])

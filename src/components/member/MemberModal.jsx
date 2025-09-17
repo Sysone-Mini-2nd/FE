@@ -1,5 +1,5 @@
 import { Close, Save } from '@mui/icons-material';
-
+/** 작성자: 김대호 */
 function MemberModal({ 
   isOpen, 
   onClose, 

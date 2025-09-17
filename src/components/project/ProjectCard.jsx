@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   MoreVert,
 } from "@mui/icons-material";
-
+/** 작성자: 김대호, 백승준 */
 function ProjectCard({ project, onAction, isPm, user }) {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);

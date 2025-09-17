@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { getMeetings, deleteMeeting as deleteMeetingAPI, getMeetingDetail } from '../api/meetingAPI'
-
+/** 작성자: 김대호, 배지원 */
 const useMeetingStore = create((set, get) => ({
   // 상태
   meetings: [],

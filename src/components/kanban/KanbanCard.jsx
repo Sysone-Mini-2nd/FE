@@ -7,7 +7,7 @@ import {
   Person,
   MoreVert
 } from '@mui/icons-material';
-
+/** 작성자: 김대호, 백승준 */
 function KanbanCard({ item, index, onCardClick, onDelete }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

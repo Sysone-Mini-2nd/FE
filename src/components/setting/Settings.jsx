@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
 function Settings() {
   return (
     <div className="p-6">

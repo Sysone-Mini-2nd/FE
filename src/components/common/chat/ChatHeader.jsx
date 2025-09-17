@@ -1,6 +1,6 @@
 import { Close, Minimize, ArrowBack } from '@mui/icons-material'
 import { useAuth } from '../../../hooks/useAuth'
-
+/** 작성자: 김대호 */
 const ChatHeader = ({ 
   currentView, 
   selectedChat, 
