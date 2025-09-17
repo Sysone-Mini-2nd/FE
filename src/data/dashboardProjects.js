@@ -1,4 +1,5 @@
 // 더미 데이터 - API 연동 전까지 사용
+/** 작성자: 김대호 */
 export const dummyProjectData = {
   statusCode: 200,
   message: "프로젝트 리스트 호출 성공",

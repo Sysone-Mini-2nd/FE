@@ -13,7 +13,7 @@ import Meeting from "../components/meeting/Meeting";
 import TeamManagement from "../components/teammanage/TeamManagement";
 import { useProjectDetail } from "../hooks/useProjectQueries";
 import AuthContext from "../contexts/AuthContext"; // AuthContext import
-
+/** 작성자: 김대호, 백승준 */
 // --- Helper Functions ---
 const getStatusColor = (status) => {
   switch (status) {

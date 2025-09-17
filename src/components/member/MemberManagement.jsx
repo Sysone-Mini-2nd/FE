@@ -5,7 +5,7 @@ import MemberTable from './MemberTable';
 import MemberModal from './MemberModal';
 import MemberHeader from './MemberHeader';
 import ConfirmDialog from '../common/ConfirmDialog';
-
+/** 작성자: 김대호 */
 function MemberManagement() {
   const {
     members,

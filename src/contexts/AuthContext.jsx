@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from 'react';
 import { login as apiLogin, logout as apiLogout } from '../api/authAPI';
-
+/** 작성자: 김대호 */
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {

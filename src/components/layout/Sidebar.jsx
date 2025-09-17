@@ -11,7 +11,7 @@ import {
   People,
 } from "@mui/icons-material";
 import { useAuth } from "../../hooks/useAuth";
-
+/** 작성자: 김대호 */
 function Sidebar() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { user } = useAuth();

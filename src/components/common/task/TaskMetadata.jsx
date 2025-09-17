@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
 function TaskMetadata({ task }) {
   // 메타데이터 구성
   const metadataItems = [

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import useChatStore from '../../store/chatStore'
-
+/** 작성자: 김대호 */
 export const useChatRooms = () => {
   const [searchTerm, setSearchTerm] = useState('')
   

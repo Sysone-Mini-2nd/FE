@@ -6,7 +6,7 @@ import ProjectList from '../components/project/ProjectList';
 import ProjectModal from '../components/project/ProjectModal';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '../hooks/useProjectQueries';
 import { useMemberQueries } from '../hooks/useMemberQueries';
-
+/** 작성자: 김대호, 백승준 */
 const statusMap = {
   planning: 'TODO',
   progress: 'IN_PROGRESS',
@@ -64,8 +64,7 @@ function ProjectManager() {
         <div>에러가 발생했습니다.</div>
       ) : (
         <>
-          {/* 1. ProjectStats에 필요한 모든 통계 데이터를 props로 전달합니다. */}
-          <ProjectStats 
+          <ProjectStats
             total={projectData.total}
             stats={projectData.statusCounts}
             delayed={projectData.delayed}

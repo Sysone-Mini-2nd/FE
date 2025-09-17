@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth.jsx";
 import "../styles/login.css";
-
+/** 작성자: 김대호 */
 function Login() {
   const [credentials, setCredentials] = useState({
     username: "",

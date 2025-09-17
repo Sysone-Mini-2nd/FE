@@ -1,5 +1,5 @@
 import api from './client';
-
+/** 작성자: 백승준 */
 export const getProjects = async (params = {}) => {
   try {
     const response = await api.get('/projects', { params });
@@ -69,7 +69,6 @@ export const deleteProject = async (projectId) => {
 
 export const createProjectMember = async (projectId, memberId) => {
   try {
-    // memberId를 JSON 객체로 감싸서 전송합니다.
     const response = await api.post(`/projects/${projectId}/members`, memberId);
     return response.data;
   } catch (error) {
@@ -80,7 +79,6 @@ export const createProjectMember = async (projectId, memberId) => {
 
 export const deleteProjectMember = async (projectId, memberId) => {
   try {
-    // DELETE 요청 시 body는 { data: ... } 객체 안에 넣어주어야 합니다.
     const response = await api.delete(`/projects/${projectId}/members`, { data: { memberId } });
     return response.data;
   } catch (error) {

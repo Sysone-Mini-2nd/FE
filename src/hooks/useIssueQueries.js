@@ -7,7 +7,7 @@ import {
     patchIssue,  // PATCH 요청용
     deleteIssue as deleteIssueAPI
 } from '../api/projectIssueAPI';
-
+/** 작성자: 백승준 */
 // 이슈 목록 조회 (필터링, 검색 지원)
 export function useProjectIssues(projectId, filters = {}) {
     return useQuery({
@@ -48,7 +48,7 @@ export function useIssueDetail(issueId) {
     });
 }
 
-// 이슈 생성 mutation (사용자 요청에 따라 이 부분은 수정하지 않습니다)
+// 이슈 생성 mutation
 export function useCreateIssue() {
     const queryClient = useQueryClient();
 

@@ -1,6 +1,6 @@
 import { Replay, Warning} from "@mui/icons-material";
 import { Skeleton } from "@mui/material";
-
+/** 작성자: 김대호 */
 // 대시보드 KPI 카드용 스켈레톤
 export function KPICardSkeleton({ count = 2 }) {
   return (

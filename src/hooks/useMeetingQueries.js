@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query';
 import { getMeetings, deleteMeeting as deleteMeetingAPI, getMeetingDetail, createMeeting, updateMeeting } from '../api/meetingAPI';
-
+/** 작성자: 김대호, 배지원 */
 // 회의록 목록 조회
 export function useMeetings(projectId, page = 1, size = 10) {
   return useQuery({

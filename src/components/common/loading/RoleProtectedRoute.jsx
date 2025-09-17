@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth.jsx';
-
+/** 작성자: 김대호 */
 function RoleProtectedRoute({ children, requiredRole, fallback = null }) {
   const { user, isAuthenticated, loading } = useAuth();
 

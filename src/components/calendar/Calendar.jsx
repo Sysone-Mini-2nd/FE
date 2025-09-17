@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react'
 import { Calendar as BigCalendar, dayjsLocalizer } from 'react-big-calendar'
 import dayjs from 'dayjs'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
-
+/** 작성자: 김대호 */
 const localizer = dayjsLocalizer(dayjs)
 
 const Calendar = ({ events, onSelectEvent, onSelectSlot }) => {

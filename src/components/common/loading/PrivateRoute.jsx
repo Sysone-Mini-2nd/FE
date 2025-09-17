@@ -1,6 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../../hooks/useAuth.jsx';
-
+/** 작성자: 김대호 */
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
 

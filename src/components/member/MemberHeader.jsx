@@ -1,5 +1,5 @@
 import { Add } from '@mui/icons-material';
-
+/** 작성자: 김대호 */
 function MemberHeader({ onCreateMember }) {
   return (
     <div className="flex justify-between items-center mb-6">

@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
 function MainContent({ children }) {
   return (
     <div className="flex-1 overflow-hidden">

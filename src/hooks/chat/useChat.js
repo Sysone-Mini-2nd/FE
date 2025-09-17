@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import useChatStore from '../../store/chatStore'
-
+/** 작성자: 김대호, 조윤상 */
 export const useChat = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [isMinimized, setIsMinimized] = useState(false)

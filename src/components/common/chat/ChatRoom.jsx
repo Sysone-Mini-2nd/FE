@@ -4,7 +4,7 @@ import useChatStore from '../../../store/chatStore';
 import { sendInviteMessage } from '../../../api/socketService';
 import { useDebounce } from '../../../hooks/useDebounce';
 import * as chatApi from '../../../api/chatApi';
-
+/** 작성자: 김대호, 조윤상 */
 const ChatRoom = ({
   selectedChat,
   message,

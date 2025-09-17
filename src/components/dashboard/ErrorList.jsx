@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProjectDashboard } from '../../api/dashboardAPI';
 import { Warning, Person, AccessTime } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
-
+/** 작성자: 김대호, 배지원 */
 function ErrorList({ selectedProjectId }) {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['projectDashboard', selectedProjectId],

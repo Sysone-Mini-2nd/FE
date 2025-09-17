@@ -1,5 +1,5 @@
 import api from './client';
-
+/** 작성자: 백승준 */
 export const getComments = async (issueId) => {
   try {
     const response = await api.get(`/issues/${issueId}/comments`);

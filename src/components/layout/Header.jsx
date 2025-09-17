@@ -1,6 +1,6 @@
 import { Notifications, Logout } from "@mui/icons-material";
 import { useAuth } from '../../hooks/useAuth.jsx';
-
+/** 작성자: 김대호 */
 function Header() {
   const { user, logout } = useAuth();
 

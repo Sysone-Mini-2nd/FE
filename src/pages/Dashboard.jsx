@@ -11,7 +11,7 @@ import {
   TableSkeleton, 
   ProjectListSkeleton 
 } from "../components/common/loading/LoadingComponents";
-
+/** 작성자: 김대호, 배지원 */
 // Lazy load dashboard components
 const KPICard = React.lazy(() => import("../components/dashboard/KPICard"));
 const ProjectProgressChart = React.lazy(() => import("../components/dashboard/ProjectProgressChart"));

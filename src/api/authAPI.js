@@ -1,5 +1,5 @@
 import api from './client';
-
+/** 작성자: 김대호 */
 // 로그인
 export const login = async (accountId, password) => {
   try {

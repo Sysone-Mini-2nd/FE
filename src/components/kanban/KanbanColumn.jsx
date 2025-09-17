@@ -2,7 +2,7 @@ import React from 'react';
 import { Droppable } from '@hello-pangea/dnd';
 import KanbanCard from './KanbanCard';
 import { Add } from '@mui/icons-material';
-
+/** 작성자: 김대호, 백승준 */
 function KanbanColumn({ column, onAddCard, onDeleteCard, onCardClick }) {
   const getColumnColor = (id) => {
     switch (id) {
@@ -27,7 +27,6 @@ function KanbanColumn({ column, onAddCard, onDeleteCard, onCardClick }) {
           </div>
         </div>
         
-        {/* "작업 추가" 버튼의 onClick 이벤트를 활성화합니다. */}
         <button
             onClick={onAddCard}
             className="w-full flex items-center gap-2 px-3 py-2 text-gray-600 hover:bg-gray-100 transition-colors border border-dashed border-gray-300"

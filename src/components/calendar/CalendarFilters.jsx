@@ -1,4 +1,5 @@
-const CalendarFilters = ({ 
+/** 작성자: 김대호 */
+const CalendarFilters = ({
   filters, 
   onFilterChange,
   sortBy,

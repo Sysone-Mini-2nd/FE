@@ -1,6 +1,6 @@
 import { createContext, useState, useCallback } from 'react';
 import Toast from '../components/common/Toast';
-
+/** 작성자: 김대호 */
 const ToastContext = createContext();
 
 export const ToastProvider = ({ children }) => {

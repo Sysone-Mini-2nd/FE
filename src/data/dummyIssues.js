@@ -1,3 +1,4 @@
+/** 작성자: 김대호 */
   export const dummyIssues = [
     {
       title: "이슈 적용 테스트1",

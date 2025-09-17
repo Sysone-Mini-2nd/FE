@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-
+/** 작성자: 조윤상 */
 const ContextMenu = ({ x, y, visible, items, onClose }) => {
   const menuRef = useRef(null);
 

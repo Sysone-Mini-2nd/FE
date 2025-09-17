@@ -1,4 +1,5 @@
-function TaskSchedule({ 
+/** 작성자: 김대호 */
+function TaskSchedule({
   task, 
   isEditing, 
   editData, 

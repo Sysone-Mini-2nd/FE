@@ -1,5 +1,5 @@
 import api from './client';
-
+/** 작성자: 백승준 */
 // 이슈 목록 조회 (필터링, 검색 지원)
 export const getProjectIssues = async (projectId, filters = {}) => {
     try {

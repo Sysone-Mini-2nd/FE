@@ -5,7 +5,7 @@ import SearchableDropdown from "../common/SearchableDropdown";
 import MultiSelectDropdown from "../common/MultiSelectDropdown";
 import { useProjectDetail } from "../../hooks/useProjectQueries";
 import { analyzeRequirements } from "../../api/projectAPI";
-
+/** 작성자: 김대호, 백승준 */
 const statusFromBE = { TODO: 'planning', IN_PROGRESS: 'progress', DONE: 'completed', PAUSED: 'paused' };
 const priorityFromBE = { LOW: 'low', NORMAL: 'medium', HIGH: 'high' };
 

@@ -6,7 +6,7 @@ import './index.css'
 import router from './Router.jsx'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 import { ToastProvider } from './contexts/ToastContext.jsx'
-
+/** 작성자: 김대호 */
 // QueryClient 생성
 const queryClient = new QueryClient({
   defaultOptions: {

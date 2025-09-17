@@ -1,5 +1,5 @@
 import { Search, Add, Group } from '@mui/icons-material';
-
+/** 작성자: 조윤상 */
 const ChatRoomList = ({ 
   searchTerm, 
   onSearchChange, 

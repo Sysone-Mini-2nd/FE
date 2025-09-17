@@ -5,7 +5,7 @@ import {
   updateMember, 
   deleteMember 
 } from '../api/memberAPI';
-
+/** 작성자: 김대호 */
 // 쿼리 키 정의
 const QUERY_KEYS = {
   members: ['members'],

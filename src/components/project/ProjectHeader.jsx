@@ -1,7 +1,7 @@
-import React, { useContext } from 'react'; // useContext 추가
+import React, { useContext } from 'react';
 import { Add, Search, ViewModule, TableChart } from '@mui/icons-material';
-import AuthContext from '../../contexts/AuthContext'; // AuthContext import
-
+import AuthContext from '../../contexts/AuthContext';
+/** 작성자: 김대호, 백승준 */
 function ProjectHeader({ 
   onCreateProject, 
   searchTerm, 
@@ -16,7 +16,6 @@ function ProjectHeader({
     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
       {/* 페이지 제목 및 생성 버튼 (모바일) */}
       <div className="flex items-center justify-between">
-        {/* MASTER 역할일 때만 버튼을 보여줍니다. */}
         {user?.role === 'MASTER' && (
           <button
             onClick={onCreateProject}
@@ -69,7 +68,6 @@ function ProjectHeader({
         </div>
 
         {/* 생성 버튼 (데스크톱) */}
-        {/* MASTER 역할일 때만 버튼을 보여줍니다. */}
         {user?.role === 'MASTER' && (
           <button
             onClick={onCreateProject}

@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { useGetComments, useCreateComment, useUpdateComment, useDeleteComment } from '../../../hooks/useCommentQueries';
 import AuthContext from '../../../contexts/AuthContext';
-
+/** 작성자: 김대호, 백승준 */
 // 댓글 하나를 렌더링하는 재사용 가능한 컴포넌트
 const Comment = ({ comment, onStartEdit, onSaveEdit, onCancelEdit, onDelete, onStartReply, editingCommentId, editContent, setEditContent, currentUser }) => {
   const formatDate = (dateString) => {

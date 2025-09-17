@@ -7,7 +7,7 @@ import Dropdown from "../common/Dropdown";
 import { LoadingSpinner, ErrorFallback } from "../common/loading/LoadingComponents";
 import useMeetingStore from "../../store/meetingStore";
 import { useToast } from "../../hooks/useToast";
-
+/** 작성자: 김대호, 배지원 */
 function Meeting({ projectId }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");

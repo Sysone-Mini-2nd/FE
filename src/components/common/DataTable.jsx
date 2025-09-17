@@ -10,7 +10,7 @@ import {
   ArrowDownward
 } from '@mui/icons-material'
 import { Skeleton } from '@mui/material'
-
+/** 작성자: 김대호 */
 function DataTable({ 
   data = [], 
   columns = [], 

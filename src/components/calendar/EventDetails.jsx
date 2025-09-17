@@ -1,5 +1,5 @@
 import dayjs from 'dayjs'
-
+/** 작성자: 김대호 */
 const EventDetails = ({ selectedDate, events, onEventAction }) => {
   const formatDate = (date) => {
     return dayjs(date).format('YYYY.MM.DD')

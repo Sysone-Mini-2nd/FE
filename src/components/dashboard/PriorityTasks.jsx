@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchProjectDashboard } from '../../api/dashboardAPI';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-
+/** 작성자: 김대호, 배지원 */
 function PriorityTasks({ selectedProjectId }) {
   const { data: dashboardData, isLoading, error } = useQuery({
     queryKey: ['projectDashboard', selectedProjectId],

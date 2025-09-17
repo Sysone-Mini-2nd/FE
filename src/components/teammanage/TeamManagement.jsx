@@ -3,11 +3,9 @@ import { Add, Close, Send, Delete } from '@mui/icons-material';
 import { useFloatingChat } from '../../hooks/chat/useFloatingChat';
 import useChatStore from '../../store/chatStore';
 import { useMemberQueries } from '../../hooks/useMemberQueries';
-// 1. 팀원 추가/삭제를 위한 뮤테이션 훅을 import 합니다.
 import { useAddProjectMember, useDeleteProjectMember } from '../../hooks/useProjectQueries';
 import AuthContext from "../../contexts/AuthContext.jsx";
-
-// onAddMember prop은 더 이상 필요 없으므로 제거합니다.
+/** 작성자: 김대호, 백승준 */
 function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
   const { user } = useContext(AuthContext);
   const [selectedMember, setSelectedMember] = useState(null);
@@ -17,7 +15,6 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
 
   const { members: allEmployees, loading: isLoadingMembers } = useMemberQueries();
   
-  // 3. 뮤테이션 훅을 호출합니다.
   const addMemberMutation = useAddProjectMember();
   const deleteMemberMutation = useDeleteProjectMember();
 
@@ -61,7 +58,6 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
     }
   };
 
-  // 4. 팀원 추가 로직을 뮤테이션을 사용하도록 수정합니다.
   const handleAddMember = () => {
     if (selectedEmployeeId) {
       addMemberMutation.mutate({ projectId, memberId: parseInt(selectedEmployeeId, 10) });
@@ -70,9 +66,8 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
     }
   };
 
-  // 5. 팀원 삭제를 위한 핸들러를 추가합니다.
   const handleDeleteMember = (e, memberId) => {
-    e.stopPropagation(); // 이벤트 버블링을 막아 프로필 모달이 뜨지 않게 합니다.
+    e.stopPropagation();
     if (window.confirm("정말로 이 팀원을 프로젝트에서 제외하시겠습니까?")) {
       deleteMemberMutation.mutate({ projectId, memberId });
     }
