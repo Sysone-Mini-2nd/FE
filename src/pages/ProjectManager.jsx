@@ -1,5 +1,4 @@
 import React, { useState, useMemo, Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import ProjectHeader from '../components/project/ProjectHeader';
 import ProjectStats from '../components/project/ProjectStats';
 import ProjectFilters from '../components/project/ProjectFilters';
@@ -7,7 +6,7 @@ import ProjectList from '../components/project/ProjectList';
 import ProjectModal from '../components/project/ProjectModal';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '../hooks/useProjectQueries';
 import { useMemberQueries } from '../hooks/useMemberQueries';
-import { ProjectCardSkeleton, ErrorFallback } from '../components/common/loading/LoadingComponents';
+import { ProjectCardSkeleton } from '../components/common/loading/LoadingComponents';
 /** 작성자: 김대호, 백승준 */
 const statusMap = {
   planning: 'TODO',
@@ -121,18 +120,9 @@ function ProjectManager() {
 
 function ProjectManagerWithSuspense() {
   return (
-    <ErrorBoundary
-      FallbackComponent={({ error, resetErrorBoundary }) => (
-        <ErrorFallback 
-          error={error} 
-          onRetry={resetErrorBoundary}
-        />
-      )}
-    >
-      <Suspense fallback={<ProjectCardSkeleton count={8} />}>
-        <ProjectManager />
-      </Suspense>
-    </ErrorBoundary>
+    <Suspense fallback={<ProjectCardSkeleton count={8} />}>
+      <ProjectManager />
+    </Suspense>
   );
 }
 

@@ -6,7 +6,6 @@ function AudioPlayer({ audioFile, title = "회의 녹음", createdAt }) {
 
   const togglePlayback = () => {
     setIsPlaying(!isPlaying);
-    // 실제 구현에서는 audioRef를 사용하여 재생/일시정지
   };
 
   if (!audioFile) {
