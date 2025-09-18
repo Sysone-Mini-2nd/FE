@@ -53,3 +53,15 @@ export const fetchAllMembers = () => api.get('/profile/all');
 
 // 이름 또는 이메일로 사용자 검색
 export const searchMembers = (keyword) => api.get('/profile/search', { params: { keyword } });
+
+// 프로젝트 멤버 단에서 직접 dm 보내기
+export const sendOneMessage = async ({ senderId, readerId, content }) => {
+  const payload = { senderId, readerId, content };
+  try {
+    const response = await apiCall('post', '/chat-room/oneMessage', payload); // URL 수정
+    return response.data;
+  } catch (error) {
+    console.error('Failed to send one-on-one message:', error);
+    throw error;
+  }
+};
