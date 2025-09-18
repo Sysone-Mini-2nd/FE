@@ -1,10 +1,10 @@
 import React, {useState, useMemo, useContext} from 'react';
 import { Add, Close, Send, Delete } from '@mui/icons-material';
-import { useFloatingChat } from '../../hooks/chat/useFloatingChat';
-import useChatStore from '../../store/chatStore';
+import { sendOneMessage } from '../../api/chatApi';
 import { useMemberQueries } from '../../hooks/useMemberQueries';
 import { useAddProjectMember, useDeleteProjectMember } from '../../hooks/useProjectQueries';
 import AuthContext from "../../contexts/AuthContext.jsx";
+
 /** 작성자: 김대호, 백승준 */
 function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
   const { user } = useContext(AuthContext);
@@ -18,9 +18,6 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
   const addMemberMutation = useAddProjectMember();
   const deleteMemberMutation = useDeleteProjectMember();
 
-  const { addChatRoom, findExistingPrivateChat, toggleChat, selectChatRoom, isOpen } = useFloatingChat();
-  const { sendMessage } = useChatStore();
-
   const handleMemberClick = (member) => {
     setSelectedMember(member);
   };
@@ -30,33 +27,25 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
     setMessage('');
   };
 
-  const handleSendMessage = () => {
-    if (message.trim() && selectedMember) {
-      const existingChat = findExistingPrivateChat(selectedMember.name);
-      let targetChat;
-      if (existingChat) {
-        targetChat = existingChat;
-      } else {
-        targetChat = {
-          id: Date.now(),
-          name: selectedMember.name,
-          type: 'private',
-          lastMessage: message,
-          lastTime: '방금',
-          unreadCount: 0,
-          participants: [selectedMember.name]
-        };
-        addChatRoom(targetChat);
-      }
-      sendMessage(targetChat.id, message.trim());
-      selectChatRoom(targetChat);
-      if (!isOpen) {
-        toggleChat();
-      }
-      setMessage('');
-      setSelectedMember(null);
-    }
-  };
+  const handleSendMessage = async () => {
+  if (!selectedMember || !message) {
+    console.error('Selected member or message content is missing.');
+    return;
+  }
+
+  try {
+    const response = await sendOneMessage({
+      senderId: user.id,
+      readerId: selectedMember.id,
+      content: message,
+    });
+    console.log('Message sent successfully:', response);
+    setMessage(''); // 메시지 입력창 초기화
+    setSelectedMember(null); // ✅ 전송 성공 후 창 닫기
+  } catch (error) {
+    console.error('Failed to send message:', error);
+  }
+}; 
 
   const handleAddMember = () => {
     if (selectedEmployeeId) {
@@ -160,7 +149,7 @@ function TeamManagement({ members: teamMembers = [], isPM, projectId }) {
       {/* 팀원 추가 모달 (데이터 소스 변경) */}
       {showAddModal && (
         <div className="modal">
-          <div className="bg-white backdrop-blur-2xl rounded-lg p-6 w-96">
+          <div className="bg-white backdrop-blur-2xl rounded-lg p-6 w-96" style={{ maxHeight: 'calc(100% - 200px)' }}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">새 팀원 추가</h3>
               <button onClick={() => setShowAddModal(false)} className="text-gray-400 hover:text-gray-600"><Close className="w-5 h-5" /></button>
