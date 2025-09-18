@@ -165,10 +165,17 @@ const ChatRoom = ({
 
       {/* 메시지 입력 영역 */}
       <div className="flex-shrink-0">
-        <form onSubmit={onSendMessage} className="p-3 border-t border-gray-200 bg-white rounded-b-lg">
+        <form 
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSendMessage(e);
+          }} 
+          className="p-3 border-t border-gray-200 bg-white rounded-b-lg"
+        >
           <div className="flex gap-2">
             {/* 초대 아이콘 */}
             <button
+              type="button"
               onClick={() => setInviteModalOpen(true)}
               className="p-2 bg-emerald-400 text-white rounded-full shadow-lg hover:bg-emerald-500 transition-colors"
               title="초대하기"
@@ -192,6 +199,12 @@ const ChatRoom = ({
               type="text"
               value={message}
               onChange={(e) => onMessageChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  onSendMessage(e);
+                }
+              }}
               placeholder="메시지를 입력하세요..."
               className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm"
             />
