@@ -72,9 +72,34 @@ const useChatStore = create((set, get) => ({
       get().unsubscribeAll();
       return;
     }
+    
     const websocketUrl = import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:8081/ws/chat';
-    const socket = new SockJS(websocketUrl);
-    stompClient = Stomp.over(socket);
+    console.log('WebSocket URL:', websocketUrl);
+    console.log('Environment:', import.meta.env.MODE);
+    
+    // HTTPS 환경에서는 WSS를 사용하고, SockJS 대신 네이티브 WebSocket 사용
+    const isHttps = window.location.protocol === 'https:';
+    let finalUrl = websocketUrl;
+    
+    if (isHttps) {
+      // HTTPS 환경에서는 WSS 강제 사용
+      finalUrl = websocketUrl.replace('http://', 'wss://').replace('ws://', 'wss://');
+      if (!finalUrl.startsWith('wss://')) {
+        finalUrl = 'wss://' + finalUrl.replace(/^https?:\/\//, '');
+      }
+    }
+    
+    console.log('Final WebSocket URL:', finalUrl);
+    
+    // SockJS 대신 네이티브 WebSocket 사용 (HTTPS 환경에서)
+    if (isHttps) {
+      const ws = new WebSocket(finalUrl);
+      stompClient = Stomp.over(ws);
+    } else {
+      const socket = new SockJS(finalUrl);
+      stompClient = Stomp.over(socket);
+    }
+    
     stompClient.connect({}, () => {
       set({ isConnected: true });
 
@@ -102,7 +127,8 @@ const useChatStore = create((set, get) => ({
           }
         );
       }
-    }, () => {
+    }, (error) => {
+      console.error('WebSocket connection failed:', error);
       set({ isConnected: false });
     });
   },
