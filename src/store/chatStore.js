@@ -72,7 +72,8 @@ const useChatStore = create((set, get) => ({
       get().unsubscribeAll();
       return;
     }
-    const socket = new SockJS('http://localhost:8081/ws/chat');
+    const websocketUrl = import.meta.env.VITE_WEBSOCKET_URL || 'http://localhost:8081/ws/chat';
+    const socket = new SockJS(websocketUrl);
     stompClient = Stomp.over(socket);
     stompClient.connect({}, () => {
       set({ isConnected: true });
