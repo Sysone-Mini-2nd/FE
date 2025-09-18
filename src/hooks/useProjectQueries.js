@@ -20,6 +20,7 @@ export function useProjects(filters = {}) {
       }
       return { projects: [], total: 0, statusCounts: {}, delayed: 0 };
     },
+    suspense: true,
     // staleTime: 5 * 60 * 1000,
   });
 }

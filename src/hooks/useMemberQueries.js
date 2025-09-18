@@ -27,6 +27,7 @@ export const useMemberQueries = () => {
       const response = await getMembers();
       return response.data; 
     },
+    suspense: true,
   });
 
   const members = membersData || [];

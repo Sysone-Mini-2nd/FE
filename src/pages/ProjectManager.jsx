@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import ProjectHeader from '../components/project/ProjectHeader';
 import ProjectStats from '../components/project/ProjectStats';
 import ProjectFilters from '../components/project/ProjectFilters';
@@ -6,6 +7,7 @@ import ProjectList from '../components/project/ProjectList';
 import ProjectModal from '../components/project/ProjectModal';
 import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '../hooks/useProjectQueries';
 import { useMemberQueries } from '../hooks/useMemberQueries';
+import { ProjectCardSkeleton, ErrorFallback } from '../components/common/loading/LoadingComponents';
 /** 작성자: 김대호, 백승준 */
 const statusMap = {
   planning: 'TODO',
@@ -35,8 +37,8 @@ function ProjectManager() {
     sortBy: sortBy,
   }), [searchTerm, filters, sortBy]);
 
-  const { data: projectData, isLoading: projectsLoading, isError: projectsError } = useProjects(apiFilters);
-  const { members: allMembers, loading: membersLoading, error: membersError } = useMemberQueries();
+  const { data: projectData } = useProjects(apiFilters);
+  const { members: allMembers } = useMemberQueries();
 
   const createProjectMutation = useCreateProject();
   const updateProjectMutation = useUpdateProject();
@@ -58,33 +60,25 @@ function ProjectManager() {
         onViewTypeChange={setViewType}
       />
       
-      {projectsLoading || membersLoading ? (
-        <div>데이터를 불러오는 중...</div>
-      ) : projectsError || membersError ? (
-        <div>에러가 발생했습니다.</div>
-      ) : (
-        <>
-          <ProjectStats
-            total={projectData.total}
-            stats={projectData.statusCounts}
-            delayed={projectData.delayed}
-          />
-          
-          <ProjectFilters 
-            filters={filters}
-            onFiltersChange={setFilters}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-          />
-          
-          <ProjectList 
-            projects={projectData.projects}
-            viewType={viewType}
-            onProjectSelect={setSelectedProject}
-            onProjectDelete={handleDeleteProject}
-          />
-        </>
-      )}
+      <ProjectStats
+        total={projectData.total}
+        stats={projectData.statusCounts}
+        delayed={projectData.delayed}
+      />
+      
+      <ProjectFilters 
+        filters={filters}
+        onFiltersChange={setFilters}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
+      
+      <ProjectList 
+        projects={projectData.projects}
+        viewType={viewType}
+        onProjectSelect={setSelectedProject}
+        onProjectDelete={handleDeleteProject}
+      />
 
       {isCreateModalOpen && (
         <ProjectModal
@@ -125,4 +119,21 @@ function ProjectManager() {
   )
 }
 
-export default ProjectManager;
+function ProjectManagerWithSuspense() {
+  return (
+    <ErrorBoundary
+      FallbackComponent={({ error, resetErrorBoundary }) => (
+        <ErrorFallback 
+          error={error} 
+          onRetry={resetErrorBoundary}
+        />
+      )}
+    >
+      <Suspense fallback={<ProjectCardSkeleton count={8} />}>
+        <ProjectManager />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+
+export default ProjectManagerWithSuspense;
